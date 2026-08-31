@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield SL - Module 1: Phishing Awareness</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #langToggleBtn {
+            padding: 5px 12px; border-radius: 7px;
+            border: 1px solid rgba(6,182,212,.5);
+            background: rgba(6,182,212,.08); color: #0e7490;
+            font-size: 11px; font-weight: 700; cursor: pointer;
+            transition: .2s; white-space: nowrap; margin-right: 8px;
+        }
+        #langToggleBtn:hover { background: rgba(6,182,212,.18); }
+        #langToggleBtn span { text-decoration: underline; }
+        .video-lang-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+        .video-lang-tab {
+            padding: 6px 16px; border-radius: 8px; border: 1px solid var(--gray-200);
+            background: var(--gray-50); font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: .2s; color: var(--gray-500);
+        }
+        .video-lang-tab.active {
+            background: var(--blue-primary); color: white; border-color: var(--blue-primary);
+        }
+        .yt-frame {
+            width: 100%; aspect-ratio: 16/9; border-radius: 12px;
+            border: none; box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="light-page">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-logo"><i class="ti ti-shield-check" style="color: var(--gold); margin-right: 8px;"></i>Cyber<span>Shield</span> SL</div>
+            <div class="topbar-module-name" data-en="Module 1: Phishing Awareness" data-si="පාඩම 1: ෆිශිංග් ඈතුම">පාඩම 1: ෆිශිංග් ඈතුම</div>
+        </div>
+        <div class="topbar-right">
+            <div class="progress-pill">
+                <span data-en="Progress: 0%" data-si="ප්‍රගතිය: 0%">ප්‍රගතිය: 0%</span>
+                <div class="progress-bar-container"><div class="progress-bar-fill" id="globalProgress" style="width: 0%;"></div></div>
+            </div>
+            <button id="langToggleBtn" onclick="LangUtil.toggle()">🌐 <span>EN</span> | සි</button>
+            <a href="student-dashboard.html" class="btn-back"><i class="ti ti-arrow-left"></i> <span data-en="Back to Dashboard" data-si="Dashboard එරේට">ඩැශ්බෝර්ඩ් එරේට</span></a>
+        </div>
+    </div>
+
+    <div class="module-layout">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-badge">
+                <div class="sidebar-badge-num">Module 01</div>
+                <div class="sidebar-badge-title">Phishing Awareness</div>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <a href="#" class="sidebar-item active" data-target="section1">
+                    <i class="ti ti-video"></i> AI Training Video <i class="ti ti-check check-icon"></i>
+                </a>
+                <a href="#" class="sidebar-item" data-target="section2">
+                    <i class="ti ti-file-text"></i> Module Content <i class="ti ti-check check-icon"></i>
+                </a>
+                <a href="#" class="sidebar-item" data-target="section3">
+                    <i class="ti ti-click"></i> Interactive Exercise <i class="ti ti-check check-icon"></i>
+                </a>
+                <a href="#" class="sidebar-item" data-target="section4">
+                    <i class="ti ti-help-circle"></i> End Quiz <i class="ti ti-check check-icon"></i>
+                </a>
+            </ul>
+
+            <div class="quiz-score-box">
+                <div class="quiz-score-box-title">Quiz Score</div>
+                <div class="quiz-score-box-val" id="sidebarScore">--/10</div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            
+            <!-- SECTION 1: AI VIDEO PLAYER -->
+            <div id="section1" class="content-section active">
+                <div class="module-hero">
+                    <h1 style="color: white; margin-bottom: 8px;">Defending Against Phishing</h1>
+                    <p style="color: var(--gray-400); max-width: 600px;">Learn how to identify deceptive emails and protect sensitive government information from social engineering attacks.</p>
+                    <div class="module-hero-tags">
+                        <span class="hero-tag"><i class="ti ti-clock"></i> 10 Mins</span>
+                        <span class="hero-tag"><i class="ti ti-barbell"></i> Beginner</span>
+                        <span class="hero-tag"><i class="ti ti-language"></i> English / Sinhala</span>
+                    </div>
+                </div>
+
+                <div class="section-container">
+                    <!-- VIDEO LANGUAGE TABS -->
+                    <div class="video-lang-tabs">
+                        <button class="video-lang-tab active" id="tabEn" onclick="switchVideo('en')">🇬🇧 English Video</button>
+                        <button class="video-lang-tab" id="tabSi" onclick="switchVideo('si')">🇱🇰 සිංහල Video</button>
+                    </div>
+                    <!-- VIDEO PLAYER CONTAINER -->
+                    <div id="videoEn">
+                        <video controls class="yt-frame" poster="htb_module_banner.png" style="width:100%; border-radius:16px; background:#000; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                            <source src="module1_video.mp4" type="video/mp4">
+                            <iframe class="yt-frame"
+                                src="https://www.youtube-nocookie.com/embed/aO858HyFbKI"
+                                title="Phishing Awareness Training (English)"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allowfullscreen></iframe>
+                        </video>
+                        <p style="font-size:13px; color: #475569; margin-top:10px; font-weight:600;">🇬🇧 English — Phishing Awareness Training Video</p>
+                    </div>
+                    <div id="videoSi" style="display:none;">
+                        <video controls class="yt-frame" poster="htb_module_banner.png" style="width:100%; border-radius:16px; background:#000; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                            <source src="module1_video_si.mp4" type="video/mp4">
+                            <iframe class="yt-frame"
+                                src="https://www.youtube-nocookie.com/embed/XBkzBrXlle0"
+                                title="Phishing Attacks — ෆිශිංග් ආරක්ෂාව — Sinhala"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allowfullscreen></iframe>
+                        </video>
+                        <p style="font-size:13px; color: #475569; margin-top:10px; font-weight:600;">🇱🇰 සිංහල — ෆිශිංග් ආරක්ෂාව වීඩියෝව</p>
+                    </div>
+
+
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-info-circle"></i>
+                            <div class="card-title">Video Overview</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <h4>Objective</h4>
+                                    <p class="module-card-desc">Recognize malicious links and urgent requests that aim to steal credentials.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Target Audience</h4>
+                                    <p class="module-card-desc">All Gampaha Divisional Secretariat Employees</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Methodology Focus</h4>
+                                    <p class="module-card-desc">Addressing human factors in cybersecurity (Parsons et al., 2017)</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Key Takeaway</h4>
+                                    <p class="module-card-desc">Always verify the sender before clicking or downloading attachments.</p>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button class="btn btn-primary" onclick="document.querySelector('[data-target=section2]').click()">Continue to Content <i class="ti ti-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: MODULE CONTENT -->
+            <div id="section2" class="content-section">
+                <div class="section-container">
+                    <h2 class="section-title">Phishing Awareness Essentials</h2>
+
+                    <!-- VISUAL GUIDE CARD WITH EXPLANATION BOX -->
+                    <div class="visual-guide-card">
+                        <div class="visual-guide-header">
+                            <h3><i class="ti ti-photo"></i> Visual Analysis Guide: Real vs. Fake Phishing Email</h3>
+                            <span class="badge" style="background: rgba(59,130,246,0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.4); font-size:11px; padding:3px 10px; border-radius:12px;">Step-by-Step Officer Guide</span>
+                        </div>
+                        <div class="visual-guide-img-wrap">
+                            <img src="gov_phishing_visual_guide.png" alt="Email Security Analysis: Real Gov vs Fake Phishing" class="visual-guide-img">
+                        </div>
+                        <div class="visual-explanation-box">
+                            <div class="visual-explanation-title">
+                                🔍 <span>Visual Breakdown: How to Spot Fake Emails at Your Office Desk</span>
+                            </div>
+                            <div class="visual-callout-grid">
+                                <div class="visual-callout-item">
+                                    <div class="callout-num red">1</div>
+                                    <div class="callout-text">
+                                        <h4>Fake Sender Address (Spoofed Domain)</h4>
+                                        <p>Real government emails always end in official domains like <code>@dist.gov.lk</code>. Fake emails use tricks like <code>government.support@tax-refunds.net</code> or <code>admin@gov-lk-update.com</code> to trick officers.</p>
+                                    </div>
+                                </div>
+                                <div class="visual-callout-item">
+                                    <div class="callout-num red">2</div>
+                                    <div class="callout-text">
+                                        <h4>Urgent Threat Language</h4>
+                                        <p>Phrases like "ACT NOW OR ACCOUNT TERMINATED IN 2 HOURS" create panic. Attackers want you to act fast without checking with your IT officer.</p>
+                                    </div>
+                                </div>
+                                <div class="visual-callout-item">
+                                    <div class="callout-num amber">3</div>
+                                    <div class="callout-text">
+                                        <h4>Generic Salutations</h4>
+                                        <p>Instead of your actual name or official designation, scam emails say "Dear Valued Citizen" or "Dear Sir/Madam".</p>
+                                    </div>
+                                </div>
+                                <div class="visual-callout-item">
+                                    <div class="callout-num red">4</div>
+                                    <div class="callout-text">
+                                        <h4>Malicious Links & Attachments</h4>
+                                        <p>Hovering over the link reveals non-government websites (e.g. <code>fake.gov.portal.com</code>). Never open unexpected <code>.exe</code> or zip files!</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gov-do-dont-grid">
+                                <div class="gov-do-card">
+                                    <h4>✅ What Government Staff SHOULD Do</h4>
+                                    <ul>
+                                        <li>Verify the sender's full email address (check the part after @).</li>
+                                        <li>Hover over links to inspect the actual destination URL before clicking.</li>
+                                        <li>Report suspicious emails immediately to your divisional IT officer.</li>
+                                    </ul>
+                                </div>
+                                <div class="gov-dont-card">
+                                    <h4>❌ What Government Staff Should NEVER Do</h4>
+                                    <ul>
+                                        <li>Never enter government system passwords on external websites.</li>
+                                        <li>Never open unexpected email attachments or macro-enabled files.</li>
+                                        <li>Never reply to panic-inducing emails asking for NIC or OTP details.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-help"></i>
+                            <div class="card-title">What is Phishing?</div>
+                        </div>
+                        <div class="card-body">
+                            <p>Phishing is a deceptive email or message attack where criminals pretend to be official government departments, banks, or colleagues to trick you into giving away passwords, citizen identity numbers, or clicking malicious links.</p>
+                            
+                            <div class="warning-box">
+                                <i class="ti ti-alert-triangle"></i>
+                                <div>
+                                    <strong>IMPORTANT FOR GOVERNMENT OFFICERS:</strong>
+                                    <p>Over 90% of security breaches start with a single clicked link in a phishing email. Staying alert protects government servers and citizen confidentiality!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-category"></i>
+                            <div class="card-title">4 Common Types of Phishing</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <h4>1. Mass Email Phishing</h4>
+                                    <p class="module-card-desc">Fake circulars or tax/bonus notices sent to hundreds of officers hoping someone clicks.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>2. Targeted Spear Phishing</h4>
+                                    <p class="module-card-desc">Customized scam emails using your exact name, department name, or project details.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>3. SMS Phishing (Smishing)</h4>
+                                    <p class="module-card-desc">Fake mobile SMS claiming your government bank account or salary payment requires urgent link verification.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>4. Phone Phishing (Vishing)</h4>
+                                    <p class="module-card-desc">Fake phone calls from someone pretending to be from Ministry IT asking for your OTP or password.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-shield-check"></i>
+                            <div class="card-title">Simple Action Checklist</div>
+                        </div>
+                        <div class="card-body">
+                            <p>Follow these 5 simple steps whenever an unexpected email lands in your inbox at work:</p>
+                            <div class="tip-chips">
+                                <span class="tip-chip"><i class="ti ti-eye"></i> 1. Check sender domain (@gov.lk)</span>
+                                <span class="tip-chip"><i class="ti ti-pointer"></i> 2. Hover over links first</span>
+                                <span class="tip-chip"><i class="ti ti-phone"></i> 3. Call sender directly if unsure</span>
+                                <span class="tip-chip"><i class="ti ti-trash"></i> 4. Delete unverified emails</span>
+                                <span class="tip-chip"><i class="ti ti-report"></i> 5. Inform Divisional IT Officer</span>
+                            </div>
+                            
+                            <div class="text-center" style="margin-top: 32px;">
+                                <button class="btn btn-primary" onclick="document.querySelector('[data-target=section3]').click()">Try the Phishing Simulator <i class="ti ti-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SECTION 3: INTERACTIVE EXERCISE -->
+            <div id="section3" class="content-section">
+                <div class="section-container">
+                    <div class="sim-header flex-between">
+                        <div>
+                            <h2>Spot the Phish</h2>
+                            <p style="color: var(--gray-400); margin-top: 4px;">Email Client Simulator</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 8px; font-weight: 700;">
+                            Score: <span id="simScore">0</span> / 3
+                        </div>
+                    </div>
+                    <div class="sim-body">
+                        <div class="hint-panel">
+                            <strong><i class="ti ti-bulb"></i> Tips before you start:</strong>
+                            <ul>
+                                <li>Check the sender's email address carefully (Look for legitimate .gov.lk domains).</li>
+                                <li>Watch out for artificial urgency.</li>
+                                <li>Hovering over links (simulated) can reveal their true destination.</li>
+                                <li>Government departments rarely ask for passwords via email.</li>
+                            </ul>
+                        </div>
+
+                        <div style="border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                            <!-- Mac-style dots -->
+                            <div style="background: var(--gray-100); padding: 12px 16px; border-bottom: 1px solid var(--gray-200); display: flex; gap: 8px;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f56;"></div>
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: #27c93f;"></div>
+                            </div>
+                            
+                            <!-- Email Content Area -->
+                            <div style="padding: 24px; min-height: 300px; position: relative;" id="emailContainer">
+                                <!-- Rendered via JS -->
+                            </div>
+                        </div>
+
+                        <div class="flex-between" id="simActions" style="display: none;">
+                            <button class="btn btn-outline" style="border-color: var(--red); color: var(--red);" onclick="judgeEmail('phishing')"><i class="ti ti-bug"></i> It's Phishing</button>
+                            <button class="btn btn-outline" style="border-color: var(--green); color: var(--green);" onclick="judgeEmail('legitimate')"><i class="ti ti-shield-check"></i> It's Legitimate</button>
+                        </div>
+                        
+                        <div id="simComplete" style="display: none; text-align: center;">
+                            <h3 style="color: var(--navy); margin-bottom: 16px;">Simulation Complete!</h3>
+                            <button class="btn btn-primary" onclick="document.querySelector('[data-target=section4]').click()">Take the End Quiz <i class="ti ti-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: END QUIZ -->
+            <div id="section4" class="content-section">
+                <div class="module-hero" style="padding: 32px 48px; background-size: 20px 20px;">
+                    <h2 style="color: white;">Module 1 Knowledge Assessment</h2>
+                    <div class="module-hero-tags">
+                        <span class="hero-tag">10 Questions</span>
+                        <span class="hero-tag">70% to Pass</span>
+                    </div>
+                </div>
+
+                <div class="section-container" id="quizContainer">
+                    <div class="quiz-progress-bar" id="quizProgress">
+                        <!-- Filled by JS -->
+                    </div>
+                    
+                    <div class="flex-between mb-4">
+                        <div style="font-weight: 700; color: var(--gray-600);">Question <span id="qCurrent">1</span> of 10</div>
+                        <div style="font-weight: 700; color: var(--blue-mid);">Score: <span id="qScore">0</span></div>
+                    </div>
+
+                    <div class="quiz-question-container">
+                        <div id="qScenario" class="scenario-box" style="display: none;"></div>
+                        <div class="quiz-question" id="qText">Question text here?</div>
+                        
+                        <div class="quiz-options" id="qOptions">
+                            <!-- Filled by JS -->
+                        </div>
+
+                        <div class="quiz-explanation" id="qExplanation">
+                            <h4><i class="ti ti-bulb"></i> Explanation</h4>
+                            <p id="qExpText">Explanation text here.</p>
+                            <button class="btn btn-primary mt-4" id="btnNextQuestion" style="float: right;">Next Question <i class="ti ti-arrow-right"></i></button>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESULTS CONTAINER -->
+                <div class="section-container" id="resultContainer" style="display: none;">
+                    <div class="card result-card">
+                        <h2 style="margin-bottom: 24px;">Assessment Complete</h2>
+                        
+                        <div class="score-ring pass" id="finalScoreRing">
+                            100%
+                        </div>
+                        
+                        <div style="font-size: 20px; font-weight: 700; margin-bottom: 8px;" id="finalResultTitle">Congratulations! You Passed.</div>
+                        <p class="module-card-desc">You have successfully demonstrated your understanding of phishing awareness.</p>
+                        
+                        <div class="badge-earned" id="badgeContainer">
+                            <img src="https://cdn-icons-png.flaticon.com/512/8140/8140061.png" alt="Badge">
+                            <div style="font-weight: 700; color: var(--navy);">Phishing Detective</div>
+                            <div style="font-size: 12px; color: var(--gold);">Module 01 Badge</div>
+                        </div>
+
+                        <div class="info-grid mt-4" style="text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
+                            <div class="info-item">
+                                <h4 style="color: var(--green);">Correct Answers</h4>
+                                <p style="font-size: 24px; font-weight: 700;" id="statCorrect">8</p>
+                            </div>
+                            <div class="info-item">
+                                <h4 style="color: var(--red);">Incorrect Answers</h4>
+                                <p style="font-size: 24px; font-weight: 700;" id="statWrong">2</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4" style="display: flex; gap: 16px; justify-content: center; margin-top: 32px;">
+                            <button class="btn btn-outline" onclick="location.reload()">Retry Quiz</button>
+                            <a href="student-dashboard.html" class="btn btn-primary">Back to Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="sentry.js"></script>
+    <script>
+        // Module 1 Specific Logic
+
+        // --- SIMULATOR LOGIC ---
+        const emails = [
+            {
+                senderName: "IT Support Desk",
+                senderEmail: "admin@gov-lk-portal.com", // Fake
+                subject: "URGENT: Your Gov Portal Account Will Be Suspended",
+                body: "Dear Employee,\n\nWe have detected unusual login activity on your government portal account. To prevent your account from being locked out in the next 24 hours, you must verify your identity immediately.\n\nPlease click the link below to verify:\n<a href='#' style='color:blue;'>http://verify.gov-lk-portal.com/login</a>\n\nThank you,\nIT Support",
+                type: "phishing",
+                reason: "The sender address 'gov-lk-portal.com' is fake (not a real .gov.lk domain), it uses extreme urgency, and provides a suspicious link."
+            },
+            {
+                senderName: "HR Department",
+                senderEmail: "hr@gampaha.gov.lk", // Legit
+                subject: "Upcoming Mandatory Training Session",
+                body: "Dear Colleagues,\n\nPlease note that there will be a mandatory training session on the new e-office system next Tuesday at 10:00 AM in the main auditorium.\n\nNo registration is required. Please ensure you bring your employee ID badge.\n\nRegards,\nHuman Resources\nGampaha Divisional Secretariat",
+                type: "legitimate",
+                reason: "The sender address is a legitimate .gov.lk domain, it does not ask for sensitive information or urge immediate clicking of suspicious links."
+            },
+            {
+                senderName: "Finance Division",
+                senderEmail: "finance.update2023@gmail.com", // Fake
+                subject: "Salary Hold Notification - Action Required",
+                body: "Hello,\n\nDue to a processing error, your monthly salary has been placed on hold. Please download the attached Excel document to update your bank account details.\n\n<a href='#' style='color:blue;'>[Attachment: Bank_Details_Form.xlsm]</a>\n\nFailure to do so will result in non-payment this month.\n\nFinance Team",
+                type: "phishing",
+                reason: "Government finance departments do not use @gmail.com accounts. It uses panic tactics (salary hold) and asks you to download a potentially malicious macro-enabled Excel file (.xlsm)."
+            }
+        ];
+
+        let currentEmailIndex = 0;
+        let simScore = 0;
+
+        function renderEmail() {
+            if (currentEmailIndex >= emails.length) {
+                document.getElementById('emailContainer').innerHTML = "";
+                document.getElementById('simActions').style.display = "none";
+                document.getElementById('simComplete').style.display = "block";
+                return;
+            }
+
+            const email = emails[currentEmailIndex];
+            const html = `
+                <div style="border-bottom: 1px solid var(--gray-200); padding-bottom: 16px; margin-bottom: 16px;">
+                    <div style="font-weight: 700; color: var(--navy); font-size: 16px;">From: ${email.senderName} &lt;<span style="color: var(--gray-600); font-weight: normal;">${email.senderEmail}</span>&gt;</div>
+                    <div style="font-weight: 700; color: var(--navy); margin-top: 8px;">Subject: ${email.subject}</div>
+                </div>
+                <div style="white-space: pre-wrap; font-family: var(--font-body); color: var(--gray-800);">${email.body}</div>
+                <div id="simFeedback" style="margin-top: 24px; padding: 16px; border-radius: 8px; display: none;"></div>
+            `;
+            document.getElementById('emailContainer').innerHTML = html;
+            document.getElementById('simActions').style.display = "flex";
+        }
+
+        function judgeEmail(userChoice) {
+            document.getElementById('simActions').style.display = "none";
+            const email = emails[currentEmailIndex];
+            const feedbackEl = document.getElementById('simFeedback');
+            feedbackEl.style.display = "block";
+
+            if (userChoice === email.type) {
+                simScore++;
+                document.getElementById('simScore').innerText = simScore;
+                feedbackEl.style.backgroundColor = "var(--green-soft)";
+                feedbackEl.style.border = "1px solid var(--green)";
+                feedbackEl.innerHTML = `<strong style="color: var(--green);"><i class="ti ti-check"></i> Correct!</strong> It is ${email.type}.<br><span style="font-size:14px; margin-top:8px; display:block;">${email.reason}</span>`;
+            } else {
+                feedbackEl.style.backgroundColor = "var(--red-soft)";
+                feedbackEl.style.border = "1px solid var(--red)";
+                feedbackEl.innerHTML = `<strong style="color: var(--red);"><i class="ti ti-x"></i> Incorrect.</strong> It was actually ${email.type}.<br><span style="font-size:14px; margin-top:8px; display:block;">${email.reason}</span>`;
+            }
+
+            setTimeout(() => {
+                currentEmailIndex++;
+                renderEmail();
+            }, 3500);
+        }
+
+        // Start sim
+        document.getElementById('simActions').style.display = "flex";
+        renderEmail();
+
+        // --- QUIZ LOGIC ---
+        const quizQuestions = [
+            {
+                text: "What is the primary goal of a phishing attack?",
+                options: [
+                    "To speed up computer performance",
+                    "To trick individuals into revealing sensitive information",
+                    "To install new software updates",
+                    "To block spam emails"
+                ],
+                correct: 1,
+                explanation: "Phishing relies on deception to manipulate users into voluntarily handing over confidential data like passwords or financial information."
+            },
+            {
+                scenario: "You receive an email from 'admin@gampaha.gov-update.com' asking you to reset your e-office password immediately.",
+                text: "What is the major red flag in this scenario?",
+                options: [
+                    "The email asks you to reset your password",
+                    "The email domain is not an official .gov.lk domain",
+                    "It was sent during working hours",
+                    "There are no red flags, it is safe"
+                ],
+                correct: 1,
+                explanation: "Official government emails in Sri Lanka should come from a verified .gov.lk address. Attackers often use similar-looking domains to trick users."
+            },
+            {
+                text: "What distinguishes 'Spear Phishing' from regular phishing?",
+                options: [
+                    "It targets a specific individual or organization with personalized details",
+                    "It is conducted over SMS",
+                    "It does not use deceptive links",
+                    "It is much easier to detect"
+                ],
+                correct: 0,
+                explanation: "Spear phishing is highly targeted and often uses information the attacker has researched about you to make the email seem legitimate."
+            },
+            {
+                text: "If you receive a suspicious email in your government inbox, what is the best immediate action?",
+                options: [
+                    "Forward it to all your colleagues to warn them",
+                    "Reply to the sender asking if they are legitimate",
+                    "Do not click any links and report it to the IT department",
+                    "Click the link but do not enter any information"
+                ],
+                correct: 2,
+                explanation: "Interacting with the email (clicking links or replying) can confirm your address is active or trigger malware downloads. Always report it to IT."
+            },
+            {
+                text: "Which of the following is known as 'Smishing'?",
+                options: [
+                    "Phishing via phone calls",
+                    "Phishing via USB drives",
+                    "Phishing via SMS text messages",
+                    "Phishing via social media posts"
+                ],
+                correct: 2,
+                explanation: "Smishing stands for SMS Phishing. Attackers send texts mimicking banks or institutions, asking you to click a link or call a number."
+            },
+            {
+                text: "Why do phishing emails often create a sense of extreme urgency (e.g., 'Your account will be deleted in 2 hours')?",
+                options: [
+                    "Because government servers are slow",
+                    "To force you to act quickly without thinking logically or verifying",
+                    "Because IT policies mandate quick responses",
+                    "To improve email delivery times"
+                ],
+                correct: 1,
+                explanation: "Urgency is a psychological trick. When panicked, people are more likely to make mistakes and click malicious links without verifying the sender."
+            },
+            {
+                scenario: "You hover your mouse over a link in an email that says 'www.bank.lk/login'. A small tooltip pops up showing 'http://192.168.4.5/scam'.",
+                text: "What should you do?",
+                options: [
+                    "Click it because the visible text says bank.lk",
+                    "Do not click it; the actual destination does not match the display text",
+                    "Copy the tooltip address into a new tab",
+                    "Reply to the sender asking for clarification"
+                ],
+                correct: 1,
+                explanation: "Hovering over a link (without clicking) reveals the true URL. If it doesn't match the display text or looks suspicious, it's a phishing attempt."
+            },
+            {
+                text: "According to Parsons et al. (2017), what is often the weakest link in information security systems?",
+                options: [
+                    "Outdated antivirus software",
+                    "Weak firewalls",
+                    "The human factor (employees)",
+                    "Slow internet speeds"
+                ],
+                correct: 2,
+                explanation: "Even the best technical defenses can be bypassed if an employee is manipulated into giving away their password or clicking a malicious link."
+            },
+            {
+                text: "Which of these attachments is most commonly used to deliver malware in a phishing email?",
+                options: [
+                    "A standard .txt file",
+                    "An unexpected .xlsm (Macro-enabled Excel) or .zip file",
+                    "A small .png image",
+                    "A link to a YouTube video"
+                ],
+                correct: 1,
+                explanation: "Attackers often hide malware inside macros in Office documents or inside compressed .zip archives."
+            },
+            {
+                text: "You receive an email from your division head urgently requesting you to buy gift cards. What is the safest approach?",
+                options: [
+                    "Buy the gift cards immediately because it's your boss",
+                    "Email them back to confirm",
+                    "Call the division head on a known phone number to verify the request",
+                    "Ignore it and delete the email permanently"
+                ],
+                correct: 2,
+                explanation: "This is a common 'CEO Fraud' or impersonation attack. Always verify unusual requests for money or data using a secondary communication method, like a phone call."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let quizScore = 0;
+
+        const quizProgress = document.getElementById('quizProgress');
+        const qCurrent = document.getElementById('qCurrent');
+        const qScore = document.getElementById('qScore');
+        const qScenario = document.getElementById('qScenario');
+        const qText = document.getElementById('qText');
+        const qOptions = document.getElementById('qOptions');
+        const qExplanation = document.getElementById('qExplanation');
+        const qExpText = document.getElementById('qExpText');
+        const btnNext = document.getElementById('btnNextQuestion');
+
+        // Init Progress Bar
+        for(let i=0; i<quizQuestions.length; i++){
+            const step = document.createElement('div');
+            step.className = 'quiz-step';
+            if(i===0) step.classList.add('active');
+            quizProgress.appendChild(step);
+        }
+
+        function loadQuestion() {
+            const q = quizQuestions[currentQIndex];
+            qCurrent.innerText = currentQIndex + 1;
+            
+            if (q.scenario) {
+                qScenario.innerText = q.scenario;
+                qScenario.style.display = "block";
+            } else {
+                qScenario.style.display = "none";
+            }
+            
+            qText.innerText = q.text;
+            qOptions.innerHTML = "";
+            qExplanation.classList.remove('show');
+
+            const letters = ['A', 'B', 'C', 'D'];
+            q.options.forEach((opt, idx) => {
+                const optEl = document.createElement('div');
+                optEl.className = 'quiz-option';
+                optEl.innerHTML = `
+                    <div class="quiz-option-letter">${letters[idx]}</div>
+                    <div class="quiz-option-text">${opt}</div>
+                `;
+                optEl.onclick = () => handleAnswer(idx);
+                qOptions.appendChild(optEl);
+            });
+
+            // Update step UI
+            const steps = document.querySelectorAll('.quiz-step');
+            steps.forEach((s, i) => {
+                s.classList.remove('active');
+                if(i < currentQIndex) s.classList.add('completed');
+                if(i === currentQIndex) s.classList.add('active');
+            });
+        }
+
+        function handleAnswer(selectedIndex) {
+            // Prevent multiple clicks
+            if (qExplanation.classList.contains('show')) return;
+
+            const q = quizQuestions[currentQIndex];
+            const opts = qOptions.querySelectorAll('.quiz-option');
+
+            opts.forEach(o => o.classList.add('disabled'));
+            opts[selectedIndex].classList.add('selected');
+
+            if (selectedIndex === q.correct) {
+                opts[selectedIndex].classList.add('correct');
+                quizScore++;
+                qScore.innerText = quizScore;
+                document.getElementById('sidebarScore').innerText = quizScore + "/10";
+            } else {
+                opts[selectedIndex].classList.add('wrong');
+                opts[q.correct].classList.add('correct'); // reveal correct
+            }
+
+            qExpText.innerText = q.explanation;
+            qExplanation.classList.add('show');
+        }
+
+        btnNext.onclick = () => {
+            currentQIndex++;
+            if (currentQIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        function showResults() {
+            document.getElementById('quizContainer').style.display = "none";
+            const resContainer = document.getElementById('resultContainer');
+            resContainer.style.display = "block";
+
+            const percent = (quizScore / quizQuestions.length) * 100;
+            const ring = document.getElementById('finalScoreRing');
+            const title = document.getElementById('finalResultTitle');
+            const badge = document.getElementById('badgeContainer');
+            
+            ring.innerText = percent + "%";
+            document.getElementById('statCorrect').innerText = quizScore;
+            document.getElementById('statWrong').innerText = quizQuestions.length - quizScore;
+            document.getElementById('sidebarScore').innerText = quizScore + "/10";
+            document.getElementById('globalProgress').style.width = "100%";
+            document.querySelector('.progress-pill span').innerText = "Progress: 100%";
+
+            // Update Sidebar completion
+            const navs = document.querySelectorAll('.sidebar-item');
+            navs.forEach(n => n.classList.add('completed'));
+
+            if (percent >= 70) {
+                ring.className = "score-ring pass";
+                title.innerText = "Congratulations! You Passed.";
+                badge.style.display = "inline-block";
+                // Save progress
+                if (typeof saveModuleProgress === 'function') {
+                    saveModuleProgress(1, percent, true);
+                }
+            } else {
+                ring.className = "score-ring fail";
+                title.innerText = "Assessment Failed";
+                title.style.color = "var(--amber)";
+                badge.style.display = "none";
+                if (typeof saveModuleProgress === 'function') {
+                    saveModuleProgress(1, percent, false);
+                }
+            }
+        }
+
+        // Start Quiz
+        loadQuestion();
+        CyberSentry.init('module');
+
+    </script>
+    <script>
+        function switchVideo(lang) {
+            document.getElementById('videoEn').style.display = lang === 'en' ? 'block' : 'none';
+            document.getElementById('videoSi').style.display = lang === 'si' ? 'block' : 'none';
+            document.getElementById('tabEn').classList.toggle('active', lang === 'en');
+            document.getElementById('tabSi').classList.toggle('active', lang === 'si');
+        }
+        // Auto-sync video tab with language toggle
+        document.addEventListener('langChanged', (e) => switchVideo(e.detail.lang));
+    </script>
+    <script src="lang.js"></script>
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield SL - Module 3: Malware Awareness</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #langToggleBtn { padding:5px 12px; border-radius:7px; border:1px solid rgba(6,182,212,.5); background:rgba(6,182,212,.08); color:#0e7490; font-size:11px; font-weight:700; cursor:pointer; transition:.2s; white-space:nowrap; margin-right:8px; }
+        #langToggleBtn:hover { background:rgba(6,182,212,.18); }
+        #langToggleBtn span { text-decoration:underline; }
+        .video-lang-tabs { display:flex; gap:8px; margin-bottom:12px; }
+        .video-lang-tab { padding:6px 16px; border-radius:8px; border:1px solid var(--gray-200); background:var(--gray-50); font-size:12px; font-weight:600; cursor:pointer; transition:.2s; color:var(--gray-500); }
+        .video-lang-tab.active { background:var(--blue-primary); color:white; border-color:var(--blue-primary); }
+        .yt-frame { width:100%; aspect-ratio:16/9; border-radius:12px; border:none; box-shadow:0 4px 24px rgba(0,0,0,0.15); }
+        .threat-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .threat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border-top: 4px solid var(--red);
+        }
+        .threat-card.ransomware { border-top-color: #7C3AED; }
+        .threat-card.trojan { border-top-color: var(--amber); }
+        .threat-card.spyware { border-top-color: #0891B2; }
+        .threat-card.worm { border-top-color: var(--red); }
+        .threat-card.adware { border-top-color: var(--green); }
+        .threat-card i { font-size: 32px; margin-bottom: 12px; display: block; color: var(--gray-600); }
+        .threat-card h4 { font-size: 15px; margin-bottom: 8px; }
+        .threat-card p { font-size: 13px; color: var(--gray-600); }
+
+        /* Categorization exercise */
+        .cat-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .cat-source {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .cat-source h4 { margin-bottom: 12px; font-size: 14px; color: var(--gray-600); text-transform: uppercase; }
+        .drag-item {
+            background: var(--white);
+            border: 1px solid var(--blue-pale);
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            cursor: grab;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .drag-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-1px); }
+        .drag-item:active { cursor: grabbing; }
+        .drop-zone {
+            min-height: 80px;
+            border: 2px dashed var(--gray-300);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+        .drop-zone.drag-over { border-color: var(--blue-mid); background: var(--blue-soft); }
+        .cat-column {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .cat-column h4 { margin-bottom: 8px; font-size: 14px; font-weight: 700; }
+        .cat-column h4.malware-title { color: var(--red); }
+        .cat-column h4.safe-title { color: var(--green); }
+        .dropped-item {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .cat-feedback { margin-top: 16px; text-align: center; display: none; }
+    </style>
+</head>
+<body class="light-page">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-logo"><i class="ti ti-shield-check" style="color: var(--gold); margin-right: 8px;"></i>Cyber<span>Shield</span> SL</div>
+            <div class="topbar-module-name">Module 3: Malware Awareness</div>
+        </div>
+        <div class="topbar-right">
+            <div class="progress-pill">
+                <span>Progress: 0%</span>
+                <div class="progress-bar-container"><div class="progress-bar-fill" id="globalProgress" style="width: 0%;"></div></div>
+            </div>
+            <button id="langToggleBtn" onclick="LangUtil.toggle()">🌐 <span>EN</span> | සි</button>
+            <a href="student-dashboard.html" class="btn-back"><i class="ti ti-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="module-layout">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-badge">
+                <div class="sidebar-badge-num">Module 03</div>
+                <div class="sidebar-badge-title">Malware Awareness</div>
+            </div>
+            <ul class="sidebar-nav">
+                <a href="#" class="sidebar-item active" data-target="section1">
+                    <i class="ti ti-video"></i> AI Training Video <i class="ti ti-check check-icon"></i>
+                </a>
+                <a href="#" class="sidebar-item" data-target="section2">
+                    <i class="ti ti-file-text"></i> Module Content <i class="ti ti-check check-icon"></i>
+                </a>
+                <a href="#" class="sidebar-item" data-target="section3">
+                    <i class="ti ti-click"></i> Interactive Exercise <i class="ti ti-check check-icon"></i>
+                </a>
+                <a href="#" class="sidebar-item" data-target="section4">
+                    <i class="ti ti-help-circle"></i> End Quiz <i class="ti ti-check check-icon"></i>
+                </a>
+            </ul>
+            <div class="quiz-score-box">
+                <div class="quiz-score-box-title">Quiz Score</div>
+                <div class="quiz-score-box-val" id="sidebarScore">--/10</div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+            <!-- SECTION 1: AI VIDEO PLAYER -->
+            <div id="section1" class="content-section active">
+                <div class="module-hero">
+                    <h1 style="color: white; margin-bottom: 8px;">Defending Against Malware</h1>
+                    <p style="color: var(--gray-400); max-width: 600px;">Understand the different types of malicious software, how they spread through government systems, and the steps to prevent infection.</p>
+                    <div class="module-hero-tags">
+                        <span class="hero-tag"><i class="ti ti-clock"></i> 10 Mins</span>
+                        <span class="hero-tag"><i class="ti ti-barbell"></i> Intermediate</span>
+                        <span class="hero-tag"><i class="ti ti-language"></i> English / Sinhala</span>
+                    </div>
+                </div>
+                                <div class="section-container">
+                    <div class="video-lang-tabs">
+                        <button class="video-lang-tab active" id="tabEn" onclick="switchVideo('en')">🇬🇧 English</button>
+                        <button class="video-lang-tab" id="tabSi" onclick="switchVideo('si')">🇱🇰 සිංහල</button>
+                    </div>
+                    <div id="videoEn">
+                        <iframe class="yt-frame" src="https://www.youtube-nocookie.com/embed/aO858HyFbKI" title="Safe Browsing & Email Security for Employees" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <p style="font-size:12px; color:var(--gray-400); margin-top:8px;">🇬🇧 English — Safe Browsing & Email Security for Employees</p>
+                    </div>
+                    <div id="videoSi" style="display:none;">
+                        <iframe class="yt-frame" src="https://www.youtube-nocookie.com/embed/XBkzBrXlle0" title="ආරක්ෂිත ඇතල් බලිම — Chanux Bro" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <p style="font-size:12px; color:var(--gray-400); margin-top:8px;">🇱🇰 සිංහල — ආරක්ෂිත ඇතල් බලිම — Chanux Bro</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-info-circle"></i>
+                            <div class="card-title">Video Overview</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <h4>Objective</h4>
+                                    <p class="module-card-desc">Identify malicious software types and understand how to prevent infection on government systems.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Target Audience</h4>
+                                    <p class="module-card-desc">All Gampaha Divisional Secretariat Employees</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Key Threat</h4>
+                                    <p class="module-card-desc">Ransomware attacks on government institutions have risen 300% in the Asia-Pacific region</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Key Takeaway</h4>
+                                    <p class="module-card-desc">Never open unexpected attachments and keep your software updated to patch vulnerabilities.</p>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button class="btn btn-primary" onclick="document.querySelector('[data-target=section2]').click()">Continue to Content <i class="ti ti-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: MODULE CONTENT -->
+            <div id="section2" class="content-section">
+                <div class="section-container">
+                    <h2 class="section-title">Safe Browsing & Device Security Essentials</h2>
+
+                    <!-- VISUAL GUIDE CARD WITH EXPLANATION BOX -->
+                    <div class="visual-guide-card">
+                        <div class="visual-guide-header">
+                            <h3><i class="ti ti-photo"></i> Visual Safe Browsing & Device Security Guide</h3>
+                            <span class="badge" style="background: rgba(6,182,212,0.2); color: #22d3ee; border: 1px solid rgba(6,182,212,0.4); font-size:11px; padding:3px 10px; border-radius:12px;">Step-by-Step Officer Guide</span>
+                        </div>
+                        <div class="visual-guide-img-wrap">
+                            <img src="gov_browsing_malware_guide.png" alt="Safe Browsing and Device Security Infographic" class="visual-guide-img">
+                        </div>
+                        <div class="visual-explanation-box">
+                            <div class="visual-explanation-title">
+                                🌐 <span>Visual Breakdown: Safe Browsing & Protecting Government PC Devices</span>
+                            </div>
+                            <div class="visual-callout-grid">
+                                <div class="visual-callout-item">
+                                    <div class="callout-num green">1</div>
+                                    <div class="callout-text">
+                                        <h4>HTTPS Padlock Icon 🔒</h4>
+                                        <p>Before logging into any portal or web system at work, ensure the web address begins with <code>https://</code> and shows a locked padlock icon. This encrypts your connection.</p>
+                                    </div>
+                                </div>
+                                <div class="visual-callout-item">
+                                    <div class="callout-num red">2</div>
+                                    <div class="callout-text">
+                                        <h4>Fake Web Addresses vs Real Official Domains</h4>
+                                        <p>Official Sri Lankan government sites end in <code>.gov.lk</code> (e.g. <code>gampaha.dist.gov.lk</code>). Watch out for fake typo clones like <code>gampaha-gov-lk.com</code> or <code>e-office-g0v.lk</code>!</p>
+                                    </div>
+                                </div>
+                                <div class="visual-callout-item">
+                                    <div class="callout-num amber">3</div>
+                                    <div class="callout-text">
+                                        <h4>USB Pen Drive Safety</h4>
+                                        <p>Plugging an unknown USB flash drive into a government computer can instantly infect the network with ransomware! Always scan USB drives with official antivirus software first.</p>
+                                    </div>
+                                </div>
+                                <div class="visual-callout-item">
+                                    <div class="callout-num red">4</div>
+                                    <div class="callout-text">
+                                        <h4>Unsafe Public Wi-Fi Networks</h4>
+                                        <p>Public Wi-Fi networks at cafes, stations, or airports are unencrypted. Hackers on the same network can intercept your government emails. Always connect via official government VPN.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gov-do-dont-grid">
+                                <div class="gov-do-card">
+                                    <h4>✅ What Government Staff SHOULD Do</h4>
+                                    <ul>
+                                        <li>Always check that the address bar shows <code>https://</code> and <code>.gov.lk</code>.</li>
+                                        <li>Scan all USB drives brought by visitors or staff before opening files.</li>
+                                        <li>Use official government VPN when working remotely or outside the office.</li>
+                                    </ul>
+                                </div>
+                                <div class="gov-dont-card">
+                                    <h4>❌ What Government Staff Should NEVER Do</h4>
+                                    <ul>
+                                        <li>Never plug random USB drives found in parking lots or waiting areas into office PCs.</li>
+                                        <li>Never download free pirated software or unapproved games onto government machines.</li>
+                                        <li>Never ignore Windows antivirus warning popups or disable security software.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-bug"></i>
+                            <div class="card-title">What is Malware?</div>
+                        </div>
+                        <div class="card-body">
+                            <p>Malware (malicious software) is any program or code designed to harm a computer system, steal data, or gain unauthorized access. It is one of the most serious cybersecurity threats facing Sri Lankan government institutions today.</p>
+                            <div class="warning-box" style="margin-top: 16px;">
+                                <i class="ti ti-alert-triangle"></i>
+                                <div>
+                                    <strong>Government Systems at Risk</strong>
+                                    <p>A malware infection on a government computer can compromise millions of citizen records, disrupt public services, and cause irreparable damage to national security. Prevention is always better than recovery.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-category"></i>
+                            <div class="card-title">Types of Malware</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="threat-cards">
+                                <div class="threat-card ransomware">
+                                    <i class="ti ti-lock" style="color: #7C3AED;"></i>
+                                    <h4>Ransomware</h4>
+                                    <p>Encrypts your files and demands payment to restore access. Devastating for government data.</p>
+                                </div>
+                                <div class="threat-card trojan">
+                                    <i class="ti ti-horse-toy" style="color: var(--amber);"></i>
+                                    <h4>Trojan Horse</h4>
+                                    <p>Disguises itself as legitimate software to trick users into installing it.</p>
+                                </div>
+                                <div class="threat-card spyware">
+                                    <i class="ti ti-eye" style="color: #0891B2;"></i>
+                                    <h4>Spyware</h4>
+                                    <p>Silently records keystrokes, screen activity, and transmits data to attackers.</p>
+                                </div>
+                                <div class="threat-card worm">
+                                    <i class="ti ti-circuit-resistor" style="color: var(--red);"></i>
+                                    <h4>Worm</h4>
+                                    <p>Self-replicates across a network, consuming bandwidth and crashing systems.</p>
+                                </div>
+                                <div class="threat-card adware">
+                                    <i class="ti ti-ad" style="color: var(--green);"></i>
+                                    <h4>Adware</h4>
+                                    <p>Bombards users with unwanted ads and can redirect browsing to malicious sites.</p>
+                                </div>
+                                <div class="threat-card">
+                                    <i class="ti ti-shield-off" style="color: var(--gray-600);"></i>
+                                    <h4>Rootkit</h4>
+                                    <p>Hides deeply in the OS, giving attackers long-term, hidden control over a system.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-route"></i>
+                            <div class="card-title">How Malware Spreads</div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="red-flag-list">
+                                <li class="red-flag-item"><i class="ti ti-x"></i> <strong>Email Attachments:</strong> Malicious files disguised as invoices, reports, or government forms.</li>
+                                <li class="red-flag-item"><i class="ti ti-x"></i> <strong>USB / External Drives:</strong> Infected flash drives left in public areas — never plug in unknown drives.</li>
+                                <li class="red-flag-item"><i class="ti ti-x"></i> <strong>Malicious Downloads:</strong> Software downloaded from unofficial or torrent websites.</li>
+                                <li class="red-flag-item"><i class="ti ti-x"></i> <strong>Drive-by Downloads:</strong> Visiting a compromised website automatically downloads malware.</li>
+                                <li class="red-flag-item"><i class="ti ti-x"></i> <strong>Network Propagation:</strong> Worms spread automatically through shared network folders.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-shield-check"></i>
+                            <div class="card-title">Prevention Best Practices</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="tip-chips">
+                                <span class="tip-chip"><i class="ti ti-refresh"></i> Keep software updated</span>
+                                <span class="tip-chip"><i class="ti ti-shield"></i> Use antivirus software</span>
+                                <span class="tip-chip"><i class="ti ti-usb-off"></i> Never use unknown USB drives</span>
+                                <span class="tip-chip"><i class="ti ti-cloud-upload"></i> Back up data regularly</span>
+                                <span class="tip-chip"><i class="ti ti-download-off"></i> No unofficial software</span>
+                                <span class="tip-chip"><i class="ti ti-report"></i> Report infections immediately</span>
+                            </div>
+                            <div class="text-center" style="margin-top: 32px;">
+                                <button class="btn btn-primary" onclick="document.querySelector('[data-target=section3]').click()">Try the Categorization Exercise <i class="ti ti-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: INTERACTIVE EXERCISE -->
+            <div id="section3" class="content-section">
+                <div class="section-container">
+                    <div class="sim-header">
+                        <h2>Malware or Safe? — Categorization Challenge</h2>
+                        <p style="color: var(--gray-400); margin-top: 4px;">Drag each scenario into the correct category.</p>
+                    </div>
+                    <div class="sim-body">
+                        <div class="hint-panel">
+                            <strong><i class="ti ti-bulb"></i> Instructions:</strong>
+                            <p>Drag each item from the "Scenarios" column and drop it into either "Potential Malware" or "Safe Action". Click Submit when done to see your score.</p>
+                        </div>
+
+                        <div class="cat-container">
+                            <div class="cat-source">
+                                <h4>Scenarios to Categorize</h4>
+                                <div id="dragSource">
+                                    <div class="drag-item" draggable="true" data-id="1" data-answer="malware"><i class="ti ti-file-zip"></i> A colleague emails you an unexpected .zip file named "Salary_Bonus.zip"</div>
+                                    <div class="drag-item" draggable="true" data-id="2" data-answer="safe"><i class="ti ti-download"></i> Downloading the official Microsoft Windows update from Settings</div>
+                                    <div class="drag-item" draggable="true" data-id="3" data-answer="malware"><i class="ti ti-usb"></i> Plugging in a USB drive found in the office car park</div>
+                                    <div class="drag-item" draggable="true" data-id="4" data-answer="safe"><i class="ti ti-shield"></i> Running a scheduled antivirus scan on your workstation</div>
+                                    <div class="drag-item" draggable="true" data-id="5" data-answer="malware"><i class="ti ti-browser"></i> A pop-up says "Your PC has 6 viruses! Download our cleaner NOW" — and you click it</div>
+                                    <div class="drag-item" draggable="true" data-id="6" data-answer="safe"><i class="ti ti-cloud-upload"></i> Backing up critical documents to the approved government cloud storage</div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="cat-column" style="margin-bottom: 16px;">
+                                    <h4 class="malware-title"><i class="ti ti-bug"></i> Potential Malware Risk</h4>
+                                    <div class="drop-zone" id="zone-malware" data-zone="malware">
+                                        <p style="color: var(--gray-400); font-size: 13px; text-align: center;">Drop here...</p>
+                                    </div>
+                                </div>
+                                <div class="cat-column">
+                                    <h4 class="safe-title"><i class="ti ti-shield-check"></i> Safe Action</h4>
+                                    <div class="drop-zone" id="zone-safe" data-zone="safe">
+                                        <p style="color: var(--gray-400); font-size: 13px; text-align: center;">Drop here...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 24px;">
+                            <button class="btn btn-primary" id="btnCheckCat" onclick="checkCategorization()"><i class="ti ti-check"></i> Submit Answers</button>
+                        </div>
+
+                        <div class="cat-feedback" id="catFeedback">
+                            <div style="font-size: 20px; font-weight: 700; margin-bottom: 12px;" id="catFeedbackText"></div>
+                            <button class="btn btn-primary" onclick="document.querySelector('[data-target=section4]').click()">Take the End Quiz <i class="ti ti-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: END QUIZ -->
+            <div id="section4" class="content-section">
+                <div class="module-hero" style="padding: 32px 48px; background-size: 20px 20px;">
+                    <h2 style="color: white;">Module 3 Knowledge Assessment</h2>
+                    <div class="module-hero-tags">
+                        <span class="hero-tag">10 Questions</span>
+                        <span class="hero-tag">70% to Pass</span>
+                    </div>
+                </div>
+
+                <div class="section-container" id="quizContainer">
+                    <div class="quiz-progress-bar" id="quizProgress"></div>
+                    <div class="flex-between mb-4">
+                        <div style="font-weight: 700; color: var(--gray-600);">Question <span id="qCurrent">1</span> of 10</div>
+                        <div style="font-weight: 700; color: var(--blue-mid);">Score: <span id="qScore">0</span></div>
+                    </div>
+                    <div class="quiz-question-container">
+                        <div id="qScenario" class="scenario-box" style="display: none;"></div>
+                        <div class="quiz-question" id="qText">Question text here?</div>
+                        <div class="quiz-options" id="qOptions"></div>
+                        <div class="quiz-explanation" id="qExplanation">
+                            <h4><i class="ti ti-bulb"></i> Explanation</h4>
+                            <p id="qExpText">Explanation text here.</p>
+                            <button class="btn btn-primary mt-4" id="btnNextQuestion" style="float: right;">Next Question <i class="ti ti-arrow-right"></i></button>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESULTS CONTAINER -->
+                <div class="section-container" id="resultContainer" style="display: none;">
+                    <div class="card result-card">
+                        <h2 style="margin-bottom: 24px;">Assessment Complete</h2>
+                        <div class="score-ring pass" id="finalScoreRing">100%</div>
+                        <div style="font-size: 20px; font-weight: 700; margin-bottom: 8px;" id="finalResultTitle">Congratulations! You Passed.</div>
+                        <p class="module-card-desc">You have successfully demonstrated your understanding of malware awareness.</p>
+                        <div class="badge-earned" id="badgeContainer">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1000/1000966.png" alt="Malware Hunter Badge">
+                            <div style="font-weight: 700; color: var(--navy);">Malware Hunter</div>
+                            <div style="font-size: 12px; color: var(--gold);">Module 03 Badge</div>
+                        </div>
+                        <div class="info-grid mt-4" style="text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
+                            <div class="info-item">
+                                <h4 style="color: var(--green);">Correct Answers</h4>
+                                <p style="font-size: 24px; font-weight: 700;" id="statCorrect">8</p>
+                            </div>
+                            <div class="info-item">
+                                <h4 style="color: var(--red);">Incorrect Answers</h4>
+                                <p style="font-size: 24px; font-weight: 700;" id="statWrong">2</p>
+                            </div>
+                        </div>
+                        <div class="mt-4" style="display: flex; gap: 16px; justify-content: center; margin-top: 32px;">
+                            <button class="btn btn-outline" onclick="location.reload()">Retry Quiz</button>
+                            <a href="student-dashboard.html" class="btn btn-primary">Back to Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="sentry.js"></script>
+    <script>
+        // --- DRAG & DROP CATEGORIZATION ---
+        let draggedItem = null;
+        const droppedItems = {};
+
+        document.querySelectorAll('.drag-item').forEach(item => {
+            item.addEventListener('dragstart', e => {
+                draggedItem = item;
+                setTimeout(() => item.style.opacity = '0.5', 0);
+            });
+            item.addEventListener('dragend', () => {
+                item.style.opacity = '1';
+                draggedItem = null;
+            });
+        });
+
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                zone.classList.add('drag-over');
+            });
+            zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                if (draggedItem) {
+                    const zoneId = zone.dataset.zone;
+                    const itemId = draggedItem.dataset.id;
+                    droppedItems[itemId] = zoneId;
+
+                    // Clear placeholder
+                    const placeholder = zone.querySelector('p');
+                    if (placeholder) placeholder.remove();
+
+                    // Create a dropped display item
+                    const dropped = document.createElement('div');
+                    dropped.className = 'dropped-item';
+                    dropped.textContent = draggedItem.textContent;
+                    dropped.dataset.id = itemId;
+                    zone.appendChild(dropped);
+
+                    // Remove from source
+                    draggedItem.remove();
+                }
+            });
+        });
+
+        function checkCategorization() {
+            const answers = { '1': 'malware', '2': 'safe', '3': 'malware', '4': 'safe', '5': 'malware', '6': 'safe' };
+            let correct = 0;
+            let total = Object.keys(answers).length;
+
+            for (const id in answers) {
+                if (droppedItems[id] === answers[id]) correct++;
+            }
+
+            const feedback = document.getElementById('catFeedback');
+            const feedbackText = document.getElementById('catFeedbackText');
+            feedback.style.display = 'block';
+            feedbackText.innerText = `You got ${correct} out of ${total} correct!`;
+            feedbackText.style.color = correct >= 4 ? 'var(--green)' : 'var(--red)';
+            document.getElementById('btnCheckCat').style.display = 'none';
+        }
+
+        // --- QUIZ LOGIC ---
+        const quizQuestions = [
+            {
+                text: "What does the term 'Malware' stand for?",
+                options: ["Managed Software", "Malicious Software", "Manual Learning Ware", "Main Layer Ware"],
+                correct: 1,
+                explanation: "Malware is a portmanteau of 'malicious software'. It refers to any software intentionally designed to disrupt, damage, or gain unauthorized access to a system."
+            },
+            {
+                text: "Which type of malware encrypts your files and demands a payment to restore access?",
+                options: ["Spyware", "Adware", "Ransomware", "Worm"],
+                correct: 2,
+                explanation: "Ransomware locks you out of your files or system and demands a ransom (often in cryptocurrency) for the decryption key. Paying the ransom is never recommended."
+            },
+            {
+                scenario: "You arrive at work and find a USB drive on your desk with a note that says 'Salary Slips Q1'. You don't know who left it.",
+                text: "What is the safest course of action?",
+                options: ["Plug it in immediately to check the contents", "Hand it to the IT department without plugging it in", "Plug it into a personal phone first to test it", "Share it with colleagues to see if anyone knows about it"],
+                correct: 1,
+                explanation: "This is a common 'Baiting' attack. Attackers leave infected USB drives hoping curious employees will plug them in. Always hand unknown drives to IT without inserting them."
+            },
+            {
+                text: "What is the key characteristic of a 'Trojan Horse' malware?",
+                options: ["It replicates itself across a network automatically", "It disguises itself as a legitimate or useful application", "It monitors your keyboard presses", "It displays unwanted advertisements"],
+                correct: 1,
+                explanation: "Like the mythical Trojan Horse, this malware pretends to be something harmless (e.g., a free game or a useful tool) while secretly installing a backdoor or other harmful payload."
+            },
+            {
+                text: "A malware that secretly records everything you type (including passwords) is known as a:",
+                options: ["Worm", "Ransomware", "Keylogger / Spyware", "Adware"],
+                correct: 2,
+                explanation: "A Keylogger is a type of Spyware. It silently records all keystrokes and can capture passwords, bank details, and confidential government communications without the victim knowing."
+            },
+            {
+                text: "Which of the following practices is MOST effective in preventing malware infections?",
+                options: ["Using a colourful desktop background", "Keeping all operating system and software patches up to date", "Only using your computer during office hours", "Having a strong Wi-Fi password"],
+                correct: 1,
+                explanation: "Software updates (patches) often fix critical security vulnerabilities that malware exploits. Failing to update creates an open door for attackers."
+            },
+            {
+                scenario: "While browsing a government ministry website for forms, a pop-up suddenly appears: 'WARNING! Your computer is infected with 5 viruses! Click here to clean now!'",
+                text: "What should you do?",
+                options: ["Click the pop-up to clean the viruses as instructed", "Close the pop-up and run your official antivirus software", "Shut down the computer immediately and never turn it on again", "Download and run the cleaner software from the pop-up link"],
+                correct: 1,
+                explanation: "This is 'Scareware' — a fake warning designed to trick you into downloading malware. Close the pop-up and use your officially installed antivirus if you are worried."
+            },
+            {
+                text: "What is the primary danger of a 'Worm' compared to a regular computer virus?",
+                options: ["It is more expensive to remove", "It cannot be detected by antivirus software", "It self-replicates and spreads across networks automatically without human interaction", "It only affects mobile phones"],
+                correct: 2,
+                explanation: "A worm is self-propagating — it can spread to every connected computer on a network by itself, without someone needing to open a file or email. This makes it extremely dangerous in government network environments."
+            },
+            {
+                text: "If you suspect your government workstation has been infected with malware, what is the FIRST thing you should do?",
+                options: ["Try to delete the malware files yourself", "Disconnect the computer from the network and contact IT immediately", "Keep working and hope it goes away on its own", "Email your colleagues about the infection from the same machine"],
+                correct: 1,
+                explanation: "Isolating the infected machine prevents the malware from spreading to other computers on the government network. Immediately contacting IT allows professionals to contain and remediate the threat."
+            },
+            {
+                text: "According to best practices, how often should critical government data be backed up to protect against ransomware attacks?",
+                options: ["Once a year", "Only when you remember", "Regularly (e.g., daily or weekly) and stored offline or in a secure cloud", "Only when the hard drive makes a strange noise"],
+                correct: 2,
+                explanation: "Regular backups stored offline or in a secure, air-gapped location are the single best defense against ransomware. If your files are encrypted, you can restore from a backup without paying any ransom."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let quizScore = 0;
+        const quizProgress = document.getElementById('quizProgress');
+        const qCurrent = document.getElementById('qCurrent');
+        const qScore = document.getElementById('qScore');
+        const qScenario = document.getElementById('qScenario');
+        const qText = document.getElementById('qText');
+        const qOptions = document.getElementById('qOptions');
+        const qExplanation = document.getElementById('qExplanation');
+        const qExpText = document.getElementById('qExpText');
+        const btnNext = document.getElementById('btnNextQuestion');
+
+        for (let i = 0; i < quizQuestions.length; i++) {
+            const step = document.createElement('div');
+            step.className = 'quiz-step';
+            if (i === 0) step.classList.add('active');
+            quizProgress.appendChild(step);
+        }
+
+        function loadQuestion() {
+            const q = quizQuestions[currentQIndex];
+            qCurrent.innerText = currentQIndex + 1;
+            if (q.scenario) {
+                qScenario.innerText = q.scenario;
+                qScenario.style.display = "block";
+            } else {
+                qScenario.style.display = "none";
+            }
+            qText.innerText = q.text;
+            qOptions.innerHTML = "";
+            qExplanation.classList.remove('show');
+            const letters = ['A', 'B', 'C', 'D'];
+            q.options.forEach((opt, idx) => {
+                const optEl = document.createElement('div');
+                optEl.className = 'quiz-option';
+                optEl.innerHTML = `<div class="quiz-option-letter">${letters[idx]}</div><div class="quiz-option-text">${opt}</div>`;
+                optEl.onclick = () => handleAnswer(idx);
+                qOptions.appendChild(optEl);
+            });
+            const steps = document.querySelectorAll('.quiz-step');
+            steps.forEach((s, i) => {
+                s.classList.remove('active');
+                if (i < currentQIndex) s.classList.add('completed');
+                if (i === currentQIndex) s.classList.add('active');
+            });
+        }
+
+        function handleAnswer(selectedIndex) {
+            if (qExplanation.classList.contains('show')) return;
+            const q = quizQuestions[currentQIndex];
+            const opts = qOptions.querySelectorAll('.quiz-option');
+            opts.forEach(o => o.classList.add('disabled'));
+            opts[selectedIndex].classList.add('selected');
+            if (selectedIndex === q.correct) {
+                opts[selectedIndex].classList.add('correct');
+                quizScore++;
+                qScore.innerText = quizScore;
+                document.getElementById('sidebarScore').innerText = quizScore + "/10";
+            } else {
+                opts[selectedIndex].classList.add('wrong');
+                opts[q.correct].classList.add('correct');
+            }
+            qExpText.innerText = q.explanation;
+            qExplanation.classList.add('show');
+        }
+
+        btnNext.onclick = () => {
+            currentQIndex++;
+            if (currentQIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        function showResults() {
+            document.getElementById('quizContainer').style.display = "none";
+            document.getElementById('resultContainer').style.display = "block";
+            const percent = (quizScore / quizQuestions.length) * 100;
+            const ring = document.getElementById('finalScoreRing');
+            const title = document.getElementById('finalResultTitle');
+            const badge = document.getElementById('badgeContainer');
+            ring.innerText = percent + "%";
+            document.getElementById('statCorrect').innerText = quizScore;
+            document.getElementById('statWrong').innerText = quizQuestions.length - quizScore;
+            document.getElementById('sidebarScore').innerText = quizScore + "/10";
+            document.getElementById('globalProgress').style.width = "100%";
+            document.querySelector('.progress-pill span').innerText = "Progress: 100%";
+            document.querySelectorAll('.sidebar-item').forEach(n => n.classList.add('completed'));
+            if (percent >= 70) {
+                ring.className = "score-ring pass";
+                title.innerText = "Congratulations! You Passed.";
+                badge.style.display = "inline-block";
+                if (typeof saveModuleProgress === 'function') saveModuleProgress(3, percent, true);
+            } else {
+                ring.className = "score-ring fail";
+                title.innerText = "Assessment Failed. Please try again.";
+                title.style.color = "var(--amber)";
+                badge.style.display = "none";
+                if (typeof saveModuleProgress === 'function') saveModuleProgress(3, percent, false);
+            }
+        }
+
+        loadQuestion();
+        CyberSentry.init('module');
+    </script>
+    <script>
+        function switchVideo(lang) {
+            document.getElementById('videoEn').style.display = lang === 'en' ? 'block' : 'none';
+            document.getElementById('videoSi').style.display = lang === 'si' ? 'block' : 'none';
+            document.getElementById('tabEn').classList.toggle('active', lang === 'en');
+            document.getElementById('tabSi').classList.toggle('active', lang === 'si');
+        }
+        document.addEventListener('langChanged', (e) => switchVideo(e.detail.lang));
+    </script>
+    <script src="lang.js"></script>
+</body>
+</html>

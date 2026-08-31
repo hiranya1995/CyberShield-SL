@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield SL - e-Satisfaction Survey</title>
+    <meta name="description" content="e-Satisfaction survey measuring the quality and effectiveness of the CyberShield SL cybersecurity training platform.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .survey-header {
+            background: var(--navy);
+            color: var(--white);
+            padding: 40px 48px;
+            background-image: radial-gradient(circle at 10px 10px, rgba(255,255,255,0.05) 2px, transparent 0);
+            background-size: 40px 40px;
+        }
+        .survey-header h1 { color: var(--white); margin-bottom: 12px; }
+        .survey-body {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        .survey-section {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .survey-section-header {
+            background: var(--gray-50);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .survey-section-header i { color: var(--blue-mid); font-size: 20px; }
+        .survey-section-header h3 { font-size: 16px; color: var(--navy); }
+        .survey-section-body { padding: 24px; }
+        .survey-question {
+            margin-bottom: 28px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        .survey-question:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .question-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 12px;
+        }
+        .question-label span {
+            color: var(--red);
+            margin-left: 4px;
+        }
+
+        /* Likert Scale */
+        .likert-scale {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .likert-option {
+            display: none;
+        }
+        .likert-label {
+            padding: 8px 16px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-600);
+            transition: all 0.2s;
+            text-align: center;
+            min-width: 80px;
+        }
+        .likert-option:checked + .likert-label {
+            background: var(--blue-mid);
+            border-color: var(--blue-mid);
+            color: var(--white);
+        }
+        .likert-label:hover { border-color: var(--blue-mid); color: var(--blue-mid); }
+        .likert-scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--gray-400);
+            margin-top: 6px;
+            padding: 0 2px;
+        }
+
+        /* Star Rating */
+        .star-rating {
+            display: flex;
+            gap: 4px;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        .star-rating input { display: none; }
+        .star-rating label {
+            font-size: 32px;
+            cursor: pointer;
+            color: var(--gray-200);
+            transition: color 0.1s;
+        }
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: var(--gold);
+        }
+
+        /* Text areas */
+        .survey-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.2s;
+        }
+        .survey-textarea:focus { outline: none; border-color: var(--blue-mid); }
+
+        /* Radio group */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--gray-800);
+        }
+        .radio-option input { accent-color: var(--blue-mid); width: 16px; height: 16px; cursor: pointer; }
+
+        /* Submit button area */
+        .submit-area {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        /* Thank you screen */
+        .thank-you-screen {
+            display: none;
+            text-align: center;
+            padding: 60px 24px;
+        }
+        .thank-you-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--green-soft);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+            color: var(--green);
+        }
+        .progress-indication {
+            max-width: 300px;
+            margin: 0 auto 16px;
+        }
+    </style>
+</head>
+<body class="light-page">
+
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-logo"><i class="ti ti-shield-check" style="color: var(--gold); margin-right: 8px;"></i>Cyber<span>Shield</span> SL</div>
+            <div class="topbar-module-name">e-Satisfaction Survey</div>
+        </div>
+        <div class="topbar-right">
+            <a href="student-dashboard.html" class="btn-back"><i class="ti ti-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Survey Header -->
+    <div class="survey-header">
+        <h1>e-Satisfaction Survey</h1>
+        <p style="color: var(--gray-400); max-width: 600px;">Your feedback helps measure the effectiveness of this cybersecurity training platform and contributes directly to the research study. All responses are anonymous and confidential.</p>
+        <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+            <div style="background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px; font-size: 13px;"><i class="ti ti-clock"></i> ~5 Minutes</div>
+            <div style="background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px; font-size: 13px;"><i class="ti ti-lock"></i> Anonymous & Confidential</div>
+            <div style="background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px; font-size: 13px;"><i class="ti ti-chart-bar"></i> Research Data</div>
+        </div>
+    </div>
+
+    <!-- Survey Form -->
+    <div id="surveyForm">
+        <div class="survey-body">
+
+            <!-- Section 1: System Quality -->
+            <div class="survey-section">
+                <div class="survey-section-header">
+                    <i class="ti ti-device-desktop"></i>
+                    <h3>Section 1: System Quality & Usability</h3>
+                </div>
+                <div class="survey-section-body">
+
+                    <div class="survey-question">
+                        <div class="question-label">1. The platform was easy to navigate and use.<span>*</span></div>
+                        <div class="likert-scale" id="q1">
+                            <input type="radio" name="q1" id="q1-1" class="likert-option" value="1"><label for="q1-1" class="likert-label">1<br><small>Strongly Disagree</small></label>
+                            <input type="radio" name="q1" id="q1-2" class="likert-option" value="2"><label for="q1-2" class="likert-label">2<br><small>Disagree</small></label>
+                            <input type="radio" name="q1" id="q1-3" class="likert-option" value="3"><label for="q1-3" class="likert-label">3<br><small>Neutral</small></label>
+                            <input type="radio" name="q1" id="q1-4" class="likert-option" value="4"><label for="q1-4" class="likert-label">4<br><small>Agree</small></label>
+                            <input type="radio" name="q1" id="q1-5" class="likert-option" value="5"><label for="q1-5" class="likert-label">5<br><small>Strongly Agree</small></label>
+                        </div>
+                    </div>
+
+                    <div class="survey-question">
+                        <div class="question-label">2. The platform loaded quickly and performed well without technical errors.<span>*</span></div>
+                        <div class="likert-scale">
+                            <input type="radio" name="q2" id="q2-1" class="likert-option" value="1"><label for="q2-1" class="likert-label">1<br><small>Strongly Disagree</small></label>
+                            <input type="radio" name="q2" id="q2-2" class="likert-option" value="2"><label for="q2-2" class="likert-label">2<br><small>Disagree</small></label>
+                            <input type="radio" name="q2" id="q2-3" class="likert-option" value="3"><label for="q2-3" class="likert-label">3<br><small>Neutral</small></label>
+                            <input type="radio" name="q2" id="q2-4" class="likert-option" value="4"><label for="q2-4" class="likert-label">4<br><small>Agree</small></label>
+                            <input type="radio" name="q2" id="q2-5" class="likert-option" value="5"><label for="q2-5" class="likert-label">5<br><small>Strongly Agree</small></label>
+                        </div>
+                    </div>
+
+                    <div class="survey-question">
+                        <div class="question-label">3. The design and layout of the platform was clear and professional.<span>*</span></div>
+                        <div class="likert-scale">
+                            <input type="radio" name="q3" id="q3-1" class="likert-option" value="1"><label for="q3-1" class="likert-label">1<br><small>Strongly Disagree</small></label>
+                            <input type="radio" name="q3" id="q3-2" class="likert-option" value="2"><label for="q3-2" class="likert-label">2<br><small>Disagree</small></label>
+                            <input type="radio" name="q3" id="q3-3" class="likert-option" value="3"><label for="q3-3" class="likert-label">3<br><small>Neutral</small></label>
+                            <input type="radio" name="q3" id="q3-4" class="likert-option" value="4"><label for="q3-4" class="likert-label">4<br><small>Agree</small></label>
+                            <input type="radio" name="q3" id="q3-5" class="likert-option" value="5"><label for="q3-5" class="likert-label">5<br><small>Strongly Agree</small></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Information Quality -->
+            <div class="survey-section">
+                <div class="survey-section-header">
+                    <i class="ti ti-file-text"></i>
+                    <h3>Section 2: Information & Content Quality</h3>
+                </div>
+                <div class="survey-section-body">
+
+                    <div class="survey-question">
+                        <div class="question-label">4. The training content was relevant to my day-to-day work as a government employee.<span>*</span></div>
+                        <div class="likert-scale">
+                            <input type="radio" name="q4" id="q4-1" class="likert-option" value="1"><label for="q4-1" class="likert-label">1<br><small>Strongly Disagree</small></label>
+                            <input type="radio" name="q4" id="q4-2" class="likert-option" value="2"><label for="q4-2" class="likert-label">2<br><small>Disagree</small></label>
+                            <input type="radio" name="q4" id="q4-3" class="likert-option" value="3"><label for="q4-3" class="likert-label">3<br><small>Neutral</small></label>
+                            <input type="radio" name="q4" id="q4-4" class="likert-option" value="4"><label for="q4-4" class="likert-label">4<br><small>Agree</small></label>
+                            <input type="radio" name="q4" id="q4-5" class="likert-option" value="5"><label for="q4-5" class="likert-label">5<br><small>Strongly Agree</small></label>
+                        </div>
+                    </div>
+
+                    <div class="survey-question">
+                        <div class="question-label">5. The information presented in the modules was accurate, clear, and easy to understand.<span>*</span></div>
+                        <div class="likert-scale">
+                            <input type="radio" name="q5" id="q5-1" class="likert-option" value="1"><label for="q5-1" class="likert-label">1<br><small>Strongly Disagree</small></label>
+                            <input type="radio" name="q5" id="q5-2" class="likert-option" value="2"><label for="q5-2" class="likert-label">2<br><small>Disagree</small></label>
+                            <input type="radio" name="q5" id="q5-3" class="likert-option" value="3"><label for="q5-3" class="likert-label">3<br><small>Neutral</small></label>
+                            <input type="radio" name="q5" id="q5-4" class="likert-option" value="4"><label for="q5-4" class="likert-label">4<br><small>Agree</small></label>
+                            <input type="radio" name="q5" id="q5-5" class="likert-option" value="5"><label for="q5-5" class="likert-label">5<br><small>Strongly Agree</small></label>
+                        </div>
+                    </div>
+
+                    <div class="survey-question">
+                        <div class="question-label">6. The interactive exercises (email simulator, password checker, etc.) were helpful in understanding the content.<span>*</span></div>
+                        <div class="likert-scale">
+                            <input type="radio" name="q6" id="q6-1" class="likert-option" value="1"><label for="q6-1" class="likert-label">1<br><small>Strongly Disagree</small></label>
+                            <input type="radio" name="q6" id="q6-2" class="likert-option" value="2"><label for="q6-2" class="likert-label">2<br><small>Disagree</small></label>
+                            <input type="radio" name="q6" id="q6-3" class="likert-option" value="3"><label for="q6-3" class="likert-label">3<br><small>Neutral</small></label>
+                            <input type="radio" name="q6" id="q6-4" class="likert-option" value="4"><label for="q6-4" class="likert-label">4<br><small>Agree</small></label>
+                            <input type="radio" name="q6" id="q6-5" class="likert-option" value="5"><label for="q6-5" class="likert-label">5<br><small>Strongly Agree</small></label>
+                        </div>
+                    </div>
+
+                    <div class="survey-question">
+                        <div class="question-label">7. The quiz questions effectively tested my understanding of the module content.<span>*</span></div>
+                        <div class="likert-scale">
+                            <input type="radio" name="q7" id="q7-1" class="likert-option" value="1"><label for="q7-1" class="likert-label">1<br><small>Strongly Disagree</small></label>
+                            <input type="radio" name="q7" id="q7-2" class="likert-option" value="2"><label for="q7-2" class="likert-label">2<br><small>Disagree</small></label>
+                            <input type="radio" name="q7" id="q7-3" class="likert-option" value="3"><label for="q7-3" class="likert-label">3<br><small>Neutral</small></label>
+                            <input type="radio" name="q7" id="q7-4" class="likert-option" value="4"><label for="q7-4" class="likert-label">4<br><small>Agree</small></label>
+                            <input type="radio" name="q7" id="q7-5" class="likert-option" value="5"><label for="q7-5" class="likert-label">5<br><small>Strongly Agree</small></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Learning Effectiveness -->
+            <div class="survey-section">
+                <div class="survey-section-header">
+                    <i class="ti ti-brain"></i>
+                    <h3>Section 3: Learning Effectiveness</h3>
+                </div>
+                <div class="survey-section-body">
+
+                    <div class="survey-question">
+                        <div class="question-label">8. After completing the training, I feel more confident in identifying cybersecurity threats.<span>*</span></div>
+                        <div class="likert-scale">
+                            <input type="radio" name="q8" id="q8-1" class="likert-option" value="1"><label for="q8-1" class="likert-label">1<br><small>Strongly Disagree</small></label>
+                            <input type="radio" name="q8" id="q8-2" class="likert-option" value="2"><label for="q8-2" class="likert-label">2<br><small>Disagree</small></label>
+                            <input type="radio" name="q8" id="q8-3" class="likert-option" value="3"><label for="q8-3" class="likert-label">3<br><small>Neutral</small></label>
+                            <input type="radio" name="q8" id="q8-4" class="likert-option" value="4"><label for="q8-4" class="likert-label">4<br><small>Agree</small></label>
+                            <input type="radio" name="q8" id="q8-5" class="likert-option" value="5"><label for="q8-5" class="likert-label">5<br><small>Strongly Agree</small></label>
+                        </div>
+                    </div>
+
+                    <div class="survey-question">
+                        <div class="question-label">9. The training will change how I handle emails, passwords, and data in my work.<span>*</span></div>
+                        <div class="likert-scale">
+                            <input type="radio" name="q9" id="q9-1" class="likert-option" value="1"><label for="q9-1" class="likert-label">1<br><small>Strongly Disagree</small></label>
+                            <input type="radio" name="q9" id="q9-2" class="likert-option" value="2"><label for="q9-2" class="likert-label">2<br><small>Disagree</small></label>
+                            <input type="radio" name="q9" id="q9-3" class="likert-option" value="3"><label for="q9-3" class="likert-label">3<br><small>Neutral</small></label>
+                            <input type="radio" name="q9" id="q9-4" class="likert-option" value="4"><label for="q9-4" class="likert-label">4<br><small>Agree</small></label>
+                            <input type="radio" name="q9" id="q9-5" class="likert-option" value="5"><label for="q9-5" class="likert-label">5<br><small>Strongly Agree</small></label>
+                        </div>
+                    </div>
+
+                    <div class="survey-question">
+                        <div class="question-label">10. Which module did you find most valuable?<span>*</span></div>
+                        <div class="radio-group">
+                            <label class="radio-option"><input type="radio" name="q10" value="Module 1: Phishing Awareness"> Module 1: Phishing Awareness</label>
+                            <label class="radio-option"><input type="radio" name="q10" value="Module 2: Password Security"> Module 2: Password Security</label>
+                            <label class="radio-option"><input type="radio" name="q10" value="Module 3: Malware Awareness"> Module 3: Malware Awareness</label>
+                            <label class="radio-option"><input type="radio" name="q10" value="Module 4: Safe Internet Practices"> Module 4: Safe Internet Practices</label>
+                            <label class="radio-option"><input type="radio" name="q10" value="Module 5: Social Engineering"> Module 5: Social Engineering</label>
+                            <label class="radio-option"><input type="radio" name="q10" value="All equally valuable"> All equally valuable</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Overall Satisfaction -->
+            <div class="survey-section">
+                <div class="survey-section-header">
+                    <i class="ti ti-star"></i>
+                    <h3>Section 4: Overall Satisfaction</h3>
+                </div>
+                <div class="survey-section-body">
+
+                    <div class="survey-question">
+                        <div class="question-label">11. Overall, how would you rate your experience with this e-learning platform?<span>*</span></div>
+                        <div class="star-rating" id="starRating">
+                            <input type="radio" name="overall_rating" id="star5" value="5"><label for="star5">★</label>
+                            <input type="radio" name="overall_rating" id="star4" value="4"><label for="star4">★</label>
+                            <input type="radio" name="overall_rating" id="star3" value="3"><label for="star3">★</label>
+                            <input type="radio" name="overall_rating" id="star2" value="2"><label for="star2">★</label>
+                            <input type="radio" name="overall_rating" id="star1" value="1"><label for="star1">★</label>
+                        </div>
+                    </div>
+
+                    <div class="survey-question">
+                        <div class="question-label">12. Would you recommend this training to colleagues in other government departments?<span>*</span></div>
+                        <div class="radio-group">
+                            <label class="radio-option"><input type="radio" name="q12" value="Yes, definitely"> Yes, definitely</label>
+                            <label class="radio-option"><input type="radio" name="q12" value="Yes, probably"> Yes, probably</label>
+                            <label class="radio-option"><input type="radio" name="q12" value="Not sure"> Not sure</label>
+                            <label class="radio-option"><input type="radio" name="q12" value="Probably not"> Probably not</label>
+                            <label class="radio-option"><input type="radio" name="q12" value="Definitely not"> Definitely not</label>
+                        </div>
+                    </div>
+
+                    <div class="survey-question">
+                        <div class="question-label">13. What did you like most about this platform? <span style="color: var(--gray-400); font-weight: 400;">(Optional)</span></div>
+                        <textarea class="survey-textarea" id="q13" placeholder="e.g., The interactive exercises were engaging..."></textarea>
+                    </div>
+
+                    <div class="survey-question">
+                        <div class="question-label">14. What could be improved? <span style="color: var(--gray-400); font-weight: 400;">(Optional)</span></div>
+                        <textarea class="survey-textarea" id="q14" placeholder="e.g., The videos could include Sinhala subtitles..."></textarea>
+                    </div>
+
+                    <div class="survey-question" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">
+                        <div class="question-label">15. Any additional comments for the research team? <span style="color: var(--gray-400); font-weight: 400;">(Optional)</span></div>
+                        <textarea class="survey-textarea" id="q15" placeholder="Share any other thoughts or suggestions..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="submit-area">
+                <p style="color: var(--gray-600); font-size: 14px; margin-bottom: 20px;">By submitting this survey, you confirm that your responses are your honest opinions. All data is used solely for academic research purposes.</p>
+                <button class="btn btn-primary" style="padding: 14px 40px; font-size: 16px;" id="btnSubmit" onclick="submitSurvey()">
+                    <i class="ti ti-send"></i> Submit Survey
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thank You Screen -->
+    <div id="thankYouScreen" class="thank-you-screen">
+        <div class="thank-you-icon">
+            <i class="ti ti-circle-check"></i>
+        </div>
+        <h2 style="margin-bottom: 16px;">Thank You for Your Feedback!</h2>
+        <p style="color: var(--gray-600); max-width: 500px; margin: 0 auto 32px;">Your e-satisfaction survey has been recorded. Your insights will directly contribute to research on improving cybersecurity awareness programmes for Sri Lankan government institutions.</p>
+        
+        <div class="card progress-indication" style="max-width: 400px; margin: 0 auto 32px;">
+            <div class="card-body">
+                <div style="font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 12px; text-align: center;">Your Survey Summary</div>
+                <div id="surveyRatingSummary" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+            <a href="student-dashboard.html" class="btn btn-primary"><i class="ti ti-layout-dashboard"></i> Return to Dashboard</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function submitSurvey() {
+            // Validate required fields
+            const required = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','overall_rating','q12'];
+            const labels = {
+                q1: 'Q1', q2: 'Q2', q3: 'Q3', q4: 'Q4', q5: 'Q5', q6: 'Q6', q7: 'Q7',
+                q8: 'Q8', q9: 'Q9', q10: 'Q10 (Most Valuable Module)', overall_rating: 'Q11 (Overall Rating)', q12: 'Q12 (Recommendation)'
+            };
+            let missing = [];
+            const responses = {};
+
+            for (const name of required) {
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                if (!selected) {
+                    missing.push(labels[name]);
+                } else {
+                    responses[name] = selected.value;
+                }
+            }
+
+            if (missing.length > 0) {
+                alert(`Please answer the following required questions before submitting:\n\n${missing.join('\n')}`);
+                return;
+            }
+
+            // Get optional text responses
+            responses.q13 = document.getElementById('q13').value;
+            responses.q14 = document.getElementById('q14').value;
+            responses.q15 = document.getElementById('q15').value;
+
+            // Save to localStorage
+            const currentUserId = localStorage.getItem('cyberShieldCurrentUser');
+            if (currentUserId && currentUserId !== 'admin') {
+                let users = JSON.parse(localStorage.getItem('cyberShieldUsers')) || [];
+                let userIndex = users.findIndex(u => u.empId === currentUserId);
+                if (userIndex !== -1) {
+                    if (!users[userIndex].progress) users[userIndex].progress = {};
+                    users[userIndex].progress.survey = { responses, submittedAt: new Date().toISOString() };
+                    localStorage.setItem('cyberShieldUsers', JSON.stringify(users));
+                }
+            }
+
+            // Show thank you screen
+            document.getElementById('surveyForm').style.display = 'none';
+            document.getElementById('thankYouScreen').style.display = 'block';
+
+            // Build summary
+            const likertLabels = { '1': 'Strongly Disagree', '2': 'Disagree', '3': 'Neutral', '4': 'Agree', '5': 'Strongly Agree' };
+            const summaryEl = document.getElementById('surveyRatingSummary');
+            const summaryItems = [
+                { label: 'Overall Rating', value: '⭐'.repeat(parseInt(responses.overall_rating)) },
+                { label: 'Recommend to Colleagues', value: responses.q12 },
+                { label: 'Most Valuable Module', value: responses.q10 },
+                { label: 'Avg. Content Quality', value: Math.round((parseInt(responses.q4) + parseInt(responses.q5) + parseInt(responses.q6) + parseInt(responses.q7)) / 4 * 20) + '% (very good)' }
+            ];
+            summaryItems.forEach(item => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; justify-content: space-between; font-size: 13px; align-items: flex-start; gap: 8px;';
+                div.innerHTML = `<span style="color: var(--gray-600);">${item.label}:</span><span style="font-weight: 600; text-align: right;">${item.value}</span>`;
+                summaryEl.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield SL — Certificate of Completion</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .cert-page-bg {
+            background: var(--gray-100);
+            min-height: 100vh;
+        }
+        .no-print-bar {
+            background: var(--navy);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .no-print-bar .topbar-logo { display: flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: white; }
+        .no-print-bar .topbar-logo span { color: var(--gold); }
+        .cert-actions { display: flex; gap: 12px; }
+
+        /* Locked state */
+        .cert-locked {
+            max-width: 600px; margin: 60px auto; padding: 40px;
+            background: var(--white); border-radius: var(--radius-lg);
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .cert-locked i { font-size: 64px; color: var(--gray-400); margin-bottom: 20px; display: block; }
+        .cert-locked h2 { color: var(--navy); margin-bottom: 12px; }
+        .cert-locked p { color: var(--gray-600); font-size: 14px; margin-bottom: 24px; }
+        .cert-progress-list { text-align: left; max-width: 300px; margin: 0 auto 28px; }
+        .cpl-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 14px; border-bottom: 1px solid var(--gray-100); }
+        .cpl-item .cpl-icon { font-size: 16px; }
+        .cpl-item.done { color: var(--green); }
+        .cpl-item.pending { color: var(--gray-400); }
+
+        /* Certificate frame */
+        .cert-outer { max-width: 900px; margin: 40px auto; padding: 24px; }
+        .cert-paper {
+            background: var(--white);
+            position: relative;
+            box-shadow: 0 8px 60px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08);
+        }
+        /* Gold border frame */
+        .cert-paper::before {
+            content: '';
+            position: absolute;
+            inset: 12px;
+            border: 2px solid transparent;
+            background: linear-gradient(var(--white), var(--white)) padding-box,
+                        linear-gradient(135deg, var(--gold-dark), var(--gold), #FDE68A, var(--gold-dark)) border-box;
+            pointer-events: none;
+        }
+        .cert-inner { padding: 60px 80px; position: relative; }
+        /* Corner ornaments */
+        .cert-corner { position: absolute; width: 50px; height: 50px; }
+        .cert-corner.tl { top: 20px; left: 20px; border-top: 3px solid var(--gold); border-left: 3px solid var(--gold); }
+        .cert-corner.tr { top: 20px; right: 20px; border-top: 3px solid var(--gold); border-right: 3px solid var(--gold); }
+        .cert-corner.bl { bottom: 20px; left: 20px; border-bottom: 3px solid var(--gold); border-left: 3px solid var(--gold); }
+        .cert-corner.br { bottom: 20px; right: 20px; border-bottom: 3px solid var(--gold); border-right: 3px solid var(--gold); }
+
+        /* Content */
+        .cert-logo-area { text-align: center; margin-bottom: 8px; }
+        .cert-logo-icon { font-size: 48px; color: var(--gold-dark); }
+        .cert-logo-text { font-family: var(--font-heading); font-size: 22px; color: var(--navy); font-weight: 700; }
+        .cert-logo-text span { color: var(--gold-dark); }
+        .cert-org { font-size: 12px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 2px; margin-top: 4px; }
+        .cert-divider { height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 20px 60px; }
+        .cert-main-title { font-family: var(--font-heading); font-size: 40px; color: var(--navy); text-align: center; margin-bottom: 8px; }
+        .cert-subtitle { text-align: center; font-size: 14px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 32px; }
+        .cert-presented { text-align: center; font-size: 13px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .cert-name { font-family: var(--font-heading); font-size: 52px; color: var(--navy); text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 8px; max-width: 500px; margin: 0 auto 8px; }
+        .cert-employee-id { text-align: center; font-size: 12px; color: var(--gray-400); margin-bottom: 32px; }
+        .cert-body { text-align: center; font-size: 15px; color: var(--gray-600); line-height: 1.8; max-width: 520px; margin: 0 auto 32px; }
+        .cert-highlights {
+            display: flex; justify-content: center; gap: 24px; margin-bottom: 40px; flex-wrap: wrap;
+        }
+        .cert-highlight {
+            text-align: center; padding: 12px 20px;
+            background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+            border: 1px solid rgba(217,119,6,0.3);
+            border-radius: 8px; min-width: 120px;
+        }
+        .cert-highlight-val { font-size: 22px; font-weight: 800; color: var(--gold-dark); }
+        .cert-highlight-label { font-size: 11px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; }
+        .cert-footer { display: flex; justify-content: space-between; align-items: flex-end; padding-top: 32px; border-top: 1px solid var(--gray-200); margin-top: 8px; }
+        .cert-sig { text-align: center; }
+        .cert-sig-line { width: 160px; height: 1px; background: var(--gray-400); margin: 0 auto 8px; }
+        .cert-sig-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+        .cert-sig-role { font-size: 11px; color: var(--gray-400); }
+        .cert-seal { text-align: center; }
+        .cert-seal-circle { width: 80px; height: 80px; border-radius: 50%; border: 3px double var(--gold-dark); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto; }
+        .cert-seal-circle i { font-size: 28px; color: var(--gold-dark); }
+        .cert-seal-label { font-size: 9px; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+
+        @media print {
+            .no-print-bar, .no-print { display: none !important; }
+            .cert-page-bg { background: white; }
+            .cert-outer { margin: 0; max-width: 100%; padding: 0; }
+        }
+    </style>
+</head>
+<body class="cert-page-bg">
+
+<div class="no-print-bar no-print">
+    <div class="topbar-logo">
+        <i class="ti ti-shield-check" style="color:var(--gold);font-size:22px;"></i>
+        Cyber<span>Shield</span> SL
+    </div>
+    <div class="cert-actions">
+        <a href="student-dashboard.html" class="btn btn-glass" style="color: white; border-color: rgba(255,255,255,0.2);">
+            <i class="ti ti-arrow-left"></i> Dashboard
+        </a>
+        <button class="btn btn-gold" onclick="window.print()">
+            <i class="ti ti-printer"></i> Print Certificate
+        </button>
+    </div>
+</div>
+
+<!-- LOCKED STATE (shown if not all modules complete) -->
+<div id="certLocked" class="cert-locked" style="display: none;">
+    <i class="ti ti-certificate-off"></i>
+    <h2>Certificate Not Yet Available</h2>
+    <p>Complete all 5 training modules to unlock your Certificate of Completion. Your current progress:</p>
+    <div class="cert-progress-list" id="certProgressList"></div>
+    <a href="student-dashboard.html" class="btn btn-primary">Continue Training</a>
+</div>
+
+<!-- CERTIFICATE (shown when all modules complete) -->
+<div class="cert-outer" id="certContent" style="display: none;">
+    <div class="cert-paper">
+        <div class="cert-corner tl"></div>
+        <div class="cert-corner tr"></div>
+        <div class="cert-corner bl"></div>
+        <div class="cert-corner br"></div>
+
+        <div class="cert-inner">
+            <div class="cert-logo-area">
+                <div class="cert-logo-icon"><i class="ti ti-shield-check"></i></div>
+                <div class="cert-logo-text">Cyber<span>Shield</span> SL</div>
+                <div class="cert-org">Gampaha Divisional Secretariat &bull; Ministry of Internal Affairs Sri Lanka</div>
+            </div>
+
+            <div class="cert-divider"></div>
+
+            <div class="cert-main-title">Certificate of Completion</div>
+            <div class="cert-subtitle">Cybersecurity Awareness Training Programme &bull; 2026</div>
+
+            <div class="cert-presented">This certificate is proudly presented to</div>
+            <div class="cert-name" id="certName">Employee Name</div>
+            <div class="cert-employee-id" id="certEmpId">Employee ID • Division</div>
+
+            <div class="cert-body">
+                has successfully completed the <strong>CyberShield SL Cybersecurity Awareness Training Programme</strong>,
+                demonstrating competence across all five modules covering Phishing Awareness, Password Security,
+                Safe Browsing &amp; Email, Data Protection &amp; Privacy, and Social Engineering Defence.
+            </div>
+
+            <div class="cert-highlights">
+                <div class="cert-highlight">
+                    <div class="cert-highlight-val">5/5</div>
+                    <div class="cert-highlight-label">Modules Passed</div>
+                </div>
+                <div class="cert-highlight">
+                    <div class="cert-highlight-val" id="certAvgScore">—</div>
+                    <div class="cert-highlight-label">Average Score</div>
+                </div>
+                <div class="cert-highlight">
+                    <div class="cert-highlight-val" id="certDate">—</div>
+                    <div class="cert-highlight-label">Completion Date</div>
+                </div>
+            </div>
+
+            <div class="cert-footer">
+                <div class="cert-sig">
+                    <div class="cert-sig-line"></div>
+                    <div class="cert-sig-name">Divisional Secretary</div>
+                    <div class="cert-sig-role">Gampaha Divisional Secretariat</div>
+                </div>
+                <div class="cert-seal">
+                    <div class="cert-seal-circle">
+                        <i class="ti ti-rosette"></i>
+                        <div class="cert-seal-label">Verified</div>
+                    </div>
+                </div>
+                <div class="cert-sig">
+                    <div class="cert-sig-line"></div>
+                    <div class="cert-sig-name">Research Lead</div>
+                    <div class="cert-sig-role">Cybersecurity Awareness Study</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    const currentUserId = localStorage.getItem('cyberShieldCurrentUser');
+    if (!currentUserId || currentUserId === 'admin') window.location.href = 'index.html';
+
+    const users = JSON.parse(localStorage.getItem('cyberShieldUsers')) || [];
+    const user = users.find(u => u.empId === currentUserId);
+    if (!user) window.location.href = 'index.html';
+
+    const prog = user.progress || {};
+    const MODULE_NAMES = ['Phishing Awareness', 'Password Security', 'Safe Browsing & Email', 'Data Protection & Privacy', 'Social Engineering'];
+
+    let passed = 0, totalScore = 0, lastDate = null;
+    for (let i = 1; i <= 5; i++) {
+        const m = prog[`module${i}`];
+        if (m?.passed) {
+            passed++;
+            totalScore += m.score;
+            const d = new Date(m.completedAt || Date.now());
+            if (!lastDate || d > lastDate) lastDate = d;
+        }
+    }
+
+    const allPassed = passed === 5;
+
+    if (allPassed) {
+        document.getElementById('certContent').style.display = 'block';
+        document.getElementById('certName').textContent = user.name || 'Employee';
+        document.getElementById('certEmpId').textContent = `${user.empId}  •  ${user.division || 'Gampaha Divisional Secretariat'}`;
+        document.getElementById('certAvgScore').textContent = Math.round(totalScore / 5) + '%';
+        document.getElementById('certDate').textContent = lastDate
+            ? lastDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
+            : new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+    } else {
+        document.getElementById('certLocked').style.display = 'block';
+        const list = document.getElementById('certProgressList');
+        for (let i = 1; i <= 5; i++) {
+            const done = prog[`module${i}`]?.passed;
+            const item = document.createElement('div');
+            item.className = `cpl-item ${done ? 'done' : 'pending'}`;
+            item.innerHTML = `<i class="ti ${done ? 'ti-circle-check' : 'ti-circle'} cpl-icon"></i> Module ${i}: ${MODULE_NAMES[i-1]}`;
+            list.appendChild(item);
+        }
+    }
+</script>
+</body>
+</html>

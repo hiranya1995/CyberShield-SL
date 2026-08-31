@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield SL - Module 5: Social Engineering</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #langToggleBtn { padding:5px 12px; border-radius:7px; border:1px solid rgba(6,182,212,.5); background:rgba(6,182,212,.08); color:#0e7490; font-size:11px; font-weight:700; cursor:pointer; transition:.2s; white-space:nowrap; margin-right:8px; }
+        #langToggleBtn:hover { background:rgba(6,182,212,.18); }
+        #langToggleBtn span { text-decoration:underline; }
+        .video-lang-tabs { display:flex; gap:8px; margin-bottom:12px; }
+        .video-lang-tab { padding:6px 16px; border-radius:8px; border:1px solid var(--gray-200); background:var(--gray-50); font-size:12px; font-weight:600; cursor:pointer; transition:.2s; color:var(--gray-500); }
+        .video-lang-tab.active { background:var(--blue-primary); color:white; border-color:var(--blue-primary); }
+        .yt-frame { width:100%; aspect-ratio:16/9; border-radius:12px; border:none; box-shadow:0 4px 24px rgba(0,0,0,0.15); }
+        /* Social engineering scenario cards */
+        .scenario-deck {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .scenario-challenge {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .scenario-challenge-header {
+            background: var(--navy);
+            color: var(--white);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .scenario-challenge-body {
+            padding: 20px;
+        }
+        .scenario-challenge-body p {
+            margin-bottom: 16px;
+            color: var(--gray-800);
+            font-style: italic;
+            background: var(--amber-soft);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid var(--amber);
+        }
+        .response-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .response-btn {
+            padding: 12px 16px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            background: var(--white);
+            cursor: pointer;
+            text-align: left;
+            font-size: 14px;
+            font-family: var(--font-body);
+            transition: all 0.2s;
+        }
+        .response-btn:hover:not(:disabled) { border-color: var(--blue-mid); background: var(--blue-soft); }
+        .response-btn.correct { border-color: var(--green); background: var(--green-soft); color: var(--green); font-weight: 600; }
+        .response-btn.wrong { border-color: var(--red); background: var(--red-soft); color: var(--red); }
+        .response-btn:disabled { cursor: not-allowed; }
+        .scenario-feedback {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+        }
+        .scenario-feedback.show { display: block; }
+        .scenario-feedback.correct { background: var(--green-soft); border: 1px solid var(--green); color: var(--green); }
+        .scenario-feedback.wrong { background: var(--red-soft); border: 1px solid var(--red); color: var(--red); }
+        .sim-score-display {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body class="light-page">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-logo"><i class="ti ti-shield-check" style="color: var(--gold); margin-right: 8px;"></i>Cyber<span>Shield</span> SL</div>
+            <div class="topbar-module-name">Module 5: Social Engineering</div>
+        </div>
+        <div class="topbar-right">
+            <div class="progress-pill">
+                <span>Progress: 0%</span>
+                <div class="progress-bar-container"><div class="progress-bar-fill" id="globalProgress" style="width: 0%;"></div></div>
+            </div>
+            <button id="langToggleBtn" onclick="LangUtil.toggle()">🌐 <span>EN</span> | සි</button>
+            <a href="student-dashboard.html" class="btn-back"><i class="ti ti-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="module-layout">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-badge">
+                <div class="sidebar-badge-num">Module 05</div>
+                <div class="sidebar-badge-title">Social Engineering</div>
+            </div>
+            <ul class="sidebar-nav">
+                <a href="#" class="sidebar-item active" data-target="section1">
+                    <i class="ti ti-video"></i> AI Training Video <i class="ti ti-check check-icon"></i>
+                </a>
+                <a href="#" class="sidebar-item" data-target="section2">
+                    <i class="ti ti-file-text"></i> Module Content <i class="ti ti-check check-icon"></i>
+                </a>
+                <a href="#" class="sidebar-item" data-target="section3">
+                    <i class="ti ti-click"></i> Interactive Exercise <i class="ti ti-check check-icon"></i>
+                </a>
+                <a href="#" class="sidebar-item" data-target="section4">
+                    <i class="ti ti-help-circle"></i> End Quiz <i class="ti ti-check check-icon"></i>
+                </a>
+            </ul>
+            <div class="quiz-score-box">
+                <div class="quiz-score-box-title">Quiz Score</div>
+                <div class="quiz-score-box-val" id="sidebarScore">--/10</div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+            <!-- SECTION 1: AI VIDEO PLAYER -->
+            <div id="section1" class="content-section active">
+                <div class="module-hero">
+                    <h1 style="color: white; margin-bottom: 8px;">Defending Against Human Manipulation</h1>
+                    <p style="color: var(--gray-400); max-width: 600px;">Social engineering attacks exploit human psychology, not technical vulnerabilities. Learn to recognize and resist manipulation tactics used against government employees.</p>
+                    <div class="module-hero-tags">
+                        <span class="hero-tag"><i class="ti ti-clock"></i> 11 Mins</span>
+                        <span class="hero-tag"><i class="ti ti-barbell"></i> Intermediate</span>
+                        <span class="hero-tag"><i class="ti ti-language"></i> English / Sinhala</span>
+                    </div>
+                </div>
+                                <div class="section-container">
+                    <div class="video-lang-tabs">
+                        <button class="video-lang-tab active" id="tabEn" onclick="switchVideo('en')">🇬🇧 English</button>
+                        <button class="video-lang-tab" id="tabSi" onclick="switchVideo('si')">🇱🇰 සිංහල</button>
+                    </div>
+                    <div id="videoEn">
+                        <iframe class="yt-frame" src="https://www.youtube-nocookie.com/embed/aO858HyFbKI" title="Social Engineering Attacks Explained" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <p style="font-size:12px; color:var(--gray-400); margin-top:8px;">🇬🇧 English — Social Engineering Attacks Explained</p>
+                    </div>
+                    <div id="videoSi" style="display:none;">
+                        <iframe class="yt-frame" src="https://www.youtube-nocookie.com/embed/XBkzBrXlle0" title="සමාජ ඉංජිනේරු ප්‍රහාර — සිංහල" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <p style="font-size:12px; color:var(--gray-400); margin-top:8px;">🇱🇰 සිංහල — සමාජ ඉංජිනේරු ප්‍රහාර — Cyber Security Sinhala</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-info-circle"></i>
+                            <div class="card-title">Video Overview</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <h4>Objective</h4>
+                                    <p class="module-card-desc">Recognize manipulation tactics and know how to respond effectively without compromising security.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Target Audience</h4>
+                                    <p class="module-card-desc">All Gampaha Divisional Secretariat Employees</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Key Insight</h4>
+                                    <p class="module-card-desc">Social engineers exploit trust, authority, urgency, and fear — not software vulnerabilities.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Key Takeaway</h4>
+                                    <p class="module-card-desc">"Verify before you trust" is the single most powerful defence against social engineering.</p>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button class="btn btn-primary" onclick="document.querySelector('[data-target=section2]').click()">Continue to Content <i class="ti ti-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: MODULE CONTENT -->
+            <div id="section2" class="content-section">
+                <div class="section-container">
+                    <h2 class="section-title">Social Engineering Essentials</h2>
+
+                    <!-- VISUAL GUIDE CARD WITH EXPLANATION BOX -->
+                    <div class="visual-guide-card">
+                        <div class="visual-guide-header">
+                            <h3><i class="ti ti-photo"></i> Visual Social Engineering & Impersonation Guide</h3>
+                            <span class="badge" style="background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.4); font-size:11px; padding:3px 10px; border-radius:12px;">Step-by-Step Officer Guide</span>
+                        </div>
+                        <div class="visual-guide-img-wrap">
+                            <img src="gov_social_engineering_visual_guide.png" alt="Social Engineering Threats Infographic" class="visual-guide-img">
+                        </div>
+                        <div class="visual-explanation-box">
+                            <div class="visual-explanation-title">
+                                🎭 <span>Visual Breakdown: How Attackers Manipulate Government Staff</span>
+                            </div>
+                            <div class="visual-callout-grid">
+                                <div class="visual-callout-item">
+                                    <div class="callout-num red">1</div>
+                                    <div class="callout-text">
+                                        <h4>Phone Call Impersonation (Vishing / Pretexting)</h4>
+                                        <p>An attacker calls pretending to be a senior Ministry officer or IT technician demanding your OTP or password. Always hang up and call back via official landline numbers!</p>
+                                    </div>
+                                </div>
+                                <div class="visual-callout-item">
+                                    <div class="callout-num amber">2</div>
+                                    <div class="callout-text">
+                                        <h4>Physical Tailgating at Office Entrances</h4>
+                                        <p>Unidentified visitors slipping through secure office doors behind staff holding tea cups or documents. Always require visitors to sign in and wear official visitor badges.</p>
+                                    </div>
+                                </div>
+                                <div class="visual-callout-item">
+                                    <div class="callout-num red">3</div>
+                                    <div class="callout-text">
+                                        <h4>Baiting USB Drives ("Secret Salary List")</h4>
+                                        <p>Attackers leave USB pen drives labeled with tempting titles like "Staff Bonuses 2026" or "Transfers" in office corridors. Plugging it in installs silent spyware instantly.</p>
+                                    </div>
+                                </div>
+                                <div class="visual-callout-item">
+                                    <div class="callout-num amber">4</div>
+                                    <div class="callout-text">
+                                        <h4>Urgent Boss / Authority Scams</h4>
+                                        <p>Scammers sending WhatsApp messages pretending to be your Divisional Secretary asking you to buy voucher codes or transfer funds urgently. Verify face-to-face first!</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gov-do-dont-grid">
+                                <div class="gov-do-card">
+                                    <h4>✅ What Government Staff SHOULD Do</h4>
+                                    <ul>
+                                        <li>Independently verify callers using official internal extension directories.</li>
+                                        <li>Challenge unfamiliar visitors walking in secure office hallways without badges.</li>
+                                        <li>Hand any lost USB drives directly to your IT administrator without plugging them in.</li>
+                                    </ul>
+                                </div>
+                                <div class="gov-dont-card">
+                                    <h4>❌ What Government Staff Should NEVER Do</h4>
+                                    <ul>
+                                        <li>Never disclose internal passwords, NIC details, or OTPs over phone calls or WhatsApp.</li>
+                                        <li>Never hold open secure server room doors for unverified visitors.</li>
+                                        <li>Never act on sudden financial/money transfer requests sent via messaging apps.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-users"></i>
+                            <div class="card-title">What is Social Engineering?</div>
+                        </div>
+                        <div class="card-body">
+                            <p>Social engineering is the art of manipulating people into performing actions or divulging confidential information. Unlike hacking, it targets human psychology rather than software. Government employees are prime targets because they have access to sensitive citizen data and public resources.</p>
+                            <div class="warning-box" style="margin-top: 16px;">
+                                <i class="ti ti-alert-triangle"></i>
+                                <div>
+                                    <strong>94% of Cyberattacks Start with Human Error</strong>
+                                    <p>Most successful breaches don't involve cracking encryption — they involve tricking a person. Social engineering is the entry point for the majority of corporate and government data breaches worldwide.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-theater"></i>
+                            <div class="card-title">Common Social Engineering Techniques</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <h4>Pretexting</h4>
+                                    <p class="module-card-desc">The attacker creates a fabricated scenario (a "pretext") to extract information. E.g., "I'm from the IT team and need your password to fix an urgent issue."</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Impersonation</h4>
+                                    <p class="module-card-desc">Pretending to be a trusted person — a colleague, IT support, a vendor, or a government auditor — to gain access or information.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Baiting</h4>
+                                    <p class="module-card-desc">Leaving an infected USB drive or offering a "free download" to lure victims into infecting their own systems out of curiosity or greed.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Tailgating / Piggybacking</h4>
+                                    <p class="module-card-desc">Physically following an authorized person into a restricted area (e.g., a server room) without their own access card.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Quid Pro Quo</h4>
+                                    <p class="module-card-desc">Offering a service (e.g., "free IT support") in exchange for information or access credentials.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Vishing (Voice Phishing)</h4>
+                                    <p class="module-card-desc">A phone call from a fake "bank" or "government authority" demanding urgent action or personal verification.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-brain"></i>
+                            <div class="card-title">Psychological Triggers Used by Attackers</div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="red-flag-list">
+                                <li class="red-flag-item"><i class="ti ti-x"></i> <strong>Authority:</strong> "This is the Director-General's office. You must act immediately."</li>
+                                <li class="red-flag-item"><i class="ti ti-x"></i> <strong>Urgency:</strong> "If you don't do this in the next 30 minutes, the system will shut down."</li>
+                                <li class="red-flag-item"><i class="ti ti-x"></i> <strong>Scarcity/Fear:</strong> "Your account will be permanently deleted unless you verify now."</li>
+                                <li class="red-flag-item"><i class="ti ti-x"></i> <strong>Reciprocity:</strong> "I helped you with that report last month, so you can just give me temporary access."</li>
+                                <li class="red-flag-item"><i class="ti ti-x"></i> <strong>Social Proof:</strong> "Everyone else in your department has already done this."</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-shield-check"></i>
+                            <div class="card-title">Building Your Human Firewall</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="tip-chips">
+                                <span class="tip-chip"><i class="ti ti-question-mark"></i> Always verify identity independently</span>
+                                <span class="tip-chip"><i class="ti ti-pause"></i> Pause before acting under pressure</span>
+                                <span class="tip-chip"><i class="ti ti-lock-access"></i> Never share credentials with anyone</span>
+                                <span class="tip-chip"><i class="ti ti-door"></i> Challenge tailgaters politely</span>
+                                <span class="tip-chip"><i class="ti ti-report"></i> Report suspicious behavior to IT</span>
+                                <span class="tip-chip"><i class="ti ti-phone-call"></i> Call back on verified numbers</span>
+                            </div>
+                            <div class="text-center" style="margin-top: 32px;">
+                                <button class="btn btn-primary" onclick="document.querySelector('[data-target=section3]').click()">Try the Social Engineering Simulator <i class="ti ti-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: INTERACTIVE EXERCISE -->
+            <div id="section3" class="content-section">
+                <div class="section-container">
+                    <div class="sim-header flex-between">
+                        <div>
+                            <h2>Social Engineering Scenario Simulator</h2>
+                            <p style="color: var(--gray-400); margin-top: 4px;">How would you respond? Choose the best action for each situation.</p>
+                        </div>
+                        <div class="sim-score-display">Score: <span id="simScore">0</span> / 4</div>
+                    </div>
+                    <div class="sim-body">
+                        <div class="hint-panel">
+                            <strong><i class="ti ti-bulb"></i> Remember:</strong>
+                            <p>Think about the psychological trigger being used. Always verify, never rush.</p>
+                        </div>
+
+                        <div class="scenario-deck">
+                            <!-- Scenario 1 -->
+                            <div class="scenario-challenge" id="scen1">
+                                <div class="scenario-challenge-header">
+                                    <i class="ti ti-phone" style="font-size: 24px;"></i>
+                                    <div>
+                                        <div style="font-weight: 700;">Scenario 1: The IT Help Desk Call</div>
+                                    </div>
+                                </div>
+                                <div class="scenario-challenge-body">
+                                    <p>"Good afternoon, this is Nimal from the IT department. We've detected a security breach on your account and need your password immediately to secure it before your data is lost."</p>
+                                    <div class="response-options" id="opts1">
+                                        <button class="response-btn" onclick="answerScenario(1, false, this)">Provide the password quickly since it's a security emergency.</button>
+                                        <button class="response-btn" onclick="answerScenario(1, true, this)">Refuse and hang up. Call IT on the official number listed on the intranet to verify.</button>
+                                        <button class="response-btn" onclick="answerScenario(1, false, this)">Ask them to send a password reset email and give them your email address to send it to.</button>
+                                    </div>
+                                    <div class="scenario-feedback" id="fb1"></div>
+                                </div>
+                            </div>
+
+                            <!-- Scenario 2 -->
+                            <div class="scenario-challenge" id="scen2">
+                                <div class="scenario-challenge-header">
+                                    <i class="ti ti-door-enter" style="font-size: 24px;"></i>
+                                    <div>
+                                        <div style="font-weight: 700;">Scenario 2: The Stranger at the Door</div>
+                                    </div>
+                                </div>
+                                <div class="scenario-challenge-body">
+                                    <p>As you badge into a restricted government records room, a well-dressed person carrying a stack of folders says, "Oh, could you hold that? My hands are full and I left my badge at my desk."</p>
+                                    <div class="response-options" id="opts2">
+                                        <button class="response-btn" onclick="answerScenario(2, false, this)">Hold the door open — they look official and their hands are full.</button>
+                                        <button class="response-btn" onclick="answerScenario(2, true, this)">Politely ask them to go back and retrieve their badge, or call security to escort them.</button>
+                                        <button class="response-btn" onclick="answerScenario(2, false, this)">Let them in but escort them yourself the whole time.</button>
+                                    </div>
+                                    <div class="scenario-feedback" id="fb2"></div>
+                                </div>
+                            </div>
+
+                            <!-- Scenario 3 -->
+                            <div class="scenario-challenge" id="scen3">
+                                <div class="scenario-challenge-header">
+                                    <i class="ti ti-mail" style="font-size: 24px;"></i>
+                                    <div>
+                                        <div style="font-weight: 700;">Scenario 3: The Urgent Email from the Director</div>
+                                    </div>
+                                </div>
+                                <div class="scenario-challenge-body">
+                                    <p>You receive an email from what appears to be the Divisional Secretary's account: "I'm in an emergency meeting and need you to purchase 5 x Rs. 10,000 gift vouchers immediately. I'll reimburse you. Do NOT tell anyone — this is confidential."</p>
+                                    <div class="response-options" id="opts3">
+                                        <button class="response-btn" onclick="answerScenario(3, false, this)">Purchase the gift cards since it's from the Director's email.</button>
+                                        <button class="response-btn" onclick="answerScenario(3, true, this)">Do not act. Call the Director directly on a known number to verify the request. This is a CEO Fraud attack.</button>
+                                        <button class="response-btn" onclick="answerScenario(3, false, this)">Reply to the email asking for more details before purchasing.</button>
+                                    </div>
+                                    <div class="scenario-feedback" id="fb3"></div>
+                                </div>
+                            </div>
+
+                            <!-- Scenario 4 -->
+                            <div class="scenario-challenge" id="scen4">
+                                <div class="scenario-challenge-header">
+                                    <i class="ti ti-usb" style="font-size: 24px;"></i>
+                                    <div>
+                                        <div style="font-weight: 700;">Scenario 4: The Gift USB Drive</div>
+                                    </div>
+                                </div>
+                                <div class="scenario-challenge-body">
+                                    <p>A visitor who attended a public seminar at your office leaves a branded USB drive on the table labeled "Seminar Resources — Free Software Tools". Several of your colleagues have already plugged it in.</p>
+                                    <div class="response-options" id="opts4">
+                                        <button class="response-btn" onclick="answerScenario(4, false, this)">Plug it in too, since colleagues have already used it and it seems fine.</button>
+                                        <button class="response-btn" onclick="answerScenario(4, false, this)">Plug it in but only scan it with antivirus first.</button>
+                                        <button class="response-btn" onclick="answerScenario(4, true, this)">Do not plug it in. Report it to IT and warn your colleagues about the potential risk.</button>
+                                    </div>
+                                    <div class="scenario-feedback" id="fb4"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="simComplete" style="display: none; text-align: center; margin-top: 32px; border-top: 1px solid var(--gray-200); padding-top: 24px;">
+                            <h3 style="color: var(--navy); margin-bottom: 16px;">Scenarios Completed! You're building your human firewall.</h3>
+                            <button class="btn btn-primary" onclick="document.querySelector('[data-target=section4]').click()">Take the End Quiz <i class="ti ti-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: END QUIZ -->
+            <div id="section4" class="content-section">
+                <div class="module-hero" style="padding: 32px 48px; background-size: 20px 20px;">
+                    <h2 style="color: white;">Module 5 Knowledge Assessment</h2>
+                    <div class="module-hero-tags">
+                        <span class="hero-tag">10 Questions</span>
+                        <span class="hero-tag">70% to Pass</span>
+                    </div>
+                </div>
+
+                <div class="section-container" id="quizContainer">
+                    <div class="quiz-progress-bar" id="quizProgress"></div>
+                    <div class="flex-between mb-4">
+                        <div style="font-weight: 700; color: var(--gray-600);">Question <span id="qCurrent">1</span> of 10</div>
+                        <div style="font-weight: 700; color: var(--blue-mid);">Score: <span id="qScore">0</span></div>
+                    </div>
+                    <div class="quiz-question-container">
+                        <div id="qScenario" class="scenario-box" style="display: none;"></div>
+                        <div class="quiz-question" id="qText">Question text here?</div>
+                        <div class="quiz-options" id="qOptions"></div>
+                        <div class="quiz-explanation" id="qExplanation">
+                            <h4><i class="ti ti-bulb"></i> Explanation</h4>
+                            <p id="qExpText">Explanation text here.</p>
+                            <button class="btn btn-primary mt-4" id="btnNextQuestion" style="float: right;">Next Question <i class="ti ti-arrow-right"></i></button>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESULTS -->
+                <div class="section-container" id="resultContainer" style="display: none;">
+                    <div class="card result-card">
+                        <h2 style="margin-bottom: 24px;">Assessment Complete</h2>
+                        <div class="score-ring pass" id="finalScoreRing">100%</div>
+                        <div style="font-size: 20px; font-weight: 700; margin-bottom: 8px;" id="finalResultTitle">Congratulations! You Passed.</div>
+                        <p class="module-card-desc">You have demonstrated your understanding of social engineering defence.</p>
+                        <div class="badge-earned" id="badgeContainer">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1183/1183296.png" alt="Social Shield Badge">
+                            <div style="font-weight: 700; color: var(--navy);">Social Shield</div>
+                            <div style="font-size: 12px; color: var(--gold);">Module 05 Badge</div>
+                        </div>
+                        <div class="info-grid mt-4" style="text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
+                            <div class="info-item">
+                                <h4 style="color: var(--green);">Correct Answers</h4>
+                                <p style="font-size: 24px; font-weight: 700;" id="statCorrect">8</p>
+                            </div>
+                            <div class="info-item">
+                                <h4 style="color: var(--red);">Incorrect Answers</h4>
+                                <p style="font-size: 24px; font-weight: 700;" id="statWrong">2</p>
+                            </div>
+                        </div>
+                        <div class="mt-4" style="display: flex; gap: 16px; justify-content: center; margin-top: 32px;">
+                            <button class="btn btn-outline" onclick="location.reload()">Retry Quiz</button>
+                            <a href="student-dashboard.html" class="btn btn-primary">Back to Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="sentry.js"></script>
+    <script>
+        // --- SCENARIO SIMULATOR ---
+        let simScore = 0;
+        let answeredCount = 0;
+        const totalScenarios = 4;
+
+        const feedbacks = {
+            1: {
+                correct: "Correct! Legitimate IT staff will NEVER ask for your password. This is a Pretexting / Vishing attack. Always call IT back on the official number from the intranet, never the number the caller provides.",
+                wrong: "Incorrect. This is a classic social engineering trick. IT departments have administrative access to systems — they never need your password. Your password is yours alone."
+            },
+            2: {
+                correct: "Correct! This is a classic Tailgating attack. Physical security is as important as digital security. Every person in a restricted area must use their own credentials — no exceptions, even if it feels rude.",
+                wrong: "Incorrect. Holding the door for someone without an access badge is called 'tailgating'. You could be letting an unauthorized person into a sensitive government area."
+            },
+            3: {
+                correct: "Correct! This is 'CEO Fraud' or 'Business Email Compromise'. Attackers spoof executive email accounts to trick employees into urgent, secretive financial actions. Always verify via a secondary channel (a phone call).",
+                wrong: "Incorrect. Replying to a spoofed email reaches the attacker. The correct response is to call the director on a known, verified phone number to confirm the request in person."
+            },
+            4: {
+                correct: "Correct! This is a Baiting attack. Antivirus software cannot always detect zero-day malware on a USB drive. The fact that colleagues have used it makes it worse — the device may already have spread malware. Report to IT immediately.",
+                wrong: "Incorrect. Even a quick antivirus scan may not catch sophisticated malware. Baiting attacks work because they exploit curiosity. Never use unknown USB drives on government equipment."
+            }
+        };
+
+        function answerScenario(num, isCorrect, btn) {
+            const opts = document.querySelectorAll(`#opts${num} .response-btn`);
+            const feedback = document.getElementById(`fb${num}`);
+            
+            opts.forEach(b => { b.disabled = true; });
+            
+            if (isCorrect) {
+                btn.classList.add('correct');
+                simScore++;
+                document.getElementById('simScore').innerText = simScore;
+                feedback.className = 'scenario-feedback correct show';
+                feedback.innerHTML = `<strong><i class="ti ti-check"></i> Correct!</strong> ${feedbacks[num].correct}`;
+            } else {
+                btn.classList.add('wrong');
+                feedback.className = 'scenario-feedback wrong show';
+                feedback.innerHTML = `<strong><i class="ti ti-x"></i> Incorrect.</strong> ${feedbacks[num].wrong}`;
+                // Highlight correct
+                opts.forEach(b => { if (b.onclick.toString().includes('true')) b.classList.add('correct'); });
+            }
+            answeredCount++;
+            if (answeredCount === totalScenarios) {
+                document.getElementById('simComplete').style.display = 'block';
+            }
+        }
+
+        // --- QUIZ LOGIC ---
+        const quizQuestions = [
+            {
+                text: "Social engineering attacks primarily exploit which vulnerability?",
+                options: ["Outdated software patches", "Weak firewall configurations", "Human psychology — trust, authority, fear, and urgency", "Slow internet connections"],
+                correct: 2,
+                explanation: "Unlike technical hacking, social engineering doesn't need to find a flaw in a system. It manipulates the most complex part of any security system: the human being."
+            },
+            {
+                text: "What is 'Pretexting'?",
+                options: ["Sending a message before the actual email", "Creating a fabricated scenario or false identity to extract information from a target", "Writing a news article before it is verified", "Backing up data before a server update"],
+                correct: 1,
+                explanation: "Pretexting involves the attacker inventing a plausible story (a 'pretext') to justify their request. For example, impersonating an IT auditor needing access to a server."
+            },
+            {
+                scenario: "Someone calls your extension saying: 'This is the Ministry of Finance compliance auditor. I need your Employee ID and your system login to complete an urgent audit report. Failure to comply could result in a penalty.'",
+                text: "What psychological triggers are being used?",
+                options: ["Curiosity and Scarcity", "Authority and Fear (with added Urgency)", "Reciprocity and Social Proof", "None — this sounds like a legitimate request"],
+                correct: 1,
+                explanation: "The attacker is using Authority (Ministry of Finance auditor) and Fear/Urgency (penalty for non-compliance). Legitimate auditors follow official channels and do not cold-call for passwords."
+            },
+            {
+                text: "What is 'Tailgating' in the context of physical security?",
+                options: ["Following a vehicle too closely on the road", "Sending too many emails to one person", "Gaining unauthorized physical access to a restricted area by following an authorized person", "A type of phishing attack targeting mobile phones"],
+                correct: 2,
+                explanation: "Tailgating is a physical social engineering attack. An unauthorized person waits near a secure door and slips in behind someone who has legitimate access, bypassing all digital security."
+            },
+            {
+                text: "A 'Quid Pro Quo' attack in social engineering involves:",
+                options: ["Threatening someone until they comply", "Offering a benefit or service in exchange for information or access", "Leaving infected USB drives in public places", "Creating fake websites"],
+                correct: 1,
+                explanation: "Quid pro quo (Latin for 'something for something') attacks offer a service (like fake IT support) in exchange for credentials. The victim feels they are receiving help while being exploited."
+            },
+            {
+                text: "Which of the following is the BEST defense against social engineering attacks?",
+                options: ["A stronger antivirus program", "Higher walls and fences around government buildings", "Regular security awareness training and a culture of healthy skepticism", "Blocking all phone calls to the office"],
+                correct: 2,
+                explanation: "Technology helps, but since social engineering attacks people, the primary defense must also target people. Ongoing training, awareness, and a culture where it's safe to question or verify unusual requests is the most effective countermeasure."
+            },
+            {
+                scenario: "You receive a WhatsApp message from someone claiming to be a colleague: 'Hey, I'm stuck in a meeting. Can you log into the shared drive and send me the Q3 citizen data file? It's urgent.'",
+                text: "What is the safest response?",
+                options: ["Send the file immediately because they said it's urgent", "Ask them to confirm their employee ID via WhatsApp before sending", "Ignore the WhatsApp request entirely; call or meet the colleague in person to verify before accessing any shared data", "Forward the message to your supervisor"],
+                correct: 2,
+                explanation: "WhatsApp accounts can be compromised or spoofed. The urgency is a manipulation trigger. Never take data-sharing actions based on unverified messaging app requests alone. Verify with the person directly."
+            },
+            {
+                text: "An attacker leaves a USB drive labeled 'Staff Salary Adjustments 2025' in the common area. What type of social engineering attack is this?",
+                options: ["Vishing", "Baiting", "Pretexting", "Tailgating"],
+                correct: 1,
+                explanation: "This is a Baiting attack. The attacker labels the USB with something enticing and emotionally triggering (like salary information) to ensure a curious employee will plug it in, thereby infecting the system with malware."
+            },
+            {
+                text: "If you are ever asked to break a security policy for a seemingly good reason, what should you do?",
+                options: ["Break the policy if the reason sounds genuine enough", "Always follow the established security policy, regardless of the reason given, and escalate the request to your supervisor", "Follow your gut feeling and decide case by case", "Ask your colleague next to you for advice"],
+                correct: 1,
+                explanation: "Security policies exist for good reasons. If someone needs an exception, there is a formal process for that. Social engineers deliberately create situations where breaking rules seems justified. Never deviate from policy without authorization from a supervisor."
+            },
+            {
+                text: "What does 'Vishing' mean?",
+                options: ["Visual phishing using images", "Video phishing through streaming platforms", "Voice phishing — using phone calls to socially engineer victims", "Phishing using VPN tunnels"],
+                correct: 2,
+                explanation: "Vishing uses phone calls to deceive targets. Attackers often impersonate banks, government agencies, or IT departments. It is particularly effective because a human voice creates a sense of immediacy and authority."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let quizScore = 0;
+        const quizProgress = document.getElementById('quizProgress');
+        const qCurrent = document.getElementById('qCurrent');
+        const qScore = document.getElementById('qScore');
+        const qScenario = document.getElementById('qScenario');
+        const qText = document.getElementById('qText');
+        const qOptions = document.getElementById('qOptions');
+        const qExplanation = document.getElementById('qExplanation');
+        const qExpText = document.getElementById('qExpText');
+        const btnNext = document.getElementById('btnNextQuestion');
+
+        for (let i = 0; i < quizQuestions.length; i++) {
+            const step = document.createElement('div');
+            step.className = 'quiz-step';
+            if (i === 0) step.classList.add('active');
+            quizProgress.appendChild(step);
+        }
+
+        function loadQuestion() {
+            const q = quizQuestions[currentQIndex];
+            qCurrent.innerText = currentQIndex + 1;
+            if (q.scenario) { qScenario.innerText = q.scenario; qScenario.style.display = "block"; }
+            else { qScenario.style.display = "none"; }
+            qText.innerText = q.text;
+            qOptions.innerHTML = "";
+            qExplanation.classList.remove('show');
+            const letters = ['A', 'B', 'C', 'D'];
+            q.options.forEach((opt, idx) => {
+                const optEl = document.createElement('div');
+                optEl.className = 'quiz-option';
+                optEl.innerHTML = `<div class="quiz-option-letter">${letters[idx]}</div><div class="quiz-option-text">${opt}</div>`;
+                optEl.onclick = () => handleAnswer(idx);
+                qOptions.appendChild(optEl);
+            });
+            const steps = document.querySelectorAll('.quiz-step');
+            steps.forEach((s, i) => {
+                s.classList.remove('active');
+                if (i < currentQIndex) s.classList.add('completed');
+                if (i === currentQIndex) s.classList.add('active');
+            });
+        }
+
+        function handleAnswer(selectedIndex) {
+            if (qExplanation.classList.contains('show')) return;
+            const q = quizQuestions[currentQIndex];
+            const opts = qOptions.querySelectorAll('.quiz-option');
+            opts.forEach(o => o.classList.add('disabled'));
+            opts[selectedIndex].classList.add('selected');
+            if (selectedIndex === q.correct) {
+                opts[selectedIndex].classList.add('correct');
+                quizScore++;
+                qScore.innerText = quizScore;
+                document.getElementById('sidebarScore').innerText = quizScore + "/10";
+            } else {
+                opts[selectedIndex].classList.add('wrong');
+                opts[q.correct].classList.add('correct');
+            }
+            qExpText.innerText = q.explanation;
+            qExplanation.classList.add('show');
+        }
+
+        btnNext.onclick = () => {
+            currentQIndex++;
+            if (currentQIndex < quizQuestions.length) { loadQuestion(); }
+            else { showResults(); }
+        };
+
+        function showResults() {
+            document.getElementById('quizContainer').style.display = "none";
+            document.getElementById('resultContainer').style.display = "block";
+            const percent = (quizScore / quizQuestions.length) * 100;
+            const ring = document.getElementById('finalScoreRing');
+            const title = document.getElementById('finalResultTitle');
+            const badge = document.getElementById('badgeContainer');
+            ring.innerText = percent + "%";
+            document.getElementById('statCorrect').innerText = quizScore;
+            document.getElementById('statWrong').innerText = quizQuestions.length - quizScore;
+            document.getElementById('sidebarScore').innerText = quizScore + "/10";
+            document.getElementById('globalProgress').style.width = "100%";
+            document.querySelector('.progress-pill span').innerText = "Progress: 100%";
+            document.querySelectorAll('.sidebar-item').forEach(n => n.classList.add('completed'));
+            if (percent >= 70) {
+                ring.className = "score-ring pass";
+                title.innerText = "Congratulations! You Passed.";
+                badge.style.display = "inline-block";
+                if (typeof saveModuleProgress === 'function') saveModuleProgress(5, percent, true);
+            } else {
+                ring.className = "score-ring fail";
+                title.innerText = "Assessment Failed. Please try again.";
+                title.style.color = "var(--amber)";
+                badge.style.display = "none";
+                if (typeof saveModuleProgress === 'function') saveModuleProgress(5, percent, false);
+            }
+        }
+
+        loadQuestion();
+        CyberSentry.init('module');
+    </script>
+    <script>
+        function switchVideo(lang) {
+            document.getElementById('videoEn').style.display = lang === 'en' ? 'block' : 'none';
+            document.getElementById('videoSi').style.display = lang === 'si' ? 'block' : 'none';
+            document.getElementById('tabEn').classList.toggle('active', lang === 'en');
+            document.getElementById('tabSi').classList.toggle('active', lang === 'si');
+        }
+        document.addEventListener('langChanged', (e) => switchVideo(e.detail.lang));
+    </script>
+    <script src="lang.js"></script>
+</body>
+</html>

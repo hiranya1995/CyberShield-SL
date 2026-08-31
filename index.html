@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield SL — Cybersecurity Awareness Training</title>
+    <meta name="description" content="Official cybersecurity awareness training platform for Gampaha Divisional Secretariat employees.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ─── PAGE-LEVEL LAYOUT ─── */
+        .page-wrapper {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ─── LEFT SIDE: Branding panel ─── */
+        .brand-panel {
+            background: linear-gradient(160deg, var(--bg-surface) 0%, var(--bg-base) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            border-right: 1px solid var(--glass-border);
+        }
+        .brand-panel::before {
+            content: '';
+            position: absolute;
+            top: -100px; left: -100px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(59,130,246,0.12), transparent 70%);
+            pointer-events: none;
+        }
+        .brand-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -80px; right: -80px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(245,158,11,0.1), transparent 70%);
+            pointer-events: none;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+        .brand-logo-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--blue-mid), var(--blue-light));
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: white;
+            box-shadow: 0 0 24px var(--blue-glow);
+        }
+        .brand-logo-text {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+        .brand-logo-text span { color: var(--gold); }
+
+        .brand-hero { position: relative; z-index: 1; }
+        .brand-headline {
+            font-family: var(--font-heading);
+            font-size: 44px;
+            line-height: 1.15;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+        .brand-headline span { color: var(--gold); }
+        .brand-sub {
+            color: var(--text-secondary);
+            font-size: 16px;
+            max-width: 380px;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        /* Animated shield graphic */
+        .shield-graphic {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 24px;
+        }
+        .shield-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(59,130,246,0.2);
+            animation: ring-pulse 3s ease-in-out infinite;
+        }
+        .shield-ring:nth-child(1) { inset: 0; animation-delay: 0s; }
+        .shield-ring:nth-child(2) { inset: -20px; animation-delay: 0.5s; border-color: rgba(245,158,11,0.1); }
+        .shield-ring:nth-child(3) { inset: -40px; animation-delay: 1s; border-color: rgba(59,130,246,0.08); }
+        @keyframes ring-pulse {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.03); }
+        }
+        .shield-icon {
+            position: absolute; inset: 20px;
+            background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(59,130,246,0.1));
+            border: 1px solid var(--glass-border-strong);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 64px; color: var(--blue-light);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 40px var(--blue-glow);
+        }
+
+        /* Stats strip */
+        .stats-strip {
+            display: flex;
+            gap: 0;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+        .stat-item {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            border-right: 1px solid var(--glass-border);
+        }
+        .stat-item:last-child { border-right: none; }
+        .stat-num { font-size: 24px; font-weight: 800; color: var(--blue-light); margin-bottom: 2px; }
+        .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Feature pills */
+        .feature-pills { display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 1; }
+        .feature-pill {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .feature-pill i { color: var(--gold); }
+
+        /* Brand footer */
+        .brand-footer { color: var(--text-muted); font-size: 12px; position: relative; z-index: 1; }
+        .brand-footer strong { color: var(--text-secondary); }
+
+        /* ─── RIGHT SIDE: Auth panel ─── */
+        .auth-panel {
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 40px;
+            position: relative;
+            z-index: 10;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.15);
+        }
+
+        .auth-container { width: 100%; max-width: 440px; position: relative; z-index: 10; }
+        .auth-tabs {
+            display: flex;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 28px;
+            border: 1px solid #e2e8f0;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 10px 16px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .auth-tab:hover {
+            color: #1e293b;
+        }
+        .auth-tab.active {
+            color: #2563eb;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .auth-form { display: none; }
+        .auth-form.active { display: block; animation: fadeSlideIn 0.3s var(--ease); }
+
+        .auth-title { font-size: 26px; margin-bottom: 6px; color: #0f172a; font-weight: 800; }
+        .auth-subtitle { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block; font-size: 13px; font-weight: 700;
+            color: #334155; margin-bottom: 6px;
+        }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .input-with-icon { position: relative; }
+        .input-with-icon i {
+            position: absolute; left: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8; font-size: 18px; pointer-events: none;
+        }
+        .input-with-icon .form-control { padding-left: 42px; }
+
+        .form-control {
+            width: 100%; padding: 12px 14px;
+            border: 1.5px solid #cbd5e1; border-radius: var(--radius-sm);
+            font-family: var(--font-body); font-size: 14px; color: #0f172a;
+            background: #ffffff; transition: all 0.2s ease;
+        }
+        .form-control:focus {
+            outline: none; border-color: #2563eb;
+            box-shadow: 0 0 0 3.5px rgba(37,99,235,0.15);
+        }
+        .form-control::placeholder { color: #94a3b8; }
+
+        .auth-divider {
+            text-align: center; margin: 24px 0 16px;
+            color: #94a3b8; font-size: 12px; font-weight: 600;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .auth-divider::before, .auth-divider::after {
+            content: ''; flex: 1; height: 1px; background: #e2e8f0;
+        }
+
+        .select-control {
+            width: 100%; padding: 12px 14px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 14px; color: #0f172a;
+            background: #ffffff; cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .select-control:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3.5px rgba(37,99,235,0.15); }
+
+        .login-hint {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 22px;
+        }
+        .login-hint h4 { font-size: 12px; color: #475569; margin-bottom: 8px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        .credential-row {
+            display: flex; gap: 8px; flex-wrap: wrap;
+        }
+        .credential-chip {
+            background: #ffffff; border: 1px solid #cbd5e1;
+            padding: 6px 12px; border-radius: 8px;
+            font-size: 12px; color: #1e293b; cursor: pointer;
+            transition: all 0.2s ease; display: flex; align-items: center; gap: 6px;
+            font-weight: 600;
+        }
+        .credential-chip:hover {
+            border-color: #2563eb; background: #eff6ff; color: #2563eb;
+            transform: translateY(-1px);
+        }
+        .credential-chip code { font-family: monospace; font-size: 11.5px; background: #f1f5f9; padding: 2px 5px; border-radius: 4px; }
+
+        .form-options-row {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px; font-size: 13px;
+        }
+        .remember-me { display: flex; align-items: center; gap: 8px; color: #475569; font-weight: 500; cursor: pointer; }
+        .remember-me input { accent-color: #2563eb; width: 16px; height: 16px; cursor: pointer; }
+        .forgot-link { color: #2563eb; font-weight: 600; text-decoration: none; cursor: pointer; }
+        .forgot-link:hover { text-decoration: underline; }
+
+        .error-msg {
+            background: #FEF2F2; border: 1px solid #FECACA;
+            color: #DC2626; padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px; margin-bottom: 16px; display: none;
+        }
+        .success-msg {
+            background: #F0FDF4; border: 1px solid #BBF7D0;
+            color: #16A34A; padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px; margin-bottom: 16px; display: none;
+        }
+
+        /* Strength indicator */
+        .strength-bar-row { margin-top: 6px; display: flex; gap: 4px; align-items: center; }
+        .strength-seg {
+            height: 4px; flex: 1; border-radius: 2px;
+            background: #e2e8f0; transition: background 0.3s;
+        }
+        .strength-label { font-size: 11px; color: #94a3b8; min-width: 50px; font-weight: 600; }
+
+        /* Terms */
+        .checkbox-row {
+            display: flex; align-items: flex-start; gap: 10px;
+            margin-bottom: 20px; font-size: 13px; color: #475569;
+        }
+        .checkbox-row input { margin-top: 3px; accent-color: #2563eb; width: 16px; height: 16px; cursor: pointer; }
+
+        /* Auth footer */
+        .auth-footer {
+            margin-top: 28px; text-align: center;
+            color: #94a3b8; font-size: 13px;
+        }
+        .auth-footer-badges {
+            display: flex; justify-content: center; gap: 14px; margin-top: 10px;
+        }
+        .auth-badge {
+            display: flex; align-items: center; gap: 5px;
+            font-size: 11px; color: #64748b; font-weight: 600;
+        }
+        .auth-badge i { font-size: 14px; color: #10b981; }
+    </style>
+</head>
+<body>
+
+<!-- ── ANIMATED MOVING WALLPAPER BACKDROP ── -->
+<div class="bg-video-container" id="bgVideoContainer">
+    <div class="moving-items-container" id="movingItemsWrap">
+        <div class="floating-bg-item floating-item-1"><i class="ti ti-shield-lock"></i></div>
+        <div class="floating-bg-item floating-item-2"><i class="ti ti-lock-access"></i></div>
+        <div class="floating-bg-item floating-item-3"><i class="ti ti-database-check"></i></div>
+        <div class="floating-bg-item floating-item-4"><i class="ti ti-keyframe"></i></div>
+    </div>
+    <div class="bg-video-overlay" id="bgOverlay" style="backdrop-filter: blur(12px);"></div>
+</div>
+
+<!-- ─── ANIMATED PARTICLE FIELD ─── -->
+<div class="particle-field" id="particleField"></div>
+
+<!-- ─── MAIN WRAPPER ─── -->
+<div class="page-wrapper">
+
+    <!-- LEFT: BRAND PANEL -->
+    <div class="brand-panel">
+        <div class="brand-logo">
+            <div class="brand-logo-icon"><i class="ti ti-shield-check"></i></div>
+            <div class="brand-logo-text">Cyber<span>Shield</span> SL</div>
+        </div>
+
+        <div class="brand-hero">
+            <div class="shield-graphic">
+                <div class="shield-ring"></div>
+                <div class="shield-ring"></div>
+                <div class="shield-ring"></div>
+                <div class="shield-icon"><i class="ti ti-shield-check"></i></div>
+            </div>
+
+            <h1 class="brand-headline">
+                Build Your<br>
+                <span>Cyber Defence</span><br>
+                Skills Today
+            </h1>
+            <p class="brand-sub">
+                The official AI-powered cybersecurity awareness training platform for Gampaha Divisional Secretariat employees. Learn to protect citizen data and government systems.
+            </p>
+
+            <div class="feature-pills">
+                <div class="feature-pill"><i class="ti ti-certificate"></i> 5 Certified Modules</div>
+                <div class="feature-pill"><i class="ti ti-sparkles"></i> AI-Powered Videos</div>
+                <div class="feature-pill"><i class="ti ti-gamepad-2"></i> Interactive Exercises</div>
+                <div class="feature-pill"><i class="ti ti-trophy"></i> Badges & Leaderboard</div>
+                <div class="feature-pill"><i class="ti ti-language"></i> Sinhala & English</div>
+            </div>
+        </div>
+
+        <div>
+            <div class="stats-strip" style="margin-bottom: 20px;">
+                <div class="stat-item">
+                    <div class="stat-num" id="statEmployees">0</div>
+                    <div class="stat-label">Employees Enrolled</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">5</div>
+                    <div class="stat-label">Training Modules</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">50</div>
+                    <div class="stat-label">Quiz Questions</div>
+                </div>
+            </div>
+            <div class="brand-footer">
+                A research study by <strong>Gampaha Divisional Secretariat</strong> &bull; Ministry of Internal Affairs Sri Lanka &bull; <strong>2025</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: AUTH PANEL -->
+    <div class="auth-panel">
+        <div class="auth-container">
+
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tabLogin" onclick="switchTab('login')">
+                    <i class="ti ti-login"></i> Sign In
+                </div>
+                <div class="auth-tab" id="tabRegister" onclick="switchTab('register')">
+                    <i class="ti ti-user-plus"></i> Register
+                </div>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <div class="auth-form active" id="formLogin">
+                <h2 class="auth-title">Welcome Back</h2>
+                <p class="auth-subtitle">Sign in to access your cybersecurity training portal</p>
+
+
+
+                <div class="error-msg" id="loginError">Invalid credentials. Please try again.</div>
+
+                <div class="form-group">
+                    <label>Employee ID</label>
+                    <div class="input-with-icon">
+                        <i class="ti ti-id-badge-2"></i>
+                        <input type="text" class="form-control" id="loginId" placeholder="e.g. EMP-001">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-with-icon">
+                        <i class="ti ti-lock"></i>
+                        <input type="password" class="form-control" id="loginPass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
+                    </div>
+                </div>
+
+                <div class="form-options-row">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <span>Remember Employee ID</span>
+                    </label>
+                    <a href="#" class="forgot-link" onclick="showForgotModal(event)">Forgot Password?</a>
+                </div>
+
+                <button class="btn btn-primary btn-full" onclick="doLogin()">
+                    <i class="ti ti-login"></i> Sign In
+                </button>
+
+                <div class="auth-divider">New to the platform?</div>
+                <button class="btn btn-outline btn-full" onclick="switchTab('register')">
+                    <i class="ti ti-user-plus"></i> Create an Account
+                </button>
+            </div>
+
+            <!-- REGISTER FORM -->
+            <div class="auth-form" id="formRegister">
+                <h2 class="auth-title">Create Account</h2>
+                <p class="auth-subtitle">Join the CyberShield SL training programme</p>
+
+                <div class="error-msg" id="registerError"></div>
+                <div class="success-msg" id="registerSuccess"></div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name *</label>
+                        <div class="input-with-icon">
+                            <i class="ti ti-user"></i>
+                            <input type="text" class="form-control" id="regFirst" placeholder="Kamal">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name *</label>
+                        <div class="input-with-icon">
+                            <i class="ti ti-user-check"></i>
+                            <input type="text" class="form-control" id="regLast" placeholder="Perera">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Employee ID *</label>
+                    <div class="input-with-icon">
+                        <i class="ti ti-id-badge-2"></i>
+                        <input type="text" class="form-control" id="regId" placeholder="e.g. EMP-042">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Division / Department *</label>
+                    <select class="select-control" id="regDivision">
+                        <option value="">Select your division</option>
+                        <option>Administration</option>
+                        <option>Land Registration</option>
+                        <option>Samurdhi Welfare</option>
+                        <option>Divisional Planning</option>
+                        <option>Public Health</option>
+                        <option>Revenue & Finance</option>
+                        <option>IT & Systems</option>
+                        <option>Director's Office</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <div class="input-with-icon">
+                        <i class="ti ti-lock"></i>
+                        <input type="password" class="form-control" id="regPass" placeholder="Minimum 8 characters" oninput="checkStrength(this.value)">
+                    </div>
+                    <div class="strength-bar-row">
+                        <div class="strength-seg" id="s1"></div>
+                        <div class="strength-seg" id="s2"></div>
+                        <div class="strength-seg" id="s3"></div>
+                        <div class="strength-seg" id="s4"></div>
+                        <span class="strength-label" id="strengthLabel">—</span>
+                    </div>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="agreeTerms">
+                    <label for="agreeTerms">I agree to participate in this research study and understand my data will be anonymised and used for academic purposes.</label>
+                </div>
+                <button class="btn btn-primary btn-full" onclick="doRegister()">
+                    <i class="ti ti-user-plus"></i> Create Account & Start Training
+                </button>
+
+                <div class="auth-divider">Already registered?</div>
+                <button class="btn btn-outline btn-full" onclick="switchTab('login')">
+                    <i class="ti ti-login"></i> Sign In Instead
+                </button>
+            </div>
+
+            <div class="auth-footer">
+                <div class="auth-footer-badges">
+                    <div class="auth-badge"><i class="ti ti-lock"></i> SSL Encrypted</div>
+                    <div class="auth-badge"><i class="ti ti-shield-check"></i> Data Anonymised</div>
+                    <div class="auth-badge"><i class="ti ti-certificate"></i> Certified Programme</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script src="sentry.js"></script>
+<script>
+    // ─── PARTICLES ───
+    (function() {
+        const field = document.getElementById('particleField');
+        for (let i = 0; i < 30; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.cssText = `
+                left: ${Math.random() * 50}%;
+                animation-duration: ${8 + Math.random() * 12}s;
+                animation-delay: ${Math.random() * 10}s;
+                width: ${1 + Math.random() * 2}px;
+                height: ${1 + Math.random() * 2}px;
+                opacity: ${0.3 + Math.random() * 0.5};
+            `;
+            field.appendChild(p);
+        }
+    })();
+
+    // ─── LIVE EMPLOYEE COUNT ───
+    (function() {
+        const users = JSON.parse(localStorage.getItem('cyberShieldUsers')) || [];
+        const count = users.filter(u => u.empId !== 'EMP-ADMIN').length;
+        let current = 0;
+        const target = count + 47; // base offset to make it look realistic
+        const el = document.getElementById('statEmployees');
+        const interval = setInterval(() => {
+            current = Math.min(current + 3, target);
+            el.textContent = current;
+            if (current >= target) clearInterval(interval);
+        }, 40);
+    })();
+
+    // ─── INITIALIZE DEFAULT DEMO USERS ───
+    (function initDefaultUsers() {
+        let users = JSON.parse(localStorage.getItem('cyberShieldUsers')) || [];
+        if (users.length === 0) {
+            users.push({
+                empId: 'EMP-001',
+                name: 'Kamal Perera',
+                firstName: 'Kamal',
+                division: 'Administration',
+                password: 'password123',
+                progress: {},
+                registeredAt: new Date().toISOString()
+            });
+            localStorage.setItem('cyberShieldUsers', JSON.stringify(users));
+        }
+    })();
+
+    // ─── QUICK DEMO FILL & FORGOT HELP ───
+    function fillDemoUser(empId, pass) {
+        document.getElementById('loginId').value = empId;
+        document.getElementById('loginPass').value = pass;
+        const errEl = document.getElementById('loginError');
+        if (errEl) errEl.style.display = 'none';
+    }
+
+    function showForgotModal(e) {
+        if (e) e.preventDefault();
+        alert("🔑 Password Reset Helpdesk\n\nIf you forgot your Employee ID or password, please contact the Gampaha Divisional Secretariat IT Helpdesk at Extension #402 or email it-helpdesk@gampaha.gov.lk for assistance.");
+    }
+
+    // ─── TABS ───
+    function switchTab(tab) {
+        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('form' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+        document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+    }
+
+    // ─── PASSWORD STRENGTH ───
+    function checkStrength(val) {
+        let score = 0;
+        if (val.length >= 8) score++;
+        if (/[A-Z]/.test(val)) score++;
+        if (/[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        const colors = ['', '#EF4444', '#F59E0B', '#3B82F6', '#10B981'];
+        const labels = ['—', 'Weak', 'Fair', 'Good', 'Strong'];
+        for (let i = 1; i <= 4; i++) {
+            document.getElementById('s' + i).style.background = i <= score ? colors[score] : '#E2E8F0';
+        }
+        document.getElementById('strengthLabel').textContent = labels[score];
+        document.getElementById('strengthLabel').style.color = colors[score] || '#94A3B8';
+    }
+
+    // ─── LOGIN ───
+    function doLogin() {
+        const id = document.getElementById('loginId').value.trim();
+        const pass = document.getElementById('loginPass').value;
+        const errEl = document.getElementById('loginError');
+        errEl.style.display = 'none';
+
+        if (!id || !pass) { errEl.textContent = 'Please enter your Employee ID and Password.'; errEl.style.display = 'block'; return; }
+
+        if (id === 'EMP-ADMIN' && pass === 'admin123') {
+            localStorage.setItem('cyberShieldCurrentUser', 'admin');
+            window.location.href = 'admin.html';
+            return;
+        }
+
+        let users = JSON.parse(localStorage.getItem('cyberShieldUsers')) || [];
+        const user = users.find(u => u.empId === id && u.password === pass);
+        if (user) {
+            localStorage.setItem('cyberShieldCurrentUser', id);
+            window.location.href = 'student-dashboard.html';
+        } else {
+            errEl.textContent = 'Invalid Employee ID or Password. Please try again.';
+            errEl.style.display = 'block';
+        }
+    }
+
+    // ─── REGISTER ───
+    function doRegister() {
+        const first = document.getElementById('regFirst').value.trim();
+        const last = document.getElementById('regLast').value.trim();
+        const id = document.getElementById('regId').value.trim().toUpperCase();
+        const division = document.getElementById('regDivision').value;
+        const pass = document.getElementById('regPass').value;
+        const agreed = document.getElementById('agreeTerms').checked;
+        const errEl = document.getElementById('registerError');
+        const okEl = document.getElementById('registerSuccess');
+        errEl.style.display = 'none'; okEl.style.display = 'none';
+
+        if (!first || !last || !id || !division || !pass) { errEl.textContent = 'Please fill in all required fields.'; errEl.style.display = 'block'; return; }
+        if (pass.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.style.display = 'block'; return; }
+        if (!agreed) { errEl.textContent = 'Please agree to the research study terms.'; errEl.style.display = 'block'; return; }
+
+        let users = JSON.parse(localStorage.getItem('cyberShieldUsers')) || [];
+        if (users.find(u => u.empId === id)) { errEl.textContent = 'This Employee ID is already registered.'; errEl.style.display = 'block'; return; }
+
+        const newUser = {
+            empId: id, name: first + ' ' + last, firstName: first,
+            division, password: pass, progress: {},
+            registeredAt: new Date().toISOString()
+        };
+        users.push(newUser);
+        localStorage.setItem('cyberShieldUsers', JSON.stringify(users));
+        localStorage.setItem('cyberShieldCurrentUser', id);
+
+        okEl.textContent = `Account created! Redirecting to your dashboard...`;
+        okEl.style.display = 'block';
+        setTimeout(() => window.location.href = 'student-dashboard.html', 1500);
+    }
+
+    // ─── SENTRY ───
+    CyberSentry.init('login');
+</script>
+</body>
+</html>

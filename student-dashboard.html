@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield SL — My Training Dashboard</title>
+    <meta name="description" content="Your cybersecurity awareness training dashboard — Gampaha Divisional Secretariat.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Load shared utilities FIRST so inline scripts can use LangUtil and CyberSentry -->
+    <script src="lang.js"></script>
+    <script src="sentry.js"></script>
+    <style>
+        /* ── ULTRA-PREMIUM GLASSMORPHISM DESIGN SYSTEM ───────────────────── */
+        html {
+            background-color: #080e1a !important;
+        }
+        body, body.light-page {
+            background: transparent !important;
+            background-image: none !important;
+            color: #0f172a !important;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            display: none !important;
+        }
+
+        /* ── MODERN SANS-SERIF TYPOGRAPHY OVERRIDE ────────────────── */
+        h1, h2, h3, h4, h5, h6,
+        .welcome-text h1,
+        .section-title,
+        .module-card-title,
+        .action-card h3,
+        .modal-box h2,
+        .stat-value,
+        .overall-pct {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        }
+
+        :root {
+            --bg-page:         #f1f5f9;
+            --border-glass:    rgba(255, 255, 255, 0.85);
+            --border-hover:    rgba(255, 255, 255, 0.98);
+            
+            --text-main:       #0f172a;
+            --text-muted:      #475569;
+            --text-subtle:     #64748b;
+            
+            --brand-blue:      #1d4ed8;
+            --brand-blue-dark: #1e3a8a;
+            --brand-blue-soft: rgba(29, 78, 216, 0.08);
+            --brand-blue-border: rgba(191, 219, 254, 0.8);
+            
+            --accent-green:    #059669;
+            --accent-green-bg: rgba(236, 253, 245, 0.85);
+            --accent-green-border: rgba(167, 243, 208, 0.8);
+            
+            --accent-amber:    #d97706;
+            --accent-amber-bg: rgba(254, 243, 199, 0.85);
+            --accent-amber-border: rgba(253, 230, 138, 0.8);
+
+            --accent-purple:   #6d28d9;
+            --accent-purple-bg:rgba(250, 245, 255, 0.85);
+            --accent-purple-border:rgba(233, 213, 255, 0.8);
+
+            --accent-cyan:     #0891b2;
+            --accent-cyan-bg:  rgba(236, 254, 255, 0.85);
+            --accent-cyan-border: rgba(165, 243, 252, 0.8);
+
+            --accent-red:      #dc2626;
+            --accent-red-bg:   rgba(254, 242, 242, 0.85);
+            --accent-red-border: rgba(254, 202, 202, 0.8);
+
+            --radius-lg:       20px;
+            --radius-md:       14px;
+            --radius-sm:       8px;
+            --shadow-glass:    inset 0 1px 1px 0 rgba(255, 255, 255, 0.9), 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+            --shadow-glass-hover: inset 0 1px 2px 0 rgba(255, 255, 255, 1), 0 20px 40px -10px rgba(30, 58, 138, 0.15);
+            --transition:      all .3s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        /* ── TOPBAR NAV ─────────────────────────────────────────────── */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(255, 255, 255, 0.78) !important;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.8) !important;
+            padding: 0 32px;
+            height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+        }
+        .topbar-left { display: flex; align-items: center; gap: 16px; }
+        .tb-logo {
+            display: flex; align-items: center; gap: 12px;
+            font-size: 19px; font-weight: 800; color: #0f172a !important;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+        .tb-logo-icon {
+            width: 40px; height: 40px; border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--brand-blue-dark), var(--brand-blue));
+            display: flex; align-items: center; justify-content: center;
+            color: #ffffff; font-size: 20px;
+            box-shadow: 0 4px 14px rgba(29, 78, 216, 0.3);
+        }
+        .tb-logo span { color: var(--brand-blue); }
+        .tb-badge {
+            font-size: 12px; font-weight: 600; letter-spacing: .3px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            color: var(--brand-blue); border-radius: 20px;
+            padding: 4px 12px;
+            display: flex; align-items: center; gap: 6px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+        }
+        .tb-badge::before {
+            content: ''; display: block; width: 6px; height: 6px;
+            border-radius: 50%; background: var(--brand-blue);
+        }
+
+        .topbar-right { display: flex; align-items: center; gap: 14px; }
+        .user-pill {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255, 255, 255, 0.75) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.9) !important;
+            border-radius: 30px; padding: 5px 16px 5px 6px;
+            font-size: 13.5px; font-weight: 600; color: #0f172a !important;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+        .user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700;
+        }
+        .btn-logout {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--accent-red-border);
+            background: var(--accent-red-bg);
+            backdrop-filter: blur(8px);
+            color: var(--accent-red);
+            font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: var(--transition);
+            text-decoration: none; display: flex; align-items: center; gap: 6px;
+        }
+        .btn-logout:hover { background: rgba(254, 226, 226, 0.9); }
+
+        /* ── MAIN WRAPPER ───────────────────────────────────────────── */
+        .main {
+            position: relative; z-index: 1;
+            padding: 32px 32px 64px;
+            max-width: 1400px; margin: 0 auto;
+        }
+
+        /* ── EXECUTIVE HERO ─────────────────────────────────────────── */
+        .welcome-hero {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 58, 138, 0.95) 55%, rgba(29, 78, 216, 0.92) 100%) !important;
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.25) !important;
+            border-radius: var(--radius-lg);
+            padding: 38px 42px;
+            margin-bottom: 36px;
+            color: #ffffff !important;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 32px;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 20px 50px -10px rgba(30, 58, 138, 0.35);
+            position: relative; overflow: hidden;
+        }
+        .welcome-hero::after {
+            content: ''; position: absolute;
+            top: -50%; right: -10%; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .welcome-text h1 {
+            font-size: 28px; font-weight: 800; margin-bottom: 8px;
+            letter-spacing: -0.5px; color: #ffffff !important;
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        }
+        .welcome-text h1 span#heroName {
+            color: #fde047 !important;
+            font-weight: 800;
+        }
+        .welcome-text p.meta-line {
+            color: #cbd5e1 !important; font-size: 14px; font-weight: 500;
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        }
+        .welcome-text p.meta-line span.highlight {
+            color: #ffffff !important; font-weight: 600;
+            background: rgba(255,255,255,0.15); padding: 3px 12px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .welcome-text p.sub-text {
+            color: #94a3b8 !important; font-size: 14px; margin-top: 8px; font-weight: 400;
+        }
+
+        .overall-progress-wrap {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: var(--radius-md);
+            padding: 20px 28px;
+            text-align: right; min-width: 220px;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.2);
+        }
+        .overall-pct {
+            font-size: 44px; font-weight: 800; line-height: 1;
+            color: #ffffff !important; letter-spacing: -1px;
+        }
+        .overall-pct-label { font-size: 12px; color: #cbd5e1 !important; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; margin-top: 4px; }
+        .overall-bar {
+            height: 8px; background: rgba(255, 255, 255, 0.25);
+            border-radius: 10px; margin-top: 12px; overflow: hidden;
+        }
+        .overall-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #4ade80);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        /* ── STATS ROW (GLASS DESIGN) ───────────────────────────────── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px; margin-bottom: 40px;
+        }
+        @media (max-width: 990px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 540px) { .stats-row { grid-template-columns: 1fr; } }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.68) !important;
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.85) !important;
+            border-radius: var(--radius-md) !important;
+            padding: 24px;
+            position: relative; overflow: hidden;
+            box-shadow: var(--shadow-glass) !important;
+            transition: var(--transition) !important;
+        }
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.88) !important;
+            transform: translateY(-4px) !important;
+            box-shadow: var(--shadow-glass-hover) !important;
+            border-color: rgba(255, 255, 255, 0.98) !important;
+        }
+        .stat-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+        }
+        .stat-card.blue::before   { background: var(--brand-blue); }
+        .stat-card.green::before  { background: var(--accent-green); }
+        .stat-card.gold::before   { background: var(--accent-amber); }
+        .stat-card.purple::before { background: var(--accent-purple); }
+
+        .stat-card-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .stat-icon-wrap {
+            width: 44px; height: 44px; border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .stat-card.blue .stat-icon-wrap   { background: var(--brand-blue-soft); color: var(--brand-blue); }
+        .stat-card.green .stat-icon-wrap  { background: var(--accent-green-bg); color: var(--accent-green); }
+        .stat-card.gold .stat-icon-wrap   { background: var(--accent-amber-bg); color: var(--accent-amber); }
+        .stat-card.purple .stat-icon-wrap { background: var(--accent-purple-bg); color: var(--accent-purple); }
+
+        .stat-value { font-size: 34px; font-weight: 800; line-height: 1; color: #0f172a !important; letter-spacing: -0.5px; }
+        .stat-label { font-size: 13px; color: #64748b !important; font-weight: 600; margin-top: 6px; }
+
+        /* ── SECTION HEADER ─────────────────────────────────────────── */
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 22px;
+        }
+        .section-title {
+            font-size: 19px !important; font-weight: 800 !important; color: #0f172a !important;
+            letter-spacing: -0.3px;
+            display: flex; align-items: center; gap: 10px;
+            margin: 0;
+        }
+        .section-title::before {
+            content: ''; display: block;
+            width: 4px; height: 22px; border-radius: 4px;
+            background: var(--brand-blue) !important;
+        }
+
+        /* ── MODULES GRID (GLASSMORPHISM CARDS) ─────────────────────── */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px; margin-bottom: 44px;
+        }
+        @media (max-width: 1150px) { .modules-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 700px)  { .modules-grid { grid-template-columns: 1fr; } }
+
+        .module-card {
+            background: rgba(255, 255, 255, 0.68) !important;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.85) !important;
+            border-radius: var(--radius-lg) !important;
+            padding: 28px !important;
+            position: relative; overflow: hidden;
+            box-shadow: var(--shadow-glass) !important;
+            transition: var(--transition) !important;
+            text-decoration: none; display: flex; flex-direction: column;
+            color: inherit;
+        }
+        .module-card:hover {
+            background: rgba(255, 255, 255, 0.88) !important;
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            border-color: rgba(255, 255, 255, 0.98) !important;
+            transform: translateY(-6px) scale(1.01) !important;
+            box-shadow: var(--shadow-glass-hover) !important;
+        }
+        .module-card.completed {
+            background: rgba(240, 253, 244, 0.65) !important;
+            border-color: rgba(167, 243, 208, 0.85) !important;
+        }
+        .module-card.completed:hover {
+            background: rgba(236, 253, 245, 0.88) !important;
+            border-color: rgba(52, 211, 153, 0.9) !important;
+        }
+        .module-card.locked { opacity: .6; cursor: not-allowed; pointer-events: none; }
+
+        .module-card-accent-bar {
+            position: absolute; top: 0; left: 0; right: 0; height: 4px;
+        }
+
+        .module-card-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .module-num-badge {
+            font-size: 11px; font-weight: 700; letter-spacing: .6px;
+            text-transform: uppercase; padding: 4px 12px; border-radius: 8px;
+            background: rgba(29, 78, 216, 0.08); color: var(--brand-blue);
+            border: 1px solid rgba(191, 219, 254, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        .module-status-icon {
+            font-size: 22px; display: flex; align-items: center;
+        }
+
+        .module-icon-wrap {
+            width: 108px; height: 80px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 18px; overflow: hidden;
+            background: rgba(255, 255, 255, 0.75) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.9) !important;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.9), 0 4px 12px rgba(15, 23, 42, 0.05) !important;
+            padding: 6px;
+        }
+        .module-icon-img {
+            width: 100%; height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        .module-card:hover .module-icon-img {
+            transform: scale(1.08);
+        }
+
+        .module-card-title {
+            font-size: 18px; font-weight: 800; color: #0f172a !important;
+            margin-bottom: 8px; line-height: 1.35; letter-spacing: -0.3px;
+        }
+        .module-card-desc {
+            font-size: 13.5px; color: #475569 !important; line-height: 1.6;
+            margin-bottom: 22px; flex-grow: 1;
+        }
+        .module-card-meta {
+            display: flex; gap: 16px;
+            font-size: 12px; font-weight: 600; color: #64748b !important;
+            margin-bottom: 18px;
+        }
+        .module-card-meta span { display: flex; align-items: center; gap: 5px; }
+
+        .module-progress-bar {
+            height: 7px; background: rgba(226, 232, 240, 0.8);
+            border-radius: 10px; overflow: hidden; margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .module-progress-fill {
+            height: 100%; border-radius: 10px;
+            transition: width .8s ease;
+        }
+
+        .module-card-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-top: 18px; border-top: 1px solid rgba(226, 232, 240, 0.7) !important;
+        }
+        .module-score-tag {
+            font-size: 12px; font-weight: 700;
+            padding: 5px 14px; border-radius: 8px;
+            display: flex; align-items: center; gap: 6px;
+            backdrop-filter: blur(8px);
+        }
+        .score-pass { background: var(--accent-green-bg); color: var(--accent-green); border: 1px solid var(--accent-green-border); }
+        .score-fail { background: var(--accent-red-bg); color: var(--accent-red); border: 1px solid var(--accent-red-border); }
+        .score-none { background: rgba(255, 255, 255, 0.7); color: #64748b; border: 1px solid rgba(226, 232, 240, 0.9); }
+
+        .btn-start {
+            font-size: 12.5px; font-weight: 700;
+            padding: 8px 20px; border-radius: var(--radius-sm); border: none;
+            cursor: pointer; transition: var(--transition);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .btn-start.primary {
+            background: var(--brand-blue);
+            color: #ffffff !important;
+            box-shadow: 0 4px 14px rgba(29,78,216,0.3);
+        }
+        .btn-start.primary:hover { background: #1e40af; box-shadow: 0 6px 20px rgba(29,78,216,0.4); transform: translateY(-1px); }
+        .btn-start.success {
+            background: var(--accent-green-bg);
+            color: var(--accent-green); border: 1px solid var(--accent-green-border);
+        }
+        .btn-start.success:hover { background: rgba(209, 250, 229, 0.9); }
+
+        /* ── QUICK ACCESS GRID (GLASS DESIGN) ───────────────────────── */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 22px;
+        }
+        @media (max-width: 650px)  { .bottom-grid { grid-template-columns: 1fr; } }
+
+        .action-card {
+            background: rgba(255, 255, 255, 0.68) !important;
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.85) !important;
+            border-radius: var(--radius-lg) !important;
+            padding: 26px;
+            display: flex; flex-direction: column;
+            align-items: flex-start; gap: 12px;
+            text-decoration: none; color: inherit;
+            box-shadow: var(--shadow-glass) !important;
+            transition: var(--transition) !important;
+        }
+        .action-card:hover {
+            background: rgba(255, 255, 255, 0.88) !important;
+            transform: translateY(-4px) !important;
+            box-shadow: var(--shadow-glass-hover) !important;
+            border-color: rgba(255, 255, 255, 0.98) !important;
+        }
+
+        .action-icon {
+            width: 48px; height: 48px; border-radius: var(--radius-md);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .icon-red    { background: var(--accent-red-bg); color: var(--accent-red); }
+        .icon-gold   { background: var(--accent-amber-bg); color: var(--accent-amber); }
+        .icon-purple { background: var(--accent-purple-bg); color: var(--accent-purple); }
+        .icon-green  { background: var(--accent-green-bg); color: var(--accent-green); }
+        .icon-cyan   { background: var(--accent-cyan-bg); color: var(--accent-cyan); }
+
+        .action-card h3 { font-size: 16px; font-weight: 700; color: #0f172a !important; }
+        .action-card p  { font-size: 13px; color: #475569 !important; line-height: 1.5; flex-grow: 1; }
+        .action-arrow {
+            margin-top: 8px;
+            font-size: 13px; font-weight: 700;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .arrow-red    { color: var(--accent-red); }
+        .arrow-gold   { color: var(--accent-amber); }
+        .arrow-purple { color: var(--accent-purple); }
+        .arrow-green  { color: var(--accent-green); }
+        .arrow-cyan   { color: var(--accent-cyan); }
+
+        /* ── API KEY MODAL (GLASS) ──────────────────────────────────── */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 999;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal-box {
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(24px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.95) !important;
+            border-radius: var(--radius-lg);
+            padding: 42px;
+            width: 460px; max-width: 95vw;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+            text-align: center;
+        }
+        .modal-icon {
+            width: 64px; height: 64px; border-radius: var(--radius-md);
+            background: rgba(219, 234, 254, 0.8);
+            border: 1px solid rgba(191, 219, 254, 0.9);
+            color: var(--brand-blue);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; margin: 0 auto 20px;
+        }
+        .modal-box h2 { font-size: 20px; font-weight: 800; color: #0f172a !important; margin-bottom: 8px; }
+        .modal-box p  { font-size: 13.5px; color: #475569 !important; margin-bottom: 24px; line-height: 1.6; }
+        .modal-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8) !important;
+            border: 1px solid rgba(203, 213, 225, 0.9) !important;
+            border-radius: var(--radius-sm);
+            padding: 13px 16px;
+            color: #0f172a !important;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin-bottom: 16px;
+            outline: none;
+            transition: var(--transition);
+        }
+        .modal-input:focus { border-color: var(--brand-blue) !important; box-shadow: 0 0 0 3px rgba(191, 219, 254, 0.6); }
+        .modal-hint {
+            font-size: 12px; color: #64748b !important;
+            margin-bottom: 24px;
+        }
+        .modal-hint code {
+            background: rgba(241, 245, 249, 0.9);
+            padding: 2px 8px; border-radius: 4px;
+            font-family: monospace; color: var(--brand-blue); font-weight: 600;
+        }
+        .modal-btn {
+            width: 100%;
+            padding: 13px;
+            border-radius: var(--radius-sm); border: none;
+            background: var(--brand-blue);
+            color: white !important; font-size: 14px; font-weight: 700;
+            cursor: pointer; transition: var(--transition);
+            box-shadow: 0 4px 14px rgba(29, 78, 216, 0.3);
+        }
+        .modal-btn:hover { background: #1e40af; transform: translateY(-1px); }
+        .modal-skip {
+            margin-top: 14px; font-size: 13px; color: #64748b !important; font-weight: 600;
+            cursor: pointer; transition: color var(--transition);
+        }
+        .modal-skip:hover { color: #0f172a !important; }
+
+        /* ── TOAST (GLASS) ──────────────────────────────────────────── */
+        .toast-wrap {
+            position: fixed; top: 88px; right: 32px;
+            z-index: 900; display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--accent-green-border);
+            border-radius: var(--radius-md); padding: 14px 20px;
+            display: flex; align-items: center; gap: 12px;
+            font-size: 13.5px; font-weight: 600; color: #0f172a !important;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12); min-width: 240px;
+            animation: slide-in .3s ease;
+        }
+        @keyframes slide-in { from { opacity: 0; transform: translateX(30px); } to { opacity:1; transform: translateX(0); } }
+
+        /* ── SCROLLBAR ──────────────────────────────────────────────── */
+        ::-webkit-scrollbar { width: 7px; height: 7px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* ── LANG TOGGLE ─────────────────────────────────────────────── */
+        #langToggleBtn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.9) !important;
+            background: rgba(255, 255, 255, 0.75) !important;
+            backdrop-filter: blur(10px);
+            color: #0f172a !important;
+            font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: var(--transition);
+            white-space: nowrap; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+        #langToggleBtn:hover { background: rgba(255, 255, 255, 0.95) !important; }
+        #langToggleBtn span { text-decoration: underline; font-weight: 800; color: var(--brand-blue); }
+    </style>
+</head>
+<body class="light-page">
+
+<!-- ── ANIMATED MOVING WALLPAPER BACKDROP ── -->
+<div class="bg-video-container" id="bgVideoContainer">
+    <div class="moving-items-container" id="movingItemsWrap">
+        <div class="floating-bg-item floating-item-1" title="Cyber Defense Shield"><i class="ti ti-shield-lock"></i></div>
+        <div class="floating-bg-item floating-item-2" title="Access Control Key"><i class="ti ti-lock-access"></i></div>
+        <div class="floating-bg-item floating-item-3" title="Secure Database"><i class="ti ti-database-check"></i></div>
+        <div class="floating-bg-item floating-item-4" title="MFA Authentication"><i class="ti ti-fingerprint"></i></div>
+        <div class="floating-bg-item floating-item-5" title="Verified Officer Badge"><i class="ti ti-shield-check"></i></div>
+        <div class="floating-bg-item floating-item-6" title="Quantum Encryption Core"><i class="ti ti-cpu"></i></div>
+    </div>
+    <canvas id="cyberCanvas" class="bg-canvas-backdrop"></canvas>
+    <div class="bg-video-overlay" id="bgOverlay"></div>
+</div>
+
+<!-- ── TOPBAR ─────────────────────────────────────────────────────────── -->
+<div class="topbar">
+    <div class="topbar-left">
+        <a href="student-dashboard.html" class="tb-logo">
+            <div class="tb-logo-icon">
+                <i class="ti ti-shield-check"></i>
+            </div>
+            Cyber<span>Shield</span> SL
+        </a>
+        <span class="tb-badge">Government Officer Portal</span>
+    </div>
+    <div class="topbar-right">
+        <div class="user-pill">
+            <div class="user-avatar" id="avatarInitial">?</div>
+            <span id="topbarName">Loading…</span>
+        </div>
+        <!-- Moving Wallpaper & Theme Control Button -->
+        <div style="position: relative;">
+            <button class="wallpaper-ctrl-btn" id="wpCtrlBtn" onclick="toggleWpModal()" title="Wallpaper & Theme Options">
+                <i class="ti ti-color-filter"></i> <span>Wallpaper</span> <i class="ti ti-chevron-down" style="font-size:12px;"></i>
+            </button>
+            <div class="wallpaper-modal-panel" id="wpModalPanel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="font-size:14px; font-weight:700;"><i class="ti ti-atom"></i> Live Backdrops</span>
+                    <span class="pulse-signal"><span class="pulse-dot"></span> Active</span>
+                </div>
+                <div class="wp-option-grid">
+                    <div class="wp-preset-card active" id="wpCardItems" onclick="setWpMode('items')"><i class="ti ti-atom"></i> Moving Items</div>
+                    <div class="wp-preset-card" id="wpCardMatrix" onclick="setWpMode('matrix')"><i class="ti ti-code"></i> Matrix Code</div>
+                    <div class="wp-preset-card" id="wpCardNodes" onclick="setWpMode('particle')"><i class="ti ti-atom-2"></i> Cyber Nodes</div>
+                    <div class="wp-preset-card" id="wpCardWave" onclick="setWpMode('wave')"><i class="ti ti-waves"></i> Quantum Wave</div>
+                </div>
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                    <button class="wp-preset-card" style="flex:1;" id="btnTogglePlay" onclick="toggleVideoPlay()"><i class="ti ti-pause"></i> Pause Video</button>
+                    <button class="wp-preset-card" style="flex:1;" id="btnToggleTheme" onclick="toggleDarkTheme()"><i class="ti ti-moon"></i> Cyber Mode</button>
+                </div>
+                <div class="wp-slider-group">
+                    <label><span>Wallpaper Opacity</span><span id="opacityVal">35%</span></label>
+                    <input type="range" id="opacitySlider" min="5" max="80" value="35" oninput="changeWpOpacity(this.value)">
+                </div>
+                <div class="wp-slider-group">
+                    <label><span>Glass Blur</span><span id="blurVal">8px</span></label>
+                    <input type="range" id="blurSlider" min="0" max="25" value="8" oninput="changeWpBlur(this.value)">
+                </div>
+            </div>
+        </div>
+        <button id="langToggleBtn" onclick="LangUtil.toggle()" title="Switch language">🌐 <span>EN</span> | සි</button>
+        <a href="index.html" class="btn-logout" onclick="doLogout(event)">
+            <i class="ti ti-power"></i> Logout
+        </a>
+    </div>
+</div>
+
+<!-- ── MAIN ───────────────────────────────────────────────────────────── -->
+<div class="main">
+
+    <!-- Executive Welcome Hero -->
+    <div class="welcome-hero border-beam-card">
+        <div class="floating-orb floating-orb-blue"></div>
+        <div class="floating-orb floating-orb-gold"></div>
+        <div class="welcome-text">
+            <h1>
+                <span data-en="Welcome back," data-si="නැවත සාදරයෙන් පිළිගනිමු,">Welcome back,</span>
+                <span id="heroName">Officer</span> 👋
+            </h1>
+            <p class="meta-line">
+                <span><strong data-en="Division:" data-si="අංශය:">Division:</strong> <span class="highlight" id="heroDivision">—</span></span>
+                <span>·</span>
+                <span><strong data-en="Employee ID:" data-si="සේවක අංකය:">Employee ID:</strong> <span class="highlight" id="heroId">—</span></span>
+            </p>
+            <p class="sub-text" data-en="Continue your cybersecurity awareness training below." data-si="ඔබේ සයිබර් ආරක්ෂා පුහුණුව පහතින් දිගටම කරගෙන යන්න.">Continue your cybersecurity awareness training below.</p>
+        </div>
+        <div class="overall-progress-wrap">
+            <div class="overall-pct" id="overallPct">0%</div>
+            <div class="overall-pct-label" data-en="Overall Progress" data-si="සමස්ත ප්‍රගතිය">Overall Progress</div>
+            <div class="overall-bar">
+                <div class="overall-bar-fill" id="overallBarFill" style="width:0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+        <div class="stat-card blue">
+            <div class="stat-card-header">
+                <div class="stat-icon-wrap"><i class="ti ti-books"></i></div>
+            </div>
+            <div class="stat-value" id="statTotal">5</div>
+            <div class="stat-label" data-en="Total Training Modules" data-si="මුළු පුහුණු පාඩම්">Total Training Modules</div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-card-header">
+                <div class="stat-icon-wrap"><i class="ti ti-circle-check"></i></div>
+            </div>
+            <div class="stat-value" id="statCompleted">0</div>
+            <div class="stat-label" data-en="Completed Modules" data-si="සම්පූර්ණ කළ පාඩම්">Completed Modules</div>
+        </div>
+        <div class="stat-card gold">
+            <div class="stat-card-header">
+                <div class="stat-icon-wrap"><i class="ti ti-award"></i></div>
+            </div>
+            <div class="stat-value" id="statAvgScore">—</div>
+            <div class="stat-label" data-en="Avg. Quiz Score" data-si="සාමාන්‍ය ඔප්පර් ලකුණු">Avg. Quiz Score</div>
+        </div>
+        <div class="stat-card purple">
+            <div class="stat-card-header">
+                <div class="stat-icon-wrap"><i class="ti ti-trophy"></i></div>
+            </div>
+            <div class="stat-value" id="statPassed">0</div>
+            <div class="stat-label" data-en="Modules Passed" data-si="සමත් වූ පාඩම්">Modules Passed</div>
+        </div>
+    </div>
+
+    <!-- Modules Grid Section -->
+    <div class="section-header">
+        <div class="section-title" data-en="Training Curriculum" data-si="පුහුණු පාඩම්">Training Curriculum</div>
+    </div>
+    <div class="modules-grid" id="modulesGrid">
+        <!-- Dynamic injection by JavaScript -->
+    </div>
+
+    <!-- Quick Access Section -->
+    <div class="section-header">
+        <div class="section-title" data-en="Quick Access & Tools" data-si="ඉක්මන් ප්‍රවේශය">Quick Access & Tools</div>
+    </div>
+    <div class="bottom-grid">
+        <a href="pre-assessment.html" class="action-card">
+            <div class="action-icon icon-red"><i class="ti ti-clipboard-check"></i></div>
+            <h3 data-en="Pre-Assessment" data-si="පූර්ව ඇගයීම">Pre-Assessment</h3>
+            <p data-en="Take the baseline cybersecurity knowledge test before starting the programme." data-si="පාඩමාලාව ආරම්භ කිරීමට පෙර පූර්ව ඇගයීම සම්පූර්ණ කරන්න.">Take the baseline cybersecurity knowledge test before starting the programme.</p>
+            <div class="action-arrow arrow-red" data-en="Take Assessment →" data-si="ඇගයීමට යන්න →">Take Assessment →</div>
+        </a>
+        <a href="leaderboard.html" class="action-card">
+            <div class="action-icon icon-gold"><i class="ti ti-trophy"></i></div>
+            <h3 data-en="Leaderboard" data-si="ශ්‍රේණිගත කිරීම">Leaderboard</h3>
+            <p data-en="See how you rank among colleagues in the cybersecurity training programme." data-si="ඔබේ ශ්‍රේණිය සගයන් අතර බලන්න.">See how you rank among colleagues in the cybersecurity training programme.</p>
+            <div class="action-arrow arrow-gold" data-en="View Rankings →" data-si="ශ්‍රේණිය බලන්න →">View Rankings →</div>
+        </a>
+        <a href="post-assessment.html" class="action-card">
+            <div class="action-icon icon-purple"><i class="ti ti-chart-dots-2"></i></div>
+            <h3 data-en="Post-Assessment" data-si="පශ්චාත් ඇගයීම">Post-Assessment</h3>
+            <p data-en="Evaluate how much your cybersecurity knowledge has improved after completing all modules." data-si="සියලු පාඩම් සම්පූර්ණ කිරීමෙන් පසු ඔබේ දැනුමේ දියුණුව ඇගයීම.">Evaluate how much your cybersecurity knowledge has improved after completing all modules.</p>
+            <div class="action-arrow arrow-purple" data-en="Start Evaluation →" data-si="ආරම්භ කරන්න →">Start Evaluation →</div>
+        </a>
+        <a href="certificate.html" class="action-card">
+            <div class="action-icon icon-green"><i class="ti ti-certificate"></i></div>
+            <h3 data-en="My Certificate" data-si="සම්මාන පත්‍රය">My Certificate</h3>
+            <p data-en="Download your completion certificate once all 5 modules are passed." data-si="සියලු පාඩම් 5 සමත් වූ පසු සම්මාන පත්‍රය ලබාගන්න.">Download your completion certificate once all 5 modules are passed.</p>
+            <div class="action-arrow arrow-green" data-en="Get Certificate →" data-si="පත්‍රය ලබාගන්න →">Get Certificate →</div>
+        </a>
+        <a href="survey.html" class="action-card">
+            <div class="action-icon icon-cyan"><i class="ti ti-message-report"></i></div>
+            <h3 data-en="Feedback Survey" data-si="අදහස් විමසීම">Feedback Survey</h3>
+            <p data-en="Share your experience with the CyberShield SL training platform to help us improve." data-si="අපගේ වේදිකාව වැඩිදියුණු කිරීමට ඔබේ අදහස් හුවමාරු කරගන්න.">Share your experience with the CyberShield SL training platform to help us improve.</p>
+            <div class="action-arrow arrow-cyan" data-en="Take Survey →" data-si="සර්වේක්ෂනයට යන්න →">Take Survey →</div>
+        </a>
+    </div>
+</div>
+
+<!-- ── API KEY MODAL (SIEM) ───────────────────────────────────────────── -->
+<div class="modal-overlay hidden" id="siemModal">
+    <div class="modal-box">
+        <div class="modal-icon"><i class="ti ti-lock"></i></div>
+        <h2>SIEM Live Dashboard Access</h2>
+        <p>Enter your API key to access the real-time security event telemetry dashboard. This is for authorised security analysts only.</p>
+        <input type="password" class="modal-input" id="siemKeyInput"
+               placeholder="e.g. siem-dev-secret-2026"
+               autocomplete="off">
+        <div class="modal-hint">
+            Default dev key: <code>siem-dev-secret-2026</code>
+        </div>
+        <button class="modal-btn" onclick="goToSiem()">🚀 Open SIEM Dashboard</button>
+        <div class="modal-skip" onclick="closeSiemModal()">✕ Cancel</div>
+    </div>
+</div>
+
+<!-- ── TOAST CONTAINER ───────────────────────────────────────────────── -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ── MODULE DEFINITIONS WITH CUSTOM VECTOR ICON IMAGES ─────────────────
+const MODULES = [
+    {
+        num: 1, file: 'module1.html',
+        enTitle: 'Phishing Awareness',
+        siTitle: 'ෆිශිංග් පිළිබඳ දැනුවත්භාවය',
+        get title() { return LangUtil.getCurrentLang()==='si' ? this.siTitle : this.enTitle; },
+        enDesc: 'Recognize malicious emails, fake links, and social engineering attacks targeting government systems.',
+        siDesc: 'ව්‍යාජ විද්‍යුත් තැපෑල, සැකකටයුතු සබැඳි සහ රාජ්‍ය පද්ධති වෙත පැමිණෙන ප්‍රහාර හඳුනාගැනීම.',
+        get desc() { return LangUtil.getCurrentLang()==='si' ? this.siDesc : this.enDesc; },
+        iconImg: 'module1_icon.png',
+        bgSoft: 'var(--brand-blue-soft)', borderSoft: 'var(--brand-blue-border)', accentColor: 'var(--brand-blue)',
+        duration: '10 mins', level: 'Beginner'
+    },
+    {
+        num: 2, file: 'module2.html',
+        enTitle: 'Password Security',
+        siTitle: 'මුරපද ආරක්ෂාව',
+        get title() { return LangUtil.getCurrentLang()==='si' ? this.siTitle : this.enTitle; },
+        enDesc: 'Create strong passwords, use multi-factor authentication, and protect your government credentials.',
+        siDesc: 'ශක්තිමත් මුරපද සෑදීම, MFA භාවිතා කිරීම සහ රාජ්‍ය ගිණුම් ආරක්ෂා කරගැනීම.',
+        get desc() { return LangUtil.getCurrentLang()==='si' ? this.siDesc : this.enDesc; },
+        iconImg: 'module2_icon.png',
+        bgSoft: 'var(--accent-purple-bg)', borderSoft: 'var(--accent-purple-border)', accentColor: 'var(--accent-purple)',
+        duration: '10 mins', level: 'Beginner'
+    },
+    {
+        num: 3, file: 'module3.html',
+        enTitle: 'Safe Browsing & Email',
+        siTitle: 'ආරක්ෂිත අන්තර්ජාල භාවිතය',
+        get title() { return LangUtil.getCurrentLang()==='si' ? this.siTitle : this.enTitle; },
+        enDesc: 'Browse safely, avoid malicious downloads, and handle official government emails securely.',
+        siDesc: 'ආරක්ෂිතව අන්තර්ජාලය භාවිතා කිරීම සහ නිල තැපෑල සුරක්ෂිතව හැසිරවීම.',
+        get desc() { return LangUtil.getCurrentLang()==='si' ? this.siDesc : this.enDesc; },
+        iconImg: 'module3_icon.png',
+        bgSoft: 'var(--accent-cyan-bg)', borderSoft: 'var(--accent-cyan-border)', accentColor: 'var(--accent-cyan)',
+        duration: '12 mins', level: 'Beginner'
+    },
+    {
+        num: 4, file: 'module4.html',
+        enTitle: 'Data Protection & Privacy',
+        siTitle: 'දත්ත ආරක්ෂාව සහ පෞද්ගලිකත්වය',
+        get title() { return LangUtil.getCurrentLang()==='si' ? this.siTitle : this.enTitle; },
+        enDesc: 'Understand data classification, Sri Lanka PDPA 2022 privacy principles, and how to handle sensitive citizen information securely.',
+        siDesc: 'දත්ත වර්ගීකරණය, PDPA 2022 පනත සහ සංවේදී රාජ්‍ය දත්ත ආරක්ෂා කිරීම.',
+        get desc() { return LangUtil.getCurrentLang()==='si' ? this.siDesc : this.enDesc; },
+        iconImg: 'module4_icon.png',
+        bgSoft: 'var(--accent-green-bg)', borderSoft: 'var(--accent-green-border)', accentColor: 'var(--accent-green)',
+        duration: '14 mins', level: 'Intermediate'
+    },
+    {
+        num: 5, file: 'module5.html',
+        enTitle: 'Social Engineering',
+        siTitle: 'සමාජ ඉංජිනේරු ප්‍රහාර',
+        get title() { return LangUtil.getCurrentLang()==='si' ? this.siTitle : this.enTitle; },
+        enDesc: 'Defend against manipulation tactics, pretexting, baiting and in-person social engineering threats.',
+        siDesc: 'පුද්ගලික රවටීම්, ව්‍යාජ පණිවිඩ සහ සමාජ ඉංජිනේරු තර්ජන වලින් ආරක්ෂා වීම.',
+        get desc() { return LangUtil.getCurrentLang()==='si' ? this.siDesc : this.enDesc; },
+        iconImg: 'module5_icon.png',
+        bgSoft: 'var(--accent-red-bg)', borderSoft: 'var(--accent-red-border)', accentColor: 'var(--accent-red)',
+        duration: '11 mins', level: 'Intermediate'
+    }
+];
+
+// ── AUTH CHECK ─────────────────────────────────────────────────────────
+const currentId = localStorage.getItem('cyberShieldCurrentUser');
+if (!currentId || currentId === 'admin') {
+    window.location.href = currentId === 'admin' ? 'admin.html' : 'index.html';
+}
+
+// ── LOAD USER DATA ─────────────────────────────────────────────────────
+const users    = JSON.parse(localStorage.getItem('cyberShieldUsers')) || [];
+const user     = users.find(u => u.empId === currentId) || {};
+const progress = user.progress || {};
+
+// Populate header & hero
+const firstName = user.firstName || user.name?.split(' ')[0] || currentId;
+document.getElementById('heroName').textContent = firstName;
+document.getElementById('heroDivision').textContent = user.division || '—';
+document.getElementById('heroId').textContent = user.empId || currentId;
+document.getElementById('topbarName').textContent = user.name || currentId;
+document.getElementById('avatarInitial').textContent = (user.name || currentId).charAt(0).toUpperCase();
+
+// ── CALCULATE STATS ────────────────────────────────────────────────────
+let completedCount = 0, passedCount = 0, totalScore = 0, scoredModules = 0;
+MODULES.forEach(m => {
+    const key = `module${m.num}`;
+    if (progress[key]) {
+        completedCount++;
+        if (progress[key].passed) passedCount++;
+        if (progress[key].score != null) {
+            totalScore += progress[key].score;
+            scoredModules++;
+        }
+    }
+});
+
+const overallPct = Math.round((passedCount / MODULES.length) * 100);
+document.getElementById('statCompleted').textContent = completedCount;
+document.getElementById('statPassed').textContent = passedCount;
+document.getElementById('statAvgScore').textContent = scoredModules > 0 ? (totalScore / scoredModules).toFixed(1) : '—';
+document.getElementById('overallPct').textContent = overallPct + '%';
+document.getElementById('overallBarFill').style.width = overallPct + '%';
+
+// ── RENDER MODULES ─────────────────────────────────────────────────────
+function renderModules() {
+    const grid = document.getElementById('modulesGrid');
+    grid.innerHTML = '';
+
+    MODULES.forEach((m) => {
+        const key = `module${m.num}`;
+        const prog = progress[key];
+        const isDone = !!prog;
+        const isPassed = prog?.passed;
+        const score = prog?.score;
+        const progressPct = isDone ? (isPassed ? 100 : 60) : 0;
+
+        // Score tag HTML
+        let scoreTag = '';
+        if (score != null) {
+            scoreTag = isPassed
+                ? `<span class="module-score-tag score-pass"><i class="ti ti-circle-check"></i> ${score}/10 — Passed</span>`
+                : `<span class="module-score-tag score-fail"><i class="ti ti-circle-x"></i> ${score}/10 — Retry</span>`;
+        } else {
+            scoreTag = `<span class="module-score-tag score-none"><i class="ti ti-circle"></i> Not started</span>`;
+        }
+
+        // Button
+        let btnClass = isDone ? 'success' : 'primary';
+        let btnLabel = isDone ? (isPassed ? '↩ Review' : '🔄 Retry') : '▶ Start';
+
+        // Status Icon
+        let statusIconHtml = `<i class="ti ti-circle-arrow-right-filled" style="color: var(--brand-blue);"></i>`;
+        if (isDone) {
+            statusIconHtml = isPassed
+                ? `<i class="ti ti-circle-check-filled" style="color: var(--accent-green);"></i>`
+                : `<i class="ti ti-alert-triangle-filled" style="color: var(--accent-amber);"></i>`;
+        }
+
+        const card = document.createElement('a');
+        card.href = m.file;
+        card.className = `module-card${isDone && isPassed ? ' completed' : ''}`;
+        card.innerHTML = `
+            <div class="module-card-accent-bar" style="background: ${m.accentColor};"></div>
+            <div class="module-card-header">
+                <span class="module-num-badge">Module 0${m.num}</span>
+                <span class="module-status-icon">${statusIconHtml}</span>
+            </div>
+            <div class="module-icon-wrap" style="background: ${m.bgSoft}; border-color: ${m.borderSoft};">
+                <img src="${m.iconImg}" alt="${m.title}" class="module-icon-img">
+            </div>
+            <div class="module-card-title">${m.title}</div>
+            <div class="module-card-desc">${m.desc}</div>
+            <div class="module-card-meta">
+                <span><i class="ti ti-clock"></i> ${m.duration}</span>
+                <span><i class="ti ti-chart-bar"></i> ${m.level}</span>
+            </div>
+            <div class="module-progress-bar">
+                <div class="module-progress-fill" style="width:${progressPct}%; background: ${m.accentColor};"></div>
+            </div>
+            <div class="module-card-footer">
+                ${scoreTag}
+                <button class="btn-start ${btnClass}" onclick="event.preventDefault(); window.location.href='${m.file}'">${btnLabel}</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+renderModules();
+
+// ── SIEM MODAL ─────────────────────────────────────────────────────────
+function openSiemModal(e) {
+    if (e) e.preventDefault();
+    document.getElementById('siemModal').classList.remove('hidden');
+    document.getElementById('siemKeyInput').focus();
+}
+function closeSiemModal() {
+    document.getElementById('siemModal').classList.add('hidden');
+    document.getElementById('siemKeyInput').value = '';
+}
+function goToSiem() {
+    const key = document.getElementById('siemKeyInput').value.trim();
+    if (!key) {
+        document.getElementById('siemKeyInput').style.borderColor = 'var(--accent-red)';
+        setTimeout(() => document.getElementById('siemKeyInput').style.borderColor = '', 1500);
+        return;
+    }
+    sessionStorage.setItem('siem_api_key', key);
+    window.location.href = 'dashboard.html';
+}
+document.getElementById('siemKeyInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') goToSiem();
+    if (e.key === 'Escape') closeSiemModal();
+});
+document.getElementById('siemModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('siemModal')) closeSiemModal();
+});
+
+// ── LOGOUT ─────────────────────────────────────────────────────────────
+function doLogout(e) {
+    e.preventDefault();
+    localStorage.removeItem('cyberShieldCurrentUser');
+    window.location.href = 'index.html';
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────
+function showToast(msg, emoji = '✅') {
+    const wrap = document.getElementById('toastWrap');
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = `<span style="font-size:18px">${emoji}</span> ${msg}`;
+    wrap.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+}
+
+// Welcome toast
+const lang = LangUtil.getCurrentLang();
+const welcomeMsg = lang === 'si' ? `නැවත සාදරයෙන් පිළිගනිමු, ${firstName}!` : `Welcome back, ${firstName}!`;
+setTimeout(() => showToast(welcomeMsg, '👋'), 600);
+if (passedCount === MODULES.length) {
+    const certMsg = lang === 'si' ? '🎉 පාඩම් 5ම සමත් විය! සම්මාන පත්‍රය ලබාගන්න!' : '🎉 All 5 modules completed! Get your certificate!';
+    setTimeout(() => showToast(certMsg, '🏆'), 1400);
+}
+
+// Init Cyber Sentry mascot for student dashboard
+if (typeof CyberSentry !== 'undefined') CyberSentry.init('dashboard');
+
+// ── ANIMATED LIVE WALLPAPER & CANVASES ENGINE ─────────────────────────
+let currentWpMode = localStorage.getItem('cyberShield_wp_mode') || 'items';
+let isDarkTheme = localStorage.getItem('cyberShield_dark_theme') === 'true';
+let animFrameId = null;
+
+const bgCanvas = document.getElementById('cyberCanvas');
+const bgOverlay = document.getElementById('bgOverlay');
+const ctx = bgCanvas ? bgCanvas.getContext('2d') : null;
+
+function initCanvasSize() {
+    if (!bgCanvas) return;
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', initCanvasSize);
+initCanvasSize();
+
+// Particle & Matrix system states
+let particles = [];
+let matrixColumns = [];
+let waveOffset = 0;
+
+function setupParticleMode() {
+    particles = [];
+    const count = Math.floor((bgCanvas.width * bgCanvas.height) / 15000);
+    for (let i = 0; i < count; i++) {
+        particles.push({
+            x: Math.random() * bgCanvas.width,
+            y: Math.random() * bgCanvas.height,
+            vx: (Math.random() - 0.5) * 0.8,
+            vy: (Math.random() - 0.5) * 0.8,
+            radius: Math.random() * 2 + 1,
+            color: Math.random() > 0.5 ? 'rgba(59, 130, 246, ' : 'rgba(245, 158, 11, '
+        });
+    }
+}
+
+function setupMatrixMode() {
+    matrixColumns = [];
+    const fontSize = 14;
+    const cols = Math.floor(bgCanvas.width / fontSize);
+    for (let i = 0; i < cols; i++) {
+        matrixColumns[i] = Math.floor(Math.random() * -50);
+    }
+}
+
+function renderCanvasFrame() {
+    if (!ctx || !bgCanvas) return;
+
+    if (currentWpMode === 'video_cyber') {
+        ctx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+        animFrameId = requestAnimationFrame(renderCanvasFrame);
+        return;
+    }
+
+    if (currentWpMode === 'matrix') {
+        ctx.fillStyle = 'rgba(6, 13, 26, 0.15)';
+        ctx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+        ctx.fillStyle = '#06b6d4';
+        ctx.font = '13px monospace';
+        const chars = '01CYBERSHIELD1001010101';
+        const fontSize = 14;
+
+        for (let i = 0; i < matrixColumns.length; i++) {
+            const char = chars[Math.floor(Math.random() * chars.length)];
+            const x = i * fontSize;
+            const y = matrixColumns[i] * fontSize;
+
+            ctx.fillStyle = i % 5 === 0 ? '#38bdf8' : 'rgba(6, 182, 212, 0.85)';
+            ctx.fillText(char, x, y);
+
+            if (y > bgCanvas.height && Math.random() > 0.975) {
+                matrixColumns[i] = 0;
+            }
+            matrixColumns[i]++;
+        }
+    } else if (currentWpMode === 'particle') {
+        ctx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+        
+        for (let i = 0; i < particles.length; i++) {
+            const p1 = particles[i];
+            p1.x += p1.vx;
+            p1.y += p1.vy;
+
+            if (p1.x < 0 || p1.x > bgCanvas.width) p1.vx *= -1;
+            if (p1.y < 0 || p1.y > bgCanvas.height) p1.vy *= -1;
+
+            ctx.beginPath();
+            ctx.arc(p1.x, p1.y, p1.radius, 0, Math.PI * 2);
+            ctx.fillStyle = p1.color + '0.7)';
+            ctx.fill();
+
+            for (let j = i + 1; j < particles.length; j++) {
+                const p2 = particles[j];
+                const dx = p1.x - p2.x;
+                const dy = p1.y - p2.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < 120) {
+                    ctx.beginPath();
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.strokeStyle = `rgba(59, 130, 246, ${1 - dist / 120})`;
+                    ctx.lineWidth = 0.6;
+                    ctx.stroke();
+                }
+            }
+        }
+    } else if (currentWpMode === 'wave') {
+        ctx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+        waveOffset += 0.02;
+
+        for (let i = 0; i < 4; i++) {
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = i % 2 === 0 ? 'rgba(59, 130, 246, 0.25)' : 'rgba(245, 158, 11, 0.2)';
+            
+            for (let x = 0; x < bgCanvas.width; x += 15) {
+                const y = bgCanvas.height * 0.5 + Math.sin(x * 0.005 + waveOffset + i) * 60 + Math.cos(x * 0.002 + waveOffset) * 40;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+    }
+
+    animFrameId = requestAnimationFrame(renderCanvasFrame);
+}
+
+function setWpMode(mode) {
+    currentWpMode = mode;
+    localStorage.setItem('cyberShield_wp_mode', mode);
+
+    document.querySelectorAll('.wp-preset-card').forEach(c => c.classList.remove('active'));
+    const movingWrap = document.getElementById('movingItemsWrap');
+
+    if (mode === 'items') {
+        document.getElementById('wpCardItems')?.classList.add('active');
+        if (movingWrap) movingWrap.style.display = 'block';
+        if (bgCanvas) bgCanvas.style.opacity = '0.4';
+        setupParticleMode();
+    } else {
+        if (movingWrap) movingWrap.style.display = 'none';
+        if (bgCanvas) bgCanvas.style.opacity = '1';
+        
+        if (mode === 'matrix') {
+            document.getElementById('wpCardMatrix')?.classList.add('active');
+            setupMatrixMode();
+        } else if (mode === 'particle') {
+            document.getElementById('wpCardNodes')?.classList.add('active');
+            setupParticleMode();
+        } else if (mode === 'wave') {
+            document.getElementById('wpCardWave')?.classList.add('active');
+        }
+    }
+
+    if (!animFrameId) renderCanvasFrame();
+}
+
+function toggleWpModal() {
+    const modal = document.getElementById('wpModalPanel');
+    if (modal) modal.classList.toggle('active');
+}
+
+function toggleVideoPlay() {
+    if (!bgVideo) return;
+    const btn = document.getElementById('btnTogglePlay');
+    if (bgVideo.paused) {
+        bgVideo.play();
+        isVideoPlaying = true;
+        if (btn) btn.innerHTML = '<i class="ti ti-pause"></i> Pause Video';
+    } else {
+        bgVideo.pause();
+        isVideoPlaying = false;
+        if (btn) btn.innerHTML = '<i class="ti ti-player-play"></i> Play Video';
+    }
+}
+
+function toggleDarkTheme() {
+    isDarkTheme = !isDarkTheme;
+    localStorage.setItem('cyberShield_dark_theme', isDarkTheme);
+    applyThemeMode();
+}
+
+function applyThemeMode() {
+    const btn = document.getElementById('btnToggleTheme');
+    if (isDarkTheme) {
+        document.body.classList.add('dark-theme-mode');
+        if (btn) btn.innerHTML = '<i class="ti ti-sun"></i> Light Mode';
+    } else {
+        document.body.classList.remove('dark-theme-mode');
+        if (btn) btn.innerHTML = '<i class="ti ti-moon"></i> Cyber Mode';
+    }
+}
+
+function changeWpOpacity(val) {
+    if (bgVideo) bgVideo.style.opacity = val / 100;
+    const label = document.getElementById('opacityVal');
+    if (label) label.textContent = val + '%';
+}
+
+function changeWpBlur(val) {
+    if (bgOverlay) bgOverlay.style.backdropFilter = `blur(${val}px)`;
+    const label = document.getElementById('blurVal');
+    if (label) label.textContent = val + 'px';
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('wpModalPanel');
+    const btn = document.getElementById('wpCtrlBtn');
+    if (modal && modal.classList.contains('active') && !modal.contains(e.target) && !btn.contains(e.target)) {
+        modal.classList.remove('active');
+    }
+});
+
+// Initialize wallpaper & theme settings on load
+applyThemeMode();
+setWpMode(currentWpMode);
+</script>
+</body>
+</html>

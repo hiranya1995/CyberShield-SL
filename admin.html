@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield SL - Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-header {
+            background-color: var(--navy);
+            color: var(--white);
+            padding: 40px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--gold);
+        }
+        .btn-siem-admin {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid #8b5cf6;
+            background: rgba(139,92,246,0.12);
+            color: #a78bfa;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .2s ease;
+            margin-right: 12px;
+        }
+        .btn-siem-admin:hover {
+            background: rgba(139,92,246,0.25);
+            box-shadow: 0 0 20px rgba(139,92,246,0.35);
+            transform: translateY(-1px);
+        }
+        .admin-container {
+            padding: 40px 48px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: var(--blue-soft);
+            color: var(--blue-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        
+        .stat-info h3 {
+            font-size: 24px;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+        .stat-info p {
+            color: var(--gray-500);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid var(--gray-200);
+        }
+        .data-table th, .data-table td {
+            padding: 16px 24px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .data-table th {
+            background: var(--gray-50);
+            color: var(--gray-600);
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        .data-table tbody tr:hover {
+            background: var(--gray-50);
+        }
+        
+        .progress-pill-admin {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .pill-success { background: var(--green-soft); color: var(--green); }
+        .pill-warning { background: var(--amber-soft); color: var(--amber); }
+        .pill-danger { background: var(--red-soft); color: var(--red); }
+        .pill-neutral { background: var(--gray-200); color: var(--gray-600); }
+        
+    </style>
+</head>
+<body class="light-page">
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-logo"><i class="ti ti-shield-check" style="color: var(--gold); margin-right: 8px;"></i>Cyber<span>Shield</span> SL</div>
+            <div class="topbar-module-name">Research Admin Panel</div>
+        </div>
+        <div class="topbar-right">
+            <a href="#" onclick="openSiemModal(event)" class="btn-siem-admin">🔐 SIEM Live Dashboard</a>
+            <a href="#" onclick="logout()" class="btn-back"><i class="ti ti-logout"></i> Logout</a>
+        </div>
+    </div>
+
+    <div class="admin-header">
+        <div>
+            <h1 style="margin-bottom: 8px;">Dashboard Overview</h1>
+            <p style="color: var(--gray-400);">Gampaha Divisional Secretariat - Cybersecurity Research Analytics</p>
+        </div>
+        <button class="btn btn-outline" style="border-color: var(--gold); color: var(--gold);" onclick="exportData()"><i class="ti ti-download"></i> Export Data (CSV)</button>
+    </div>
+
+    <div class="admin-container">
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="ti ti-users"></i></div>
+                <div class="stat-info">
+                    <h3 id="statTotalUsers">0</h3>
+                    <p>Total Registered</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--green-soft); color: var(--green);"><i class="ti ti-certificate"></i></div>
+                <div class="stat-info">
+                    <h3 id="statCompleted">0</h3>
+                    <p>Fully Completed</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--amber-soft); color: var(--amber);"><i class="ti ti-loader"></i></div>
+                <div class="stat-info">
+                    <h3 id="statInProgress">0</h3>
+                    <p>In Progress</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--purple-soft); color: var(--purple);"><i class="ti ti-chart-pie"></i></div>
+                <div class="stat-info">
+                    <h3 id="statAvgScore">0%</h3>
+                    <p>Avg Quiz Score</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="font-size: 20px;">Employee Training Progress</h3>
+            <div style="position: relative;">
+                <i class="ti ti-search" style="position: absolute; left: 12px; top: 12px; color: var(--gray-400);"></i>
+                <input type="text" id="searchInput" placeholder="Search by name or ID..." onkeyup="filterTable()" style="padding: 10px 10px 10px 36px; border: 1px solid var(--gray-200); border-radius: 8px; width: 300px;">
+            </div>
+        </div>
+
+        <table class="data-table" id="usersTable">
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Name</th>
+                    <th>Division</th>
+                    <th>Modules Completed</th>
+                    <th>Avg Quiz Score</th>
+                    <th>Pre-Test</th>
+                    <th>Survey</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Data populated by JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SIEM API Key Modal -->
+    <div id="siemModal" style="display:none; position:fixed; inset:0; z-index:999; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); align-items:center; justify-content:center;">
+        <div style="background:#111827; border:1px solid #1e2d45; border-radius:20px; padding:40px; width:460px; max-width:95vw; text-align:center; box-shadow:0 24px 80px rgba(0,0,0,0.6);">
+            <div style="font-size:48px; margin-bottom:16px;">🔐</div>
+            <h2 style="color:#f1f5f9; margin-bottom:8px; font-size:20px;">SIEM Live Dashboard</h2>
+            <p style="color:#64748b; font-size:13px; margin-bottom:24px; line-height:1.6;">Enter the API key to access the real-time security event telemetry dashboard.</p>
+            <input type="password" id="siemKeyInput"
+                   style="width:100%; background:#080b14; border:1px solid #1e2d45; border-radius:10px; padding:13px 16px; color:#f1f5f9; font-family:monospace; font-size:14px; margin-bottom:10px; outline:none;"
+                   placeholder="siem-dev-secret-2026" autocomplete="off">
+            <div style="font-size:11px; color:#64748b; margin-bottom:20px;">Default key: <code style="background:rgba(255,255,255,0.06); padding:2px 7px; border-radius:5px; color:#06b6d4;">siem-dev-secret-2026</code></div>
+            <button onclick="goToSiem()" style="width:100%; padding:13px; border-radius:10px; border:none; background:linear-gradient(135deg,#8b5cf6,#6d28d9); color:white; font-size:14px; font-weight:700; cursor:pointer; margin-bottom:12px;">🚀 Open SIEM Dashboard</button>
+            <div onclick="closeSiemModal()" style="font-size:12px; color:#64748b; cursor:pointer;">✕ Cancel</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function logout() {
+            localStorage.removeItem('cyberShieldCurrentUser');
+            window.location.href = 'index.html';
+        }
+
+        function openSiemModal(e) {
+            e.preventDefault();
+            const m = document.getElementById('siemModal');
+            m.style.display = 'flex';
+            document.getElementById('siemKeyInput').focus();
+        }
+        function closeSiemModal() {
+            document.getElementById('siemModal').style.display = 'none';
+            document.getElementById('siemKeyInput').value = '';
+        }
+        function goToSiem() {
+            const key = document.getElementById('siemKeyInput').value.trim();
+            if (!key) {
+                document.getElementById('siemKeyInput').style.borderColor = '#ef4444';
+                setTimeout(() => document.getElementById('siemKeyInput').style.borderColor = '#1e2d45', 1500);
+                return;
+            }
+            sessionStorage.setItem('siem_api_key', key);
+            window.location.href = 'dashboard.html';
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('siemKeyInput').addEventListener('keydown', e => {
+                if (e.key === 'Enter') goToSiem();
+                if (e.key === 'Escape') closeSiemModal();
+            });
+            document.getElementById('siemModal').addEventListener('click', e => {
+                if (e.target === document.getElementById('siemModal')) closeSiemModal();
+            });
+        });
+
+        let users = [];
+
+        window.onload = function() {
+            const current = localStorage.getItem('cyberShieldCurrentUser');
+            if (current !== 'admin') {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            users = getAllUsers();
+            populateTable();
+            calculateStats();
+        };
+
+        function populateTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            if (users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray-500); padding: 40px;">No employees registered yet.</td></tr>`;
+                return;
+            }
+
+            users.forEach(user => {
+                const prog = user.progress || {};
+                let modsCompleted = 0;
+                let totalScore = 0;
+                
+                for (let i = 1; i <= 5; i++) {
+                    if (prog[`module${i}`] && prog[`module${i}`].passed) {
+                        modsCompleted++;
+                        totalScore += prog[`module${i}`].score;
+                    }
+                }
+
+                const avgScore = modsCompleted > 0 ? Math.round(totalScore / modsCompleted) : 0;
+                
+                let statusHtml = '';
+                if (modsCompleted === 5) {
+                    statusHtml = `<span class="progress-pill-admin pill-success"><i class="ti ti-check" style="margin-right: 4px;"></i> Completed</span>`;
+                } else if (modsCompleted > 0) {
+                    statusHtml = `<span class="progress-pill-admin pill-warning"><i class="ti ti-loader" style="margin-right: 4px;"></i> In Progress</span>`;
+                } else {
+                    statusHtml = `<span class="progress-pill-admin pill-neutral"><i class="ti ti-minus" style="margin-right: 4px;"></i> Not Started</span>`;
+                }
+
+                const preTestScore = prog.preTest ? prog.preTest.score + '%' : '<span style="color:var(--gray-400);">--</span>';
+                const surveyDone = prog.survey ? '<span class="progress-pill-admin pill-success"><i class="ti ti-check" style="margin-right:4px;"></i>Done</span>' : '<span class="progress-pill-admin pill-neutral">Pending</span>';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 700; color: var(--navy);">${user.empId}</td>
+                    <td>${user.name}</td>
+                    <td style="color: var(--gray-500);">${user.division}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="flex: 1; height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden;">
+                                <div style="height: 100%; width: ${(modsCompleted/5)*100}%; background: var(--blue-mid);"></div>
+                            </div>
+                            <span style="font-weight: 700; font-size: 13px;">${modsCompleted}/5</span>
+                        </div>
+                    </td>
+                    <td style="font-weight: 700;">${avgScore}%</td>
+                    <td style="font-weight: 700; color: var(--blue-mid);">${preTestScore}</td>
+                    <td>${surveyDone}</td>
+                    <td>${statusHtml}</td>
+                    <td>
+                        <button onclick="deleteUser('${user.empId}')" style="background:#fef2f2; color:#dc2626; border:1px solid #fecaca; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;" onhover="this.style.background='#fee2e2'">
+                            <i class="ti ti-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function deleteUser(empId) {
+            if (confirm(`Are you sure you want to delete user "${empId}"?`)) {
+                let allUsers = JSON.parse(localStorage.getItem('cyberShieldUsers')) || [];
+                allUsers = allUsers.filter(u => u.empId !== empId);
+                localStorage.setItem('cyberShieldUsers', JSON.stringify(allUsers));
+                users = allUsers;
+                populateTable();
+                calculateStats();
+            }
+        }
+
+        function calculateStats() {
+            document.getElementById('statTotalUsers').innerText = users.length;
+            
+            let completedCount = 0;
+            let inProgressCount = 0;
+            let sumAvgScore = 0;
+            let scoredUsers = 0;
+
+            users.forEach(user => {
+                const prog = user.progress || {};
+                let mods = 0;
+                let userTotalScore = 0;
+
+                for (let i = 1; i <= 5; i++) {
+                    if (prog[`module${i}`] && prog[`module${i}`].passed) {
+                        mods++;
+                        userTotalScore += prog[`module${i}`].score;
+                    }
+                }
+
+                if (mods === 5) completedCount++;
+                else if (mods > 0) inProgressCount++;
+
+                if (mods > 0) {
+                    sumAvgScore += (userTotalScore / mods);
+                    scoredUsers++;
+                }
+            });
+
+            document.getElementById('statCompleted').innerText = completedCount;
+            document.getElementById('statInProgress').innerText = inProgressCount;
+            
+            const overallAvg = scoredUsers > 0 ? Math.round(sumAvgScore / scoredUsers) : 0;
+            document.getElementById('statAvgScore').innerText = overallAvg + '%';
+        }
+
+        function filterTable() {
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById("usersTable");
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                const tdId = tr[i].getElementsByTagName("td")[0];
+                const tdName = tr[i].getElementsByTagName("td")[1];
+                if (tdId || tdName) {
+                    const txtValueId = tdId.textContent || tdId.innerText;
+                    const txtValueName = tdName.textContent || tdName.innerText;
+                    if (txtValueId.toUpperCase().indexOf(filter) > -1 || txtValueName.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }       
+            }
+        }
+        
+        function exportData() {
+            const rows = [['Employee ID', 'Name', 'Division', 'Modules Completed', 'Avg Quiz Score', 'Pre-Test Score', 'Post-Assessment Score', 'Improvement', 'Survey Overall Rating', 'Survey Avg Content Quality', 'Status']];
+            users.forEach(user => {
+                const prog = user.progress || {};
+                let mods = 0, totalScore = 0;
+                for (let i = 1; i <= 5; i++) {
+                    if (prog[`module${i}`] && prog[`module${i}`].passed) { mods++; totalScore += prog[`module${i}`].score; }
+                }
+                const avgScore = mods > 0 ? Math.round(totalScore / mods) + '%' : '0%';
+                const status = mods === 5 ? 'Completed' : mods > 0 ? 'In Progress' : 'Not Started';
+                const preTest = prog.preTest ? prog.preTest.score + '%' : 'N/A';
+                const postTest = prog.postAssessment ? prog.postAssessment.score + '%' : 'N/A';
+                let improvement = 'N/A';
+                if (prog.preTest && prog.postAssessment) {
+                    improvement = (prog.postAssessment.score - prog.preTest.score) + 'pp';
+                }
+                let surveyRating = 'N/A';
+                let surveyContentQuality = 'N/A';
+                if (prog.survey && prog.survey.responses) {
+                    surveyRating = prog.survey.responses.overall_rating || 'N/A';
+                    const r = prog.survey.responses;
+                    if (r.q4 && r.q5 && r.q6 && r.q7) {
+                        surveyContentQuality = Math.round((parseInt(r.q4) + parseInt(r.q5) + parseInt(r.q6) + parseInt(r.q7)) / 4 * 20) + '%';
+                    }
+                }
+                rows.push([user.empId, user.name, user.division, mods + '/5', avgScore, preTest, postTest, improvement, surveyRating + '/5', surveyContentQuality, status]);
+            });
+            const csvContent = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `CyberShieldSL_ResearchData_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+    </script>
+</body>
+</html>

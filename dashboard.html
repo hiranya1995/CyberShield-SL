@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIEM Live Dashboard — Telemetry Pipeline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── RESET & TOKENS ─────────────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-base: #080b14;
+      --bg-card: #0d1220;
+      --bg-card2: #111827;
+      --border: #1e2d45;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-purple: #8b5cf6;
+      --accent-green: #10b981;
+      --sev-critical: #ef4444;
+      --sev-high: #f97316;
+      --sev-medium: #eab308;
+      --sev-low: #22c55e;
+      --sev-info: #3b82f6;
+      --text-primary: #f1f5f9;
+      --text-muted: #64748b;
+      --text-dim: #334155;
+      --glow-blue: 0 0 20px rgba(59, 130, 246, .25);
+      --glow-red: 0 0 20px rgba(239, 68, 68, .35);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --transition: .2s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── ANIMATED BG GRID ───────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59, 130, 246, .04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59, 130, 246, .04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────────────────── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8, 11, 20, .85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: var(--glow-blue);
+    }
+
+    .logo-text {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+    }
+
+    .logo-text span {
+      color: var(--accent-blue);
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px;
+      font-weight: 400;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(16, 185, 129, .12);
+      border: 1px solid rgba(16, 185, 129, .3);
+      border-radius: 20px;
+      padding: 5px 13px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-green);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      animation: pulse-green 1.5s infinite;
+    }
+
+    .live-badge.disconnected {
+      background: rgba(239, 68, 68, .1);
+      border-color: rgba(239, 68, 68, .3);
+      color: var(--sev-critical);
+    }
+
+    .live-badge.disconnected .live-dot {
+      background: var(--sev-critical);
+      animation: none;
+    }
+
+    @keyframes pulse-green {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: .5;
+        transform: scale(.75);
+      }
+    }
+
+    .hdr-stat {
+      text-align: right;
+    }
+
+    .hdr-stat-num {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--accent-blue);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hdr-stat-lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    /* ── MAIN LAYOUT ────────────────────────────────────────────────── */
+    .main {
+      position: relative;
+      z-index: 1;
+      padding: 24px 28px 40px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* ── KPI CARDS ──────────────────────────────────────────────────── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1100px) {
+      .kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 700px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .4);
+    }
+
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+    }
+
+    .kpi-card.blue::after {
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+    }
+
+    .kpi-card.red::after {
+      background: linear-gradient(90deg, var(--sev-critical), #f97316);
+    }
+
+    .kpi-card.purple::after {
+      background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+    }
+
+    .kpi-card.green::after {
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan));
+    }
+
+    .kpi-card.orange::after {
+      background: linear-gradient(90deg, #f97316, var(--sev-medium));
+    }
+
+    .kpi-icon {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .kpi-value {
+      font-size: 34px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      margin-bottom: 4px;
+      transition: color .3s;
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .kpi-delta {
+      font-size: 11px;
+      color: var(--accent-green);
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    /* ── CHARTS ROW ─────────────────────────────────────────────────── */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr 320px;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1200px) {
+      .charts-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      transition: transform var(--transition);
+    }
+
+    .chart-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .chart-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-title::before {
+      content: '';
+      display: block;
+      width: 3px;
+      height: 14px;
+      border-radius: 2px;
+      background: var(--accent-blue);
+    }
+
+    .chart-wrap {
+      position: relative;
+    }
+
+    /* ── BOTTOM GRID ────────────────────────────────────────────────── */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+    }
+
+    @media (max-width: 1000px) {
+      .bottom-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── LIVE FEED ──────────────────────────────────────────────────── */
+    .feed-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      max-height: 480px;
+    }
+
+    .feed-header {
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .feed-header-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .feed-count {
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(59, 130, 246, .15);
+      border: 1px solid rgba(59, 130, 246, .3);
+      color: var(--accent-blue);
+      border-radius: 12px;
+      padding: 3px 10px;
+    }
+
+    .feed-list {
+      overflow-y: auto;
+      flex: 1;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .feed-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .feed-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .feed-list::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .feed-empty {
+      padding: 48px 22px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .feed-empty-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+      opacity: .4;
+    }
+
+    .event-card {
+      padding: 14px 22px;
+      border-bottom: 1px solid rgba(30, 45, 69, .6);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: start;
+      animation: slide-in .3s cubic-bezier(.4, 0, .2, 1);
+      transition: background var(--transition);
+    }
+
+    .event-card:hover {
+      background: rgba(255, 255, 255, .02);
+    }
+
+    .event-card:last-child {
+      border-bottom: none;
+    }
+
+    @keyframes slide-in {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .sev-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .6px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      white-space: nowrap;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .sev-CRITICAL {
+      background: rgba(239, 68, 68, .18);
+      color: var(--sev-critical);
+      border: 1px solid rgba(239, 68, 68, .3);
+    }
+
+    .sev-HIGH {
+      background: rgba(249, 115, 22, .15);
+      color: #fb923c;
+      border: 1px solid rgba(249, 115, 22, .3);
+    }
+
+    .sev-MEDIUM {
+      background: rgba(234, 179, 8, .12);
+      color: #fbbf24;
+      border: 1px solid rgba(234, 179, 8, .3);
+    }
+
+    .sev-LOW {
+      background: rgba(34, 197, 94, .12);
+      color: var(--sev-low);
+      border: 1px solid rgba(34, 197, 94, .3);
+    }
+
+    .sev-INFO {
+      background: rgba(59, 130, 246, .12);
+      color: var(--sev-info);
+      border: 1px solid rgba(59, 130, 246, .3);
+    }
+
+    .event-body {
+      min-width: 0;
+    }
+
+    .event-type {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .event-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .event-msg {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .event-time {
+      font-size: 10px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── TOP IPs PANEL ──────────────────────────────────────────────── */
+    .ip-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+    }
+
+    .ip-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(30, 45, 69, .5);
+    }
+
+    .ip-row:last-child {
+      border-bottom: none;
+    }
+
+    .ip-rank {
+      font-size: 11px;
+      color: var(--text-dim);
+      width: 18px;
+      text-align: right;
+      font-weight: 700;
+    }
+
+    .ip-addr {
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      flex: 1;
+      color: var(--text-primary);
+    }
+
+    .ip-bar-wrap {
+      width: 80px;
+      height: 6px;
+      background: var(--bg-card2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .ip-bar {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+      transition: width .5s ease;
+    }
+
+    .ip-count {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-blue);
+      min-width: 28px;
+      text-align: right;
+    }
+
+    .ip-empty {
+      padding: 30px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    /* ── TOAST NOTIFICATIONS ────────────────────────────────────────── */
+    #toast-container {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: all;
+      min-width: 320px;
+      max-width: 400px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      animation: toast-in .35s cubic-bezier(.4, 0, .2, 1);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
+    }
+
+    .toast.critical {
+      border-left: 3px solid var(--sev-critical);
+      box-shadow: 0 0 30px rgba(239, 68, 68, .2);
+    }
+
+    .toast.high {
+      border-left: 3px solid #f97316;
+    }
+
+    .toast.fade-out {
+      animation: toast-out .35s forwards;
+    }
+
+    @keyframes toast-in {
+      from {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes toast-out {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+    }
+
+    .toast-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .toast-body {
+      flex: 1;
+    }
+
+    .toast-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .toast-msg {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .toast-close {
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1;
+      background: none;
+      border: none;
+      padding: 0;
+      pointer-events: all;
+    }
+
+    .toast-close:hover {
+      color: var(--text-primary);
+    }
+
+    /* ── API KEY MODAL ──────────────────────────────────────────────── */
+    #key-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(8, 11, 20, .88);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #key-modal.hidden {
+      display: none;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 36px 40px;
+      width: min(480px, 90vw);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, .7);
+    }
+
+    .modal-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .modal-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 13px 16px;
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      outline: none;
+      transition: border-color var(--transition);
+      margin-bottom: 16px;
+    }
+
+    .modal-input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity var(--transition), transform var(--transition);
+    }
+
+    .modal-btn:hover {
+      opacity: .9;
+      transform: translateY(-1px);
+    }
+
+    .modal-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    /* ── SECTION HEADER ─────────────────────────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--text-muted);
+    }
+
+    /* ── SCROLLBAR ──────────────────────────────────────────────────── */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── ANIMATED MOVING WALLPAPER BACKDROP ── -->
+  <div class="bg-video-container" id="bgVideoContainer">
+      <div class="moving-items-container" id="movingItemsWrap">
+          <div class="floating-bg-item floating-item-1"><i class="ti ti-shield-lock"></i></div>
+          <div class="floating-bg-item floating-item-2"><i class="ti ti-lock-access"></i></div>
+          <div class="floating-bg-item floating-item-3"><i class="ti ti-database-check"></i></div>
+          <div class="floating-bg-item floating-item-4"><i class="ti ti-fingerprint"></i></div>
+          <div class="floating-bg-item floating-item-5"><i class="ti ti-shield-check"></i></div>
+          <div class="floating-bg-item floating-item-6"><i class="ti ti-cpu"></i></div>
+      </div>
+      <canvas id="cyberCanvas" class="bg-canvas-backdrop"></canvas>
+      <div class="bg-video-overlay" id="bgOverlay"></div>
+  </div>
+
+  <!-- ── API KEY MODAL ──────────────────────────────────────────────────────── -->
+  <div id="key-modal">
+    <div class="modal-box">
+      <div class="modal-icon">🔑</div>
+      <div class="modal-title">API Key Required</div>
+      <p class="modal-sub">Enter your SIEM API key to connect the live dashboard to the telemetry pipeline.</p>
+      <input id="key-input" class="modal-input" type="password" placeholder="siem-dev-secret-2026" />
+      <button class="modal-btn" onclick="saveKey()">Connect Dashboard</button>
+      <p class="modal-hint">Key is saved in sessionStorage and never sent to third parties.</p>
+    </div>
+  </div>
+
+  <!-- ── HEADER ─────────────────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-icon">🛡️</div>
+      <div>
+        <div class="logo-text">SIEM <span>Live</span> Dashboard</div>
+        <div class="logo-sub">Mock Telemetry Pipeline — Real-time Security Monitor</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div id="live-badge" class="live-badge disconnected">
+        <div class="live-dot"></div>
+        <span id="live-label">Connecting…</span>
+      </div>
+      <div class="hdr-stat">
+        <div class="hdr-stat-num" id="hdr-total">0</div>
+        <div class="hdr-stat-lbl">Total Events</div>
+      </div>
+      <div class="hdr-stat">
+        <div class="hdr-stat-num" id="hdr-clients" style="color:var(--accent-green)">—</div>
+        <div class="hdr-stat-lbl">SSE Clients</div>
+      </div>
+      <a href="admin.html"
+        style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:8px;border:1px solid rgba(59,130,246,.4);background:rgba(59,130,246,.1);color:#93c5fd;font-size:12px;font-weight:600;text-decoration:none;margin-left:12px;transition:.2s ease;"
+        onmouseover="this.style.background='rgba(59,130,246,.2)'"
+        onmouseout="this.style.background='rgba(59,130,246,.1)'">← Admin Panel</a>
+    </div>
+  </header>
+
+  <!-- ── MAIN ───────────────────────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi-card blue">
+        <div class="kpi-icon">📥</div>
+        <div class="kpi-value" id="kpi-total">0</div>
+        <div class="kpi-label">Total Events</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-icon">🔴</div>
+        <div class="kpi-value" id="kpi-critical" style="color:var(--sev-critical)">0</div>
+        <div class="kpi-label">Critical Alerts</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-icon">🟠</div>
+        <div class="kpi-value" id="kpi-high" style="color:#fb923c">0</div>
+        <div class="kpi-label">High Severity</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-icon">🌐</div>
+        <div class="kpi-value" id="kpi-sources" style="color:var(--accent-green)">0</div>
+        <div class="kpi-label">Active Sources</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-icon">⚡</div>
+        <div class="kpi-value" id="kpi-rate" style="color:var(--accent-purple)">0</div>
+        <div class="kpi-label">Events / min</div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-grid">
+      <!-- Severity Donut -->
+      <div class="chart-card">
+        <div class="chart-title">Severity Distribution</div>
+        <div class="chart-wrap" style="height:200px">
+          <canvas id="donutChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Timeline Line -->
+      <div class="chart-card">
+        <div class="chart-title">Events / Minute — Rolling 10 min</div>
+        <div class="chart-wrap" style="height:200px">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Top IPs Bar -->
+      <div class="chart-card">
+        <div class="chart-title">Top Source IPs</div>
+        <div class="chart-wrap" style="height:200px">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE FEED + IP TABLE -->
+    <div class="bottom-grid">
+
+      <!-- Live Event Feed -->
+      <div class="feed-card">
+        <div class="feed-header">
+          <span class="feed-header-title">⚡ Live Event Feed</span>
+          <span class="feed-count" id="feed-count">0 events</span>
+        </div>
+        <div class="feed-list" id="feed-list">
+          <div class="feed-empty">
+            <div class="feed-empty-icon">📡</div>
+            Waiting for telemetry events…<br>
+            <small style="color:var(--text-dim);margin-top:6px;display:block">POST to /api/telemetry to see live
+              data</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top IPs Panel -->
+      <div class="ip-panel">
+        <div class="chart-title" style="margin-bottom:14px">🌐 Top Attacker IPs</div>
+        <div id="ip-list">
+          <div class="ip-empty">No IP data yet</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ── TOAST CONTAINER ────────────────────────────────────────────────────── -->
+  <div id="toast-container"></div>
+
+  <!-- ── JAVASCRIPT ─────────────────────────────────────────────────────────── -->
+  <script>
+    // ── ADMIN AUTH GUARD ───────────────────────────────────────────────────────
+    (function () {
+      const currentUser = localStorage.getItem('cyberShieldCurrentUser');
+      if (currentUser !== 'admin') {
+        // Redirect non-admin users away
+        window.location.href = currentUser ? 'student-dashboard.html' : 'index.html';
+      }
+    })();
+
+    // ── CONFIG ─────────────────────────────────────────────────────────────────
+    const API_BASE = window.location.origin;
+    const API_KEY_KEY = 'siem_api_key';
+    const MAX_FEED = 100;   // max cards in live feed DOM
+
+    // ── STATE ──────────────────────────────────────────────────────────────────
+    let apiKey = sessionStorage.getItem(API_KEY_KEY) || '';
+    let feedCount = 0;
+    let statsInterval = null;
+    let es = null;   // EventSource
+
+    // ── CHART DEFAULTS ─────────────────────────────────────────────────────────
+    Chart.defaults.color = '#64748b';
+    Chart.defaults.borderColor = '#1e2d45';
+    Chart.defaults.font.family = 'Inter';
+    Chart.defaults.animation.duration = 400;
+
+    const SEV_COLORS = {
+      CRITICAL: '#ef4444', HIGH: '#f97316',
+      MEDIUM: '#eab308', LOW: '#22c55e', INFO: '#3b82f6'
+    };
+
+    // ── DONUT CHART ─────────────────────────────────────────────────────────────
+    const donutCtx = document.getElementById('donutChart').getContext('2d');
+    const donutChart = new Chart(donutCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Critical', 'High', 'Medium', 'Low', 'Info'],
+        datasets: [{
+          data: [0, 0, 0, 0, 0],
+          backgroundColor: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6'],
+          borderColor: '#0d1220', borderWidth: 3, hoverOffset: 6
+        }]
+      },
+      options: {
+        cutout: '68%', responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 10, padding: 14, font: { size: 11 } } },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw}` } }
+        }
+      }
+    });
+
+    // ── LINE CHART ──────────────────────────────────────────────────────────────
+    const lineCtx = document.getElementById('lineChart').getContext('2d');
+    const lineChart = new Chart(lineCtx, {
+      type: 'line',
+      data: {
+        labels: [], datasets: [{
+          label: 'Events', data: [],
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59,130,246,.1)',
+          fill: true, tension: .4,
+          pointRadius: 3, pointBackgroundColor: '#3b82f6',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: '#1e2d45' }, ticks: { font: { size: 10 }, maxRotation: 0 } },
+          y: { grid: { color: '#1e2d45' }, beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } } }
+        }
+      }
+    });
+
+    // ── BAR CHART ───────────────────────────────────────────────────────────────
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: [], datasets: [{
+          label: 'Events',
+          data: [],
+          backgroundColor: 'rgba(139,92,246,.7)',
+          borderColor: '#8b5cf6',
+          borderWidth: 1, borderRadius: 5,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: '#1e2d45' }, beginAtZero: true, ticks: { font: { size: 10 } } },
+          y: { grid: { display: false }, ticks: { font: { size: 10, family: 'JetBrains Mono' } } }
+        }
+      }
+    });
+
+    // ── API KEY MODAL ───────────────────────────────────────────────────────────
+    function saveKey() {
+      const val = document.getElementById('key-input').value.trim();
+      if (!val) return;
+      apiKey = val;
+      sessionStorage.setItem(API_KEY_KEY, val);
+      document.getElementById('key-modal').classList.add('hidden');
+      init();
+    }
+    document.getElementById('key-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') saveKey();
+    });
+
+    // ── TOAST ───────────────────────────────────────────────────────────────────
+    function showToast(event) {
+      const sev = event.severity || 'INFO';
+      if (!['CRITICAL', 'HIGH'].includes(sev)) return;
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${sev.toLowerCase()}`;
+      toast.innerHTML = `
+    <div class="toast-icon">${sev === 'CRITICAL' ? '🚨' : '⚠️'}</div>
+    <div class="toast-body">
+      <div class="toast-title">${sev}: ${escHtml(event.event_type || 'Unknown')}</div>
+      <div class="toast-msg">
+        Source: ${escHtml(event.source || '?')} &nbsp;·&nbsp; IP: ${escHtml(event.source_ip || '?')}<br>
+        ${event.message ? escHtml(event.message) : ''}
+      </div>
+    </div>
+    <button class="toast-close" onclick="dismissToast(this.closest('.toast'))">✕</button>`;
+      container.appendChild(toast);
+      setTimeout(() => dismissToast(toast), 7000);
+    }
+
+    function dismissToast(el) {
+      if (!el || el.classList.contains('fade-out')) return;
+      el.classList.add('fade-out');
+      setTimeout(() => el.remove(), 360);
+    }
+
+    // ── LIVE FEED ───────────────────────────────────────────────────────────────
+    function escHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function fmtTime(isoStr) {
+      try {
+        return new Date(isoStr).toLocaleTimeString('en-GB', { hour12: false });
+      } catch { return '—'; }
+    }
+
+    function addFeedCard(event) {
+      const list = document.getElementById('feed-list');
+      // Remove empty placeholder if present
+      const empty = list.querySelector('.feed-empty');
+      if (empty) empty.remove();
+
+      const sev = (event.severity || 'INFO').toUpperCase();
+      const card = document.createElement('div');
+      card.className = 'event-card';
+      card.innerHTML = `
+    <span class="sev-badge sev-${sev}">${sev}</span>
+    <div class="event-body">
+      <div class="event-type">${escHtml(event.event_type || 'UNKNOWN')}</div>
+      <div class="event-meta">${escHtml(event.source || '?')} · ${escHtml(event.source_ip || '?')}</div>
+      ${event.message ? `<div class="event-msg">${escHtml(event.message)}</div>` : ''}
+    </div>
+    <div class="event-time">${fmtTime(event.ingested_at)}</div>`;
+
+      list.insertBefore(card, list.firstChild);
+      feedCount++;
+      document.getElementById('feed-count').textContent = `${feedCount} event${feedCount !== 1 ? 's' : ''}`;
+
+      // Trim DOM to MAX_FEED entries
+      while (list.children.length > MAX_FEED) {
+        list.removeChild(list.lastChild);
+      }
+    }
+
+    // ── UPDATE CHARTS ───────────────────────────────────────────────────────────
+    function applyStats(stats) {
+      // KPI cards
+      animateNum('kpi-total', stats.total_events || 0);
+      animateNum('kpi-critical', stats.severity_counts?.CRITICAL || 0);
+      animateNum('kpi-high', stats.severity_counts?.HIGH || 0);
+      animateNum('kpi-sources', stats.active_sources || 0);
+      animateNum('kpi-rate', Math.round(stats.events_per_min || 0));
+      document.getElementById('hdr-total').textContent = stats.total_events || 0;
+
+      // Donut
+      const sc = stats.severity_counts || {};
+      donutChart.data.datasets[0].data = [
+        sc.CRITICAL || 0, sc.HIGH || 0, sc.MEDIUM || 0, sc.LOW || 0, sc.INFO || 0
+      ];
+      donutChart.update();
+
+      // Timeline line
+      if (stats.timeline) {
+        const entries = Object.entries(stats.timeline);
+        lineChart.data.labels = entries.map(([k]) => k);
+        lineChart.data.datasets[0].data = entries.map(([, v]) => v);
+        lineChart.update();
+      }
+
+      // Bar chart (top IPs)
+      const ips = stats.top_ips || [];
+      barChart.data.labels = ips.map(x => x.ip);
+      barChart.data.datasets[0].data = ips.map(x => x.count);
+      barChart.update();
+
+      // IP panel
+      renderIpPanel(ips);
+    }
+
+    function renderIpPanel(ips) {
+      const panel = document.getElementById('ip-list');
+      if (!ips || !ips.length) {
+        panel.innerHTML = '<div class="ip-empty">No IP data yet</div>';
+        return;
+      }
+      const max = ips[0]?.count || 1;
+      panel.innerHTML = ips.map((ip, i) => `
+    <div class="ip-row">
+      <span class="ip-rank">#${i + 1}</span>
+      <span class="ip-addr">${escHtml(ip.ip)}</span>
+      <div class="ip-bar-wrap"><div class="ip-bar" style="width:${Math.round(ip.count / max * 100)}%"></div></div>
+      <span class="ip-count">${ip.count}</span>
+    </div>`).join('');
+    }
+
+    // ── KPI ANIMATION ───────────────────────────────────────────────────────────
+    const prevValues = {};
+    function animateNum(id, target) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const start = prevValues[id] || 0;
+      if (start === target) return;
+      prevValues[id] = target;
+      const duration = 500;
+      const startTime = performance.now();
+      function step(now) {
+        const t = Math.min((now - startTime) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(start + (target - start) * ease);
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    // ── FETCH INITIAL STATS ─────────────────────────────────────────────────────
+    async function fetchStats() {
+      try {
+        const res = await fetch(`${API_BASE}/api/stats`, {
+          headers: { 'X-API-Key': apiKey }
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        applyStats(data);
+      } catch { }
+    }
+
+    async function fetchHealth() {
+      try {
+        const res = await fetch(`${API_BASE}/api/health`);
+        if (!res.ok) return;
+        const data = await res.json();
+        document.getElementById('hdr-clients').textContent = data.sse_clients ?? '—';
+      } catch { }
+    }
+
+    // ── FETCH RECENT EVENTS (initial load) ─────────────────────────────────────
+    async function fetchRecentEvents() {
+      try {
+        const res = await fetch(`${API_BASE}/api/events?limit=30`, {
+          headers: { 'X-API-Key': apiKey }
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.events && data.events.length) {
+          // Add in reverse so newest ends up on top
+          const evts = [...data.events].reverse();
+          evts.forEach(addFeedCard);
+        }
+      } catch { }
+    }
+
+    // ── SSE CONNECTION ──────────────────────────────────────────────────────────
+    function connectSSE() {
+      if (es) { es.close(); }
+      es = new EventSource(`${API_BASE}/api/stream`);
+
+      es.onopen = () => {
+        const badge = document.getElementById('live-badge');
+        badge.classList.remove('disconnected');
+        document.getElementById('live-label').textContent = 'Live';
+      };
+
+      es.onmessage = (e) => {
+        try {
+          const event = JSON.parse(e.data);
+          addFeedCard(event);
+          showToast(event);
+          // Refresh stats after every event
+          fetchStats();
+        } catch { }
+      };
+
+      es.onerror = () => {
+        const badge = document.getElementById('live-badge');
+        badge.classList.add('disconnected');
+        document.getElementById('live-label').textContent = 'Reconnecting…';
+        es.close();
+        setTimeout(connectSSE, 3000);
+      };
+    }
+
+    // ── BOOT ────────────────────────────────────────────────────────────────────
+    async function init() {
+      await fetchStats();
+      await fetchRecentEvents();
+      connectSSE();
+      // Poll health every 10s for client count
+      statsInterval = setInterval(fetchHealth, 10000);
+      fetchHealth();
+    }
+
+    // Show modal or init directly
+    if (apiKey) {
+      document.getElementById('key-modal').classList.add('hidden');
+      init();
+    } else {
+      // Pre-fill the default dev key hint
+      document.getElementById('key-input').placeholder = 'siem-dev-secret-2026';
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield SL — Leaderboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, var(--bg-surface), var(--bg-elevated));
+            padding: 48px;
+            border-bottom: 1px solid var(--glass-border);
+            position: relative; overflow: hidden;
+        }
+        .page-header::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 15px 15px, rgba(245,158,11,0.06) 2px, transparent 0); background-size: 30px 30px; }
+        .page-header::after { content: ''; position: absolute; top: -60px; right: 10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(245,158,11,0.12), transparent 70%); pointer-events: none; }
+        .page-header h1 { font-size: 36px; color: var(--text-primary); position: relative; z-index: 1; }
+        .page-header p { color: var(--text-secondary); margin-top: 8px; position: relative; z-index: 1; }
+
+        .lb-container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Podium */
+        .podium-section { margin-bottom: 40px; }
+        .podium-section h2 { font-size: 22px; color: var(--text-primary); margin-bottom: 28px; text-align: center; }
+        .podium { display: flex; align-items: flex-end; justify-content: center; gap: 20px; }
+        .podium-place { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 120px; }
+        .podium-rank { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .podium-avatar { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; border: 3px solid transparent; }
+        .podium-name { font-size: 13px; font-weight: 700; color: var(--text-primary); text-align: center; }
+        .podium-division { font-size: 11px; color: var(--text-muted); text-align: center; }
+        .podium-score { font-size: 13px; font-weight: 700; }
+        .podium-stand { border-radius: 8px 8px 0 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 28px; min-width: 100px; }
+        .podium-1st .podium-avatar { border-color: var(--gold); background: rgba(245,158,11,0.15); box-shadow: 0 0 24px var(--gold-glow); }
+        .podium-1st .podium-stand { height: 110px; background: linear-gradient(180deg, rgba(245,158,11,0.25), rgba(245,158,11,0.08)); color: var(--gold); border: 1px solid rgba(245,158,11,0.3); border-bottom: none; }
+        .podium-1st .podium-rank { color: var(--gold); }
+        .podium-1st .podium-score { color: var(--gold); }
+        .podium-2nd .podium-avatar { border-color: #94A3B8; background: rgba(148,163,184,0.12); }
+        .podium-2nd .podium-stand { height: 80px; background: linear-gradient(180deg, rgba(148,163,184,0.15), rgba(148,163,184,0.05)); color: #94A3B8; border: 1px solid rgba(148,163,184,0.2); border-bottom: none; }
+        .podium-2nd .podium-rank { color: #94A3B8; }
+        .podium-2nd .podium-score { color: #94A3B8; }
+        .podium-3rd .podium-avatar { border-color: #B45309; background: rgba(180,83,9,0.12); }
+        .podium-3rd .podium-stand { height: 60px; background: linear-gradient(180deg, rgba(180,83,9,0.15), rgba(180,83,9,0.05)); color: #B45309; border: 1px solid rgba(180,83,9,0.2); border-bottom: none; }
+        .podium-3rd .podium-rank { color: #B45309; }
+        .podium-3rd .podium-score { color: #B45309; }
+
+        /* Table */
+        .lb-table-section h2 { font-size: 22px; color: var(--text-primary); margin-bottom: 16px; }
+        .lb-table { width: 100%; border-collapse: collapse; }
+        .lb-table th { background: rgba(255,255,255,0.04); padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); }
+        .lb-table td { padding: 14px 16px; font-size: 14px; color: var(--text-secondary); border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .lb-table tbody tr { transition: background 0.15s; }
+        .lb-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+        .lb-table tbody tr.current-user { background: rgba(59,130,246,0.08); border-left: 3px solid var(--blue-light); }
+        .rank-badge { width: 28px; height: 28px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+        .rank-1 { background: rgba(245,158,11,0.2); color: var(--gold); border: 1px solid rgba(245,158,11,0.4); }
+        .rank-2 { background: rgba(148,163,184,0.2); color: #94A3B8; border: 1px solid rgba(148,163,184,0.3); }
+        .rank-3 { background: rgba(180,83,9,0.2); color: #B45309; border: 1px solid rgba(180,83,9,0.3); }
+        .rank-other { background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--glass-border); }
+        .emp-cell { display: flex; align-items: center; gap: 12px; }
+        .emp-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: white; background: linear-gradient(135deg, var(--blue-mid), var(--purple)); flex-shrink: 0; }
+        .emp-name { font-weight: 600; color: var(--text-primary); }
+        .emp-div { font-size: 12px; color: var(--text-muted); }
+        .modules-bar { display: flex; gap: 3px; align-items: center; }
+        .mod-dot { width: 12px; height: 12px; border-radius: 3px; }
+        .mod-done { background: var(--green); }
+        .mod-pending { background: rgba(255,255,255,0.1); }
+        .score-val { font-weight: 700; color: var(--text-primary); }
+        .you-tag { background: var(--blue-soft); color: var(--blue-light); border: 1px solid rgba(59,130,246,0.3); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
+        .empty-state { text-align: center; padding: 60px; color: var(--text-muted); }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.4; display: block; color: var(--gold); }
+        .filter-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+        .filter-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: var(--font-body); }
+        .filter-btn:hover, .filter-btn.active { border-color: var(--blue-light); background: var(--blue-soft); color: var(--blue-light); }
+        .search-lb { padding: 8px 14px; border: 1px solid var(--glass-border); border-radius: var(--radius-sm); background: var(--glass-bg); color: var(--text-primary); font-size: 13px; font-family: var(--font-body); flex-grow: 1; max-width: 200px; }
+        .search-lb::placeholder { color: var(--text-muted); }
+        .search-lb:focus { outline: none; border-color: var(--blue-light); }
+    </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+    <div class="topbar-left">
+        <div class="topbar-logo" style="display:flex;align-items:center;gap:8px;">
+            <div class="logo-icon" style="width:32px;height:32px;background:linear-gradient(135deg,var(--blue-mid),var(--blue-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:white;"><i class="ti ti-shield-check"></i></div>
+            Cyber<span>Shield</span> SL
+        </div>
+        <div class="topbar-module-name">Leaderboard</div>
+    </div>
+    <div class="topbar-right">
+        <a href="student-dashboard.html" class="btn-back"><i class="ti ti-arrow-left"></i> Dashboard</a>
+    </div>
+</div>
+
+<div class="page-header">
+    <h1>🏆 Training Leaderboard</h1>
+    <p>See how you rank among colleagues completing the cybersecurity awareness programme.</p>
+</div>
+
+<div class="lb-container">
+    <!-- Podium -->
+    <div class="podium-section">
+        <h2>Top 3 Champions</h2>
+        <div class="podium" id="podium">
+            <div style="color: var(--text-muted); text-align: center; width: 100%;" id="podiumEmpty" style="display:none;">
+                <i class="ti ti-trophy" style="font-size: 40px; opacity: 0.3; margin-bottom: 8px; display: block;"></i>
+                Complete modules to appear on the podium!
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Table -->
+    <div class="lb-table-section">
+        <div class="filter-row">
+            <h2>All Rankings</h2>
+            <input type="text" class="search-lb" id="searchLb" placeholder="🔍 Search name..." oninput="filterTable()">
+            <button class="filter-btn active" onclick="sortBy('score', this)">By Score</button>
+            <button class="filter-btn" onclick="sortBy('modules', this)">By Modules</button>
+        </div>
+        <div class="card" style="overflow: auto;">
+            <table class="lb-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Employee</th>
+                        <th>Division</th>
+                        <th>Modules</th>
+                        <th>Avg Score</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="lbTableBody"></tbody>
+            </table>
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <i class="ti ti-users"></i>
+                No other employees have registered yet. Share this platform with your colleagues!
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script src="sentry.js"></script>
+<script>
+    const currentUserId = localStorage.getItem('cyberShieldCurrentUser');
+    if (!currentUserId || currentUserId === 'admin') window.location.href = 'index.html';
+
+    let allUsers = JSON.parse(localStorage.getItem('cyberShieldUsers')) || [];
+    let sortMode = 'score';
+
+    function computeStats(user) {
+        const prog = user.progress || {};
+        let passed = 0, totalScore = 0;
+        for (let i = 1; i <= 5; i++) {
+            if (prog[`module${i}`]?.passed) { passed++; totalScore += prog[`module${i}`].score; }
+        }
+        return { passed, avg: passed > 0 ? Math.round(totalScore / passed) : 0 };
+    }
+
+    function getRankedUsers() {
+        return allUsers.map(u => ({ ...u, stats: computeStats(u) }))
+            .sort((a, b) => {
+                if (sortMode === 'score') return b.stats.avg - a.stats.avg || b.stats.passed - a.stats.passed;
+                return b.stats.passed - a.stats.passed || b.stats.avg - a.stats.avg;
+            });
+    }
+
+    function renderPodium(ranked) {
+        const podium = document.getElementById('podium');
+        const top3 = ranked.slice(0, 3);
+        if (top3.length === 0) {
+            podium.innerHTML = '<div style="color:var(--text-muted);text-align:center;width:100%;padding:40px;"><i class="ti ti-trophy" style="font-size:48px;opacity:0.2;display:block;margin-bottom:12px;"></i>No rankings yet. Complete modules to appear here!</div>';
+            return;
+        }
+        const order = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : top3.length === 2 ? [top3[1], top3[0]] : [top3[0]];
+        const classMap = { 0: 'podium-2nd', 1: 'podium-1st', 2: 'podium-3rd' };
+        const heights = { 0: 80, 1: 110, 2: 60 };
+        const medals = ['🥈', '🥇', '🥉'];
+        const rankNums = { 0: 2, 1: 1, 2: 3 };
+
+        podium.innerHTML = order.map((u, i) => {
+            if (!u) return '';
+            const cls = classMap[i];
+            const rankNum = rankNums[i];
+            const initial = (u.name || '?')[0].toUpperCase();
+            return `
+            <div class="podium-place ${cls}">
+                <div class="podium-rank">${rankNum === 1 ? '🏆 1st' : rankNum === 2 ? '🥈 2nd' : '🥉 3rd'}</div>
+                <div class="podium-avatar">${initial}</div>
+                <div class="podium-name">${u.name || 'Unknown'}</div>
+                <div class="podium-division">${u.division || '—'}</div>
+                <div class="podium-score">${u.stats.avg}% avg</div>
+                <div class="podium-stand" style="height:${heights[i]}px;">${medals[i]}</div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderTable(ranked) {
+        const tbody = document.getElementById('lbTableBody');
+        const query = document.getElementById('searchLb').value.toLowerCase();
+        const filtered = ranked.filter(u => (u.name || '').toLowerCase().includes(query) || (u.division || '').toLowerCase().includes(query));
+
+        document.getElementById('emptyState').style.display = filtered.length === 0 ? 'block' : 'none';
+        tbody.innerHTML = '';
+
+        filtered.forEach((u, idx) => {
+            const rank = ranked.indexOf(u) + 1;
+            const isMe = u.empId === currentUserId;
+            const prog = u.progress || {};
+            const dots = Array.from({length: 5}, (_, i) => `<div class="mod-dot ${prog[`module${i+1}`]?.passed ? 'mod-done' : 'mod-pending'}" title="Module ${i+1}"></div>`).join('');
+            const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+            const status = u.stats.passed === 5 ? '<span style="color:var(--green);font-weight:700;font-size:12px;"><i class="ti ti-circle-check"></i> Complete</span>' :
+                u.stats.passed > 0 ? '<span style="color:var(--blue-light);font-weight:600;font-size:12px;">In Progress</span>' :
+                '<span style="color:var(--text-muted);font-size:12px;">Not Started</span>';
+
+            const tr = document.createElement('tr');
+            if (isMe) tr.className = 'current-user';
+            tr.innerHTML = `
+                <td><span class="rank-badge ${rankClass}">${rank}</span></td>
+                <td><div class="emp-cell">
+                    <div class="emp-av">${(u.name||'?')[0].toUpperCase()}</div>
+                    <div>
+                        <div class="emp-name">${u.name || 'Unknown'}${isMe ? '<span class="you-tag">You</span>' : ''}</div>
+                        <div class="emp-div">${u.empId || ''}</div>
+                    </div>
+                </div></td>
+                <td style="color:var(--text-muted);font-size:13px;">${u.division || '—'}</td>
+                <td><div class="modules-bar">${dots}<span style="margin-left:6px;font-size:12px;color:var(--text-muted);">${u.stats.passed}/5</span></div></td>
+                <td><span class="score-val">${u.stats.avg > 0 ? u.stats.avg + '%' : '—'}</span></td>
+                <td>${status}</td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function sortBy(mode, btn) {
+        sortMode = mode;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const ranked = getRankedUsers();
+        renderPodium(ranked);
+        renderTable(ranked);
+    }
+
+    function filterTable() {
+        renderTable(getRankedUsers());
+    }
+
+    (function init() {
+        const ranked = getRankedUsers();
+        renderPodium(ranked);
+        renderTable(ranked);
+        CyberSentry.init('dashboard');
+    })();
+</script>
+</body>
+</html>

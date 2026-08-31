@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield SL - Module 2: Password Security</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Specific styles for interactive exercise */
+        #langToggleBtn { padding:5px 12px; border-radius:7px; border:1px solid rgba(6,182,212,.5); background:rgba(6,182,212,.08); color:#0e7490; font-size:11px; font-weight:700; cursor:pointer; transition:.2s; white-space:nowrap; margin-right:8px; }
+        #langToggleBtn:hover { background:rgba(6,182,212,.18); }
+        #langToggleBtn span { text-decoration:underline; }
+        .video-lang-tabs { display:flex; gap:8px; margin-bottom:12px; }
+        .video-lang-tab { padding:6px 16px; border-radius:8px; border:1px solid var(--gray-200); background:var(--gray-50); font-size:12px; font-weight:600; cursor:pointer; transition:.2s; color:var(--gray-500); }
+        .video-lang-tab.active { background:var(--blue-primary); color:white; border-color:var(--blue-primary); }
+        .yt-frame { width:100%; aspect-ratio:16/9; border-radius:12px; border:none; box-shadow:0 4px 24px rgba(0,0,0,0.15); }
+        .pwd-strength-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .pwd-input {
+            width: 100%;
+            padding: 16px;
+            font-size: 20px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-family: monospace;
+            transition: border-color 0.3s;
+        }
+        .pwd-input:focus {
+            outline: none;
+            border-color: var(--blue-mid);
+        }
+        .strength-meter-bg {
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .strength-meter-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+        }
+        .strength-text {
+            font-weight: 700;
+            text-align: right;
+            font-size: 14px;
+        }
+        
+        .checklist {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 24px;
+            background: var(--gray-50);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+        }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+        .check-item i {
+            color: var(--gray-400);
+        }
+        .check-item.passed {
+            color: var(--green);
+        }
+        .check-item.passed i {
+            color: var(--green);
+        }
+        
+        .crack-time {
+            margin-top: 24px;
+            text-align: center;
+            padding: 16px;
+            background: var(--blue-soft);
+            border-radius: 8px;
+            border: 1px solid var(--blue-pale);
+            color: var(--blue-primary);
+        }
+        .crack-time strong {
+            font-size: 20px;
+            display: block;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body class="light-page">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-logo"><i class="ti ti-shield-check" style="color: var(--gold); margin-right: 8px;"></i>Cyber<span>Shield</span> SL</div>
+            <div class="topbar-module-name">Module 2: Password Security</div>
+        </div>
+        <div class="topbar-right">
+            <div class="progress-pill">
+                <span>Progress: 0%</span>
+                <div class="progress-bar-container"><div class="progress-bar-fill" id="globalProgress" style="width: 0%;"></div></div>
+            </div>
+            <button id="langToggleBtn" onclick="LangUtil.toggle()">🌐 <span>EN</span> | සි</button>
+            <a href="student-dashboard.html" class="btn-back"><i class="ti ti-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="module-layout">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-badge">
+                <div class="sidebar-badge-num">Module 02</div>
+                <div class="sidebar-badge-title">Password Security</div>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <a href="#" class="sidebar-item active" data-target="section1">
+                    <i class="ti ti-video"></i> AI Training Video <i class="ti ti-check check-icon"></i>
+                </a>
+                <a href="#" class="sidebar-item" data-target="section2">
+                    <i class="ti ti-file-text"></i> Module Content <i class="ti ti-check check-icon"></i>
+                </a>
+                <a href="#" class="sidebar-item" data-target="section3">
+                    <i class="ti ti-click"></i> Interactive Exercise <i class="ti ti-check check-icon"></i>
+                </a>
+                <a href="#" class="sidebar-item" data-target="section4">
+                    <i class="ti ti-help-circle"></i> End Quiz <i class="ti ti-check check-icon"></i>
+                </a>
+            </ul>
+
+            <div class="quiz-score-box">
+                <div class="quiz-score-box-title">Quiz Score</div>
+                <div class="quiz-score-box-val" id="sidebarScore">--/10</div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            
+            <!-- SECTION 1: AI VIDEO PLAYER -->
+            <div id="section1" class="content-section active">
+                <div class="module-hero">
+                    <h1 style="color: white; margin-bottom: 8px;">Mastering Password Security</h1>
+                    <p style="color: var(--gray-400); max-width: 600px;">Learn how to create unbreakable passwords, manage them effectively, and utilize Multi-Factor Authentication to secure government portals.</p>
+                    <div class="module-hero-tags">
+                        <span class="hero-tag"><i class="ti ti-clock"></i> 8 Mins</span>
+                        <span class="hero-tag"><i class="ti ti-barbell"></i> Beginner</span>
+                        <span class="hero-tag"><i class="ti ti-language"></i> English / Sinhala</span>
+                    </div>
+                </div>
+
+                <div class="section-container">
+                    <div class="video-lang-tabs">
+                        <button class="video-lang-tab active" id="tabEn" onclick="switchVideo('en')">🇬🇧 English</button>
+                        <button class="video-lang-tab" id="tabSi" onclick="switchVideo('si')">🇱🇰 සිංහල</button>
+                    </div>
+                    <div id="videoEn">
+                        <iframe class="yt-frame" src="https://www.youtube-nocookie.com/embed/aO858HyFbKI" title="Password Security Awareness Training" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                            <p style="font-size:12px; color:var(--gray-400); margin:0;">🇬🇧 English — Password Security Awareness Training</p>
+                            <a href="https://www.youtube.com/watch?v=aO858HyFbKI" target="_blank" style="font-size:12px; color:#2563eb; font-weight:600; text-decoration:none;">▶ Watch on YouTube</a>
+                        </div>
+                    </div>
+                    <div id="videoSi" style="display:none;">
+                        <iframe class="yt-frame" src="https://www.youtube-nocookie.com/embed/XBkzBrXlle0" title="Password Security Sinhala" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                            <p style="font-size:12px; color:var(--gray-400); margin:0;">🇱🇰 සිංහල — මුරපද ආරක්ෂාව</p>
+                            <a href="https://www.youtube.com/watch?v=XBkzBrXlle0" target="_blank" style="font-size:12px; color:#2563eb; font-weight:600; text-decoration:none;">▶ Watch on YouTube</a>
+                        </div>
+                    </div>
+
+
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-info-circle"></i>
+                            <div class="card-title">Video Overview</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <h4>Objective</h4>
+                                    <p class="module-card-desc">Understand the principles of strong passwords and the importance of MFA.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Target Audience</h4>
+                                    <p class="module-card-desc">All Gampaha Divisional Secretariat Employees</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Common Threats</h4>
+                                    <p class="module-card-desc">Brute-force attacks, dictionary attacks, credential stuffing</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Key Takeaway</h4>
+                                    <p class="module-card-desc">Length matters more than complexity, and never reuse passwords.</p>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button class="btn btn-primary" onclick="document.querySelector('[data-target=section2]').click()">Continue to Content <i class="ti ti-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: MODULE CONTENT -->
+            <div id="section2" class="content-section">
+                <div class="section-container">
+                    <h2 class="section-title">Password Security Essentials</h2>
+
+                    <!-- VISUAL GUIDE CARD WITH EXPLANATION BOX -->
+                    <div class="visual-guide-card">
+                        <div class="visual-guide-header">
+                            <h3><i class="ti ti-photo"></i> Visual Password & Authentication Guide: Weak vs. Strong Government Security</h3>
+                            <span class="badge" style="background: rgba(139,92,246,0.2); color: #a78bfa; border: 1px solid rgba(139,92,246,0.4); font-size:11px; padding:3px 10px; border-radius:12px;">Step-by-Step Officer Guide</span>
+                        </div>
+                        <div class="visual-guide-img-wrap">
+                            <img src="gov_password_visual_guide.png" alt="Password Security Infographic" class="visual-guide-img">
+                        </div>
+                        <div class="visual-explanation-box">
+                            <div class="visual-explanation-title">
+                                🔑 <span>Visual Breakdown: How to Protect Your Government Login Credentials</span>
+                            </div>
+                            <div class="visual-callout-grid">
+                                <div class="visual-callout-item">
+                                    <div class="callout-num red">1</div>
+                                    <div class="callout-text">
+                                        <h4>Weak Passwords (Common Danger)</h4>
+                                        <p>Avoid simple words like <code>gampaha123</code>, <code>admin@2025</code>, or birth years. Automated hacker tools can guess these in under 2 seconds!</p>
+                                    </div>
+                                </div>
+                                <div class="visual-callout-item">
+                                    <div class="callout-num green">2</div>
+                                    <div class="callout-text">
+                                        <h4>Strong Passphrases (Government Standard)</h4>
+                                        <p>Use long passphrases combining uppercase, lowercase, numbers, and symbols (e.g. <code>Gampaha@2026!Sec</code> or <code>Rainy#Gampaha$88</code>). 12+ characters take centuries to crack.</p>
+                                    </div>
+                                </div>
+                                <div class="visual-callout-item">
+                                    <div class="callout-num green">3</div>
+                                    <div class="callout-text">
+                                        <h4>Multi-Factor Authentication (MFA / 2FA)</h4>
+                                        <p>Even if an attacker steals your password, MFA sends a 6-digit code or prompt to your official mobile phone. Without your phone, hackers are completely blocked!</p>
+                                    </div>
+                                </div>
+                                <div class="visual-callout-item">
+                                    <div class="callout-num amber">4</div>
+                                    <div class="callout-text">
+                                        <h4>Never Share Credentials</h4>
+                                        <p>Never share your password or OTP code with anyone — not even coworkers or persons claiming to be IT support. Official IT officers will NEVER ask for your password!</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gov-do-dont-grid">
+                                <div class="gov-do-card">
+                                    <h4>✅ What Government Staff SHOULD Do</h4>
+                                    <ul>
+                                        <li>Use passphrases with 12+ characters for all e-government portals.</li>
+                                        <li>Enable 2FA / MFA on all work accounts and phones.</li>
+                                        <li>Use a unique password for work that is different from personal Facebook/email.</li>
+                                    </ul>
+                                </div>
+                                <div class="gov-dont-card">
+                                    <h4>❌ What Government Staff Should NEVER Do</h4>
+                                    <ul>
+                                        <li>Never write passwords on sticky notes attached to your PC monitor or desk drawer.</li>
+                                        <li>Never click "Remember Password" on public or shared computers.</li>
+                                        <li>Never tell your OTP or login code to anyone over the phone or WhatsApp.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-shield"></i>
+                            <div class="card-title">What Makes a Strong Password?</div>
+                        </div>
+                        <div class="card-body">
+                            <p>A strong password is your first line of defense against cybercriminals attempting to access government information systems.</p>
+                            
+                            <div class="info-grid mt-4">
+                                <div class="info-item">
+                                    <h4>Length (Most Important)</h4>
+                                    <p class="module-card-desc">A password should be at least 12-14 characters long. A longer password is exponentially harder to crack.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Complexity</h4>
+                                    <p class="module-card-desc">Include a mix of uppercase letters, lowercase letters, numbers, and special symbols (e.g., @, #, $, %).</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Uniqueness</h4>
+                                    <p class="module-card-desc">Never use the same password for multiple accounts. If one account is compromised, they all are.</p>
+                                </div>
+                                <div class="info-item">
+                                    <h4>Avoid Dictionary Words</h4>
+                                    <p class="module-card-desc">Instead of "Password!23", use a passphrase like "BlueCoffeeCup!42"</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-alert-circle"></i>
+                            <div class="card-title">Common Password Mistakes</div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="red-flag-list">
+                                <li class="red-flag-item"><i class="ti ti-x"></i> Using sequences like "123456", "qwerty", or "password".</li>
+                                <li class="red-flag-item"><i class="ti ti-x"></i> Using personal information (names, birthdates, pet names, ID numbers).</li>
+                                <li class="red-flag-item"><i class="ti ti-x"></i> Reusing your personal social media password for government systems.</li>
+                                <li class="red-flag-item"><i class="ti ti-x"></i> Writing passwords on sticky notes and leaving them on your monitor.</li>
+                                <li class="red-flag-item"><i class="ti ti-x"></i> Changing only one number when forced to reset (e.g., P@ssword1 to P@ssword2).</li>
+                            </ul>
+                            
+                            <div class="warning-box mt-4">
+                                <i class="ti ti-alert-triangle"></i>
+                                <div>
+                                    <strong>Credential Stuffing</strong>
+                                    <p>Cybercriminals use automated tools to test stolen passwords from public breaches on other websites. This is why password reuse is highly dangerous.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-device-mobile"></i>
+                            <div class="card-title">Multi-Factor Authentication (MFA)</div>
+                        </div>
+                        <div class="card-body">
+                            <p>MFA adds an extra layer of security. Even if a hacker steals your password, they cannot log in without the second factor.</p>
+                            <p class="mt-4">It requires two or more of the following:</p>
+                            <div class="tip-chips">
+                                <span class="tip-chip"><i class="ti ti-brain"></i> Something you know (Password/PIN)</span>
+                                <span class="tip-chip"><i class="ti ti-device-mobile-message"></i> Something you have (Phone/Security Key)</span>
+                                <span class="tip-chip"><i class="ti ti-fingerprint"></i> Something you are (Fingerprint/Face ID)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-lock-access"></i>
+                            <div class="card-title">Password Managers & Government Policy</div>
+                        </div>
+                        <div class="card-body">
+                            <p>Memorizing dozens of unique, complex passwords is impossible. A password manager is a secure software application that stores and encrypts all your passwords.</p>
+                            <p class="mt-4"><strong>Sri Lanka Government Employee Guidelines:</strong></p>
+                            <ul style="margin-left: 24px; color: var(--gray-600); font-size: 14px; margin-top: 8px;">
+                                <li>Always adhere to the Divisional Secretariat's IT policy regarding password resets.</li>
+                                <li>Never share your login credentials with colleagues, even if they need temporary access.</li>
+                                <li>Use the official enterprise password manager if provided by the IT department.</li>
+                            </ul>
+                            
+                            <div class="text-center" style="margin-top: 32px;">
+                                <button class="btn btn-primary" onclick="document.querySelector('[data-target=section3]').click()">Try the Simulator <i class="ti ti-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SECTION 3: INTERACTIVE EXERCISE -->
+            <div id="section3" class="content-section">
+                <div class="section-container">
+                    <div class="sim-header">
+                        <h2>Password Strength Checker</h2>
+                        <p style="color: var(--gray-400); margin-top: 4px;">Test your passwords against modern cracking tools.</p>
+                    </div>
+                    <div class="sim-body">
+                        <div class="hint-panel">
+                            <strong><i class="ti ti-bulb"></i> Instructions:</strong>
+                            <p>Type a password in the box below to see how strong it is. Try to satisfy all the requirements on the checklist.</p>
+                            <p><em>Note: This is a simulation. Do not enter your actual government passwords here.</em></p>
+                        </div>
+
+                        <div class="pwd-strength-container">
+                            <input type="text" id="pwdInput" class="pwd-input" placeholder="Type a password here..." autocomplete="off">
+                            
+                            <div class="strength-meter-bg">
+                                <div class="strength-meter-fill" id="pwdMeter"></div>
+                            </div>
+                            <div class="strength-text" id="pwdStrengthText" style="color: var(--gray-400);">Waiting for input...</div>
+
+                            <div class="checklist">
+                                <div class="check-item" id="check-length"><i class="ti ti-x"></i> At least 12 characters</div>
+                                <div class="check-item" id="check-upper"><i class="ti ti-x"></i> Uppercase letter</div>
+                                <div class="check-item" id="check-lower"><i class="ti ti-x"></i> Lowercase letter</div>
+                                <div class="check-item" id="check-number"><i class="ti ti-x"></i> Number</div>
+                                <div class="check-item" id="check-special"><i class="ti ti-x"></i> Special character (!@#$%^&*)</div>
+                            </div>
+
+                            <div class="crack-time" id="crackTimeDisplay">
+                                Estimated time for a hacker to crack this password:
+                                <strong id="crackTimeVal">Instant</strong>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <p style="margin-bottom: 16px; color: var(--gray-600); font-size: 14px;">Try improving these common weak passwords:</p>
+                            <div class="tip-chips" style="justify-content: center;">
+                                <span class="tip-chip" style="cursor:pointer;" onclick="document.getElementById('pwdInput').value='password123'; document.getElementById('pwdInput').dispatchEvent(new Event('input'));">password123</span>
+                                <span class="tip-chip" style="cursor:pointer;" onclick="document.getElementById('pwdInput').value='Admin2024'; document.getElementById('pwdInput').dispatchEvent(new Event('input'));">Admin2024</span>
+                                <span class="tip-chip" style="cursor:pointer;" onclick="document.getElementById('pwdInput').value='Colombo@1'; document.getElementById('pwdInput').dispatchEvent(new Event('input'));">Colombo@1</span>
+                            </div>
+                        </div>
+                        
+                        <div id="simComplete" style="display: none; text-align: center; margin-top: 32px; border-top: 1px solid var(--gray-200); padding-top: 24px;">
+                            <h3 style="color: var(--navy); margin-bottom: 16px;">Great Job! You've mastered strong passwords.</h3>
+                            <button class="btn btn-primary" onclick="document.querySelector('[data-target=section4]').click()">Take the End Quiz <i class="ti ti-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: END QUIZ -->
+            <div id="section4" class="content-section">
+                <div class="module-hero" style="padding: 32px 48px; background-size: 20px 20px;">
+                    <h2 style="color: white;">Module 2 Knowledge Assessment</h2>
+                    <div class="module-hero-tags">
+                        <span class="hero-tag">10 Questions</span>
+                        <span class="hero-tag">70% to Pass</span>
+                    </div>
+                </div>
+
+                <div class="section-container" id="quizContainer">
+                    <div class="quiz-progress-bar" id="quizProgress">
+                        <!-- Filled by JS -->
+                    </div>
+                    
+                    <div class="flex-between mb-4">
+                        <div style="font-weight: 700; color: var(--gray-600);">Question <span id="qCurrent">1</span> of 10</div>
+                        <div style="font-weight: 700; color: var(--blue-mid);">Score: <span id="qScore">0</span></div>
+                    </div>
+
+                    <div class="quiz-question-container">
+                        <div id="qScenario" class="scenario-box" style="display: none;"></div>
+                        <div class="quiz-question" id="qText">Question text here?</div>
+                        
+                        <div class="quiz-options" id="qOptions">
+                            <!-- Filled by JS -->
+                        </div>
+
+                        <div class="quiz-explanation" id="qExplanation">
+                            <h4><i class="ti ti-bulb"></i> Explanation</h4>
+                            <p id="qExpText">Explanation text here.</p>
+                            <button class="btn btn-primary mt-4" id="btnNextQuestion" style="float: right;">Next Question <i class="ti ti-arrow-right"></i></button>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESULTS CONTAINER -->
+                <div class="section-container" id="resultContainer" style="display: none;">
+                    <div class="card result-card">
+                        <h2 style="margin-bottom: 24px;">Assessment Complete</h2>
+                        
+                        <div class="score-ring pass" id="finalScoreRing">
+                            100%
+                        </div>
+                        
+                        <div style="font-size: 20px; font-weight: 700; margin-bottom: 8px;" id="finalResultTitle">Congratulations! You Passed.</div>
+                        <p class="module-card-desc">You have successfully demonstrated your understanding of password security.</p>
+                        
+                        <div class="badge-earned" id="badgeContainer">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6193/6193139.png" alt="Badge">
+                            <div style="font-weight: 700; color: var(--navy);">Password Guardian</div>
+                            <div style="font-size: 12px; color: var(--gold);">Module 02 Badge</div>
+                        </div>
+
+                        <div class="info-grid mt-4" style="text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
+                            <div class="info-item">
+                                <h4 style="color: var(--green);">Correct Answers</h4>
+                                <p style="font-size: 24px; font-weight: 700;" id="statCorrect">8</p>
+                            </div>
+                            <div class="info-item">
+                                <h4 style="color: var(--red);">Incorrect Answers</h4>
+                                <p style="font-size: 24px; font-weight: 700;" id="statWrong">2</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4" style="display: flex; gap: 16px; justify-content: center; margin-top: 32px;">
+                            <button class="btn btn-outline" onclick="location.reload()">Retry Quiz</button>
+                            <a href="student-dashboard.html" class="btn btn-primary">Back to Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="sentry.js"></script>
+    <script>
+        // Module 2 Specific Logic
+
+        // --- PASSWORD STRENGTH SIMULATOR ---
+        const pwdInput = document.getElementById('pwdInput');
+        const pwdMeter = document.getElementById('pwdMeter');
+        const pwdStrengthText = document.getElementById('pwdStrengthText');
+        const crackTimeVal = document.getElementById('crackTimeVal');
+        
+        const chkLength = document.getElementById('check-length');
+        const chkUpper = document.getElementById('check-upper');
+        const chkLower = document.getElementById('check-lower');
+        const chkNum = document.getElementById('check-number');
+        const chkSpec = document.getElementById('check-special');
+        const simComplete = document.getElementById('simComplete');
+
+        pwdInput.addEventListener('input', function() {
+            const pwd = this.value;
+            let score = 0;
+            let reqsMet = 0;
+            
+            // Checks
+            const hasLength = pwd.length >= 12;
+            const hasUpper = /[A-Z]/.test(pwd);
+            const hasLower = /[a-z]/.test(pwd);
+            const hasNum = /[0-9]/.test(pwd);
+            const hasSpec = /[^A-Za-z0-9]/.test(pwd);
+
+            updateCheck(chkLength, hasLength);
+            updateCheck(chkUpper, hasUpper);
+            updateCheck(chkLower, hasLower);
+            updateCheck(chkNum, hasNum);
+            updateCheck(chkSpec, hasSpec);
+
+            if (hasLength) { score += 2; reqsMet++; }
+            if (hasUpper) { score += 1; reqsMet++; }
+            if (hasLower) { score += 1; reqsMet++; }
+            if (hasNum) { score += 1; reqsMet++; }
+            if (hasSpec) { score += 1; reqsMet++; }
+            if (pwd.length > 15) score += 1;
+
+            if (pwd.length === 0) {
+                pwdMeter.style.width = "0%";
+                pwdStrengthText.innerText = "Waiting for input...";
+                crackTimeVal.innerText = "Instant";
+                crackTimeVal.style.color = "inherit";
+            } else if (score <= 2) {
+                pwdMeter.style.width = "25%";
+                pwdMeter.style.backgroundColor = "var(--red)";
+                pwdStrengthText.innerText = "Weak";
+                pwdStrengthText.style.color = "var(--red)";
+                crackTimeVal.innerText = "Instantly";
+                crackTimeVal.style.color = "var(--red)";
+            } else if (score <= 4) {
+                pwdMeter.style.width = "50%";
+                pwdMeter.style.backgroundColor = "var(--amber)";
+                pwdStrengthText.innerText = "Fair";
+                pwdStrengthText.style.color = "var(--amber)";
+                crackTimeVal.innerText = "A few hours or days";
+                crackTimeVal.style.color = "var(--amber)";
+            } else if (score <= 6) {
+                pwdMeter.style.width = "75%";
+                pwdMeter.style.backgroundColor = "var(--blue-mid)";
+                pwdStrengthText.innerText = "Strong";
+                pwdStrengthText.style.color = "var(--blue-mid)";
+                crackTimeVal.innerText = "Several years";
+                crackTimeVal.style.color = "var(--blue-mid)";
+            } else {
+                pwdMeter.style.width = "100%";
+                pwdMeter.style.backgroundColor = "var(--green)";
+                pwdStrengthText.innerText = "Very Strong";
+                pwdStrengthText.style.color = "var(--green)";
+                crackTimeVal.innerText = "Centuries to crack";
+                crackTimeVal.style.color = "var(--green)";
+            }
+
+            if (reqsMet === 5) {
+                simComplete.style.display = "block";
+            }
+        });
+
+        function updateCheck(el, isPassed) {
+            if (isPassed) {
+                el.classList.add('passed');
+                el.querySelector('i').className = "ti ti-check";
+            } else {
+                el.classList.remove('passed');
+                el.querySelector('i').className = "ti ti-x";
+            }
+        }
+
+
+        // --- QUIZ LOGIC ---
+        const quizQuestions = [
+            {
+                text: "What is the single most important factor for creating a strong password?",
+                options: [
+                    "Including at least one number",
+                    "The overall length of the password (e.g., 12+ characters)",
+                    "Changing it every 30 days",
+                    "Including your birth year so you don't forget it"
+                ],
+                correct: 1,
+                explanation: "Length is the most critical factor. A long passphrase composed of normal words is much harder for a computer to crack than a short, complex password."
+            },
+            {
+                text: "What is 'Credential Stuffing'?",
+                options: [
+                    "Storing passwords in a physical notebook",
+                    "When hackers use stolen passwords from one website breach to try and log into other websites",
+                    "Entering your password incorrectly too many times",
+                    "Sharing your password with colleagues"
+                ],
+                correct: 1,
+                explanation: "Credential stuffing relies on people reusing the same password across multiple sites. If one site is breached, attackers use those credentials to access your other accounts."
+            },
+            {
+                text: "Why should you never use the same password for your personal email and your government e-office account?",
+                options: [
+                    "Because personal emails receive more spam",
+                    "If your personal email is compromised, attackers can use the same password to access sensitive government systems",
+                    "Because government portals reject personal passwords automatically",
+                    "It is fine to use the same password if it is very strong"
+                ],
+                correct: 1,
+                explanation: "Password reuse is a major security risk. Always maintain separate, unique passwords for personal and professional accounts."
+            },
+            {
+                text: "What does MFA (Multi-Factor Authentication) do?",
+                options: [
+                    "It generates complex passwords for you",
+                    "It requires a second form of verification (like an OTP or fingerprint) in addition to your password",
+                    "It automatically changes your password when a threat is detected",
+                    "It encrypts your local files"
+                ],
+                correct: 1,
+                explanation: "MFA adds a critical layer of defense. Even if someone discovers your password, they cannot access your account without your physical phone or biometric factor."
+            },
+            {
+                scenario: "A colleague from the Accounts Division calls you and says they forgot their password and need to process an urgent file using your account.",
+                text: "What is the correct action?",
+                options: [
+                    "Give them the password but change it the next day",
+                    "Log in for them and let them use your computer",
+                    "Refuse to share your password and advise them to contact IT for a password reset",
+                    "Write the password on a sticky note and hand it to them"
+                ],
+                correct: 2,
+                explanation: "You must never share your login credentials or allow others to use your authenticated session, regardless of urgency. They must follow official IT reset procedures."
+            },
+            {
+                text: "Which of the following is an example of a 'Passphrase'?",
+                options: [
+                    "P@ssw0rd123!",
+                    "Admin_2023",
+                    "BlueCoffeeCup!42",
+                    "12345678"
+                ],
+                correct: 2,
+                explanation: "A passphrase combines multiple unrelated words. It is easy for a human to remember but very difficult for computers to crack due to its length."
+            },
+            {
+                text: "What is the primary benefit of using a Password Manager?",
+                options: [
+                    "It automatically replies to phishing emails",
+                    "It generates, encrypts, and stores unique passwords for every site, so you only have to remember one master password",
+                    "It prevents you from accessing unauthorized websites",
+                    "It increases your computer's internet speed"
+                ],
+                correct: 1,
+                explanation: "Password managers eliminate the need to memorize dozens of complex passwords, preventing password reuse while maintaining high security."
+            },
+            {
+                text: "Which of the following is considered a WEAK password practice?",
+                options: [
+                    "Using a password that is 16 characters long",
+                    "Using a password manager",
+                    "Changing 'Password123' to 'Password124' when required to reset",
+                    "Using a mix of upper and lowercase letters"
+                ],
+                correct: 2,
+                explanation: "Incrementing a number at the end of a password is a predictable pattern. Hackers program their cracking tools to specifically guess these patterns."
+            },
+            {
+                text: "If you receive a notification for an MFA approval (like an SMS code or app prompt) but you are NOT currently trying to log in, what should you do?",
+                options: [
+                    "Approve it to clear the notification",
+                    "Ignore it, it's just a glitch",
+                    "Deny the request and immediately change your password, as someone has likely discovered it",
+                    "Forward the code to your colleague"
+                ],
+                correct: 2,
+                explanation: "An unexpected MFA prompt usually means someone already has your password and is trying to get past the second step. Change your password immediately."
+            },
+            {
+                text: "Which of these components represents the 'Something you are' factor in Multi-Factor Authentication?",
+                options: [
+                    "A strong password",
+                    "A hardware security token (USB key)",
+                    "A fingerprint or facial scan (Biometrics)",
+                    "A temporary SMS code"
+                ],
+                correct: 2,
+                explanation: "Biometrics like fingerprints or facial recognition are unique physical characteristics representing 'something you are'."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let quizScore = 0;
+
+        const quizProgress = document.getElementById('quizProgress');
+        const qCurrent = document.getElementById('qCurrent');
+        const qScore = document.getElementById('qScore');
+        const qScenario = document.getElementById('qScenario');
+        const qText = document.getElementById('qText');
+        const qOptions = document.getElementById('qOptions');
+        const qExplanation = document.getElementById('qExplanation');
+        const qExpText = document.getElementById('qExpText');
+        const btnNext = document.getElementById('btnNextQuestion');
+
+        // Init Progress Bar
+        for(let i=0; i<quizQuestions.length; i++){
+            const step = document.createElement('div');
+            step.className = 'quiz-step';
+            if(i===0) step.classList.add('active');
+            quizProgress.appendChild(step);
+        }
+
+        function loadQuestion() {
+            const q = quizQuestions[currentQIndex];
+            qCurrent.innerText = currentQIndex + 1;
+            
+            if (q.scenario) {
+                qScenario.innerText = q.scenario;
+                qScenario.style.display = "block";
+            } else {
+                qScenario.style.display = "none";
+            }
+            
+            qText.innerText = q.text;
+            qOptions.innerHTML = "";
+            qExplanation.classList.remove('show');
+
+            const letters = ['A', 'B', 'C', 'D'];
+            q.options.forEach((opt, idx) => {
+                const optEl = document.createElement('div');
+                optEl.className = 'quiz-option';
+                optEl.innerHTML = `
+                    <div class="quiz-option-letter">${letters[idx]}</div>
+                    <div class="quiz-option-text">${opt}</div>
+                `;
+                optEl.onclick = () => handleAnswer(idx);
+                qOptions.appendChild(optEl);
+            });
+
+            // Update step UI
+            const steps = document.querySelectorAll('.quiz-step');
+            steps.forEach((s, i) => {
+                s.classList.remove('active');
+                if(i < currentQIndex) s.classList.add('completed');
+                if(i === currentQIndex) s.classList.add('active');
+            });
+        }
+
+        function handleAnswer(selectedIndex) {
+            if (qExplanation.classList.contains('show')) return;
+
+            const q = quizQuestions[currentQIndex];
+            const opts = qOptions.querySelectorAll('.quiz-option');
+
+            opts.forEach(o => o.classList.add('disabled'));
+            opts[selectedIndex].classList.add('selected');
+
+            if (selectedIndex === q.correct) {
+                opts[selectedIndex].classList.add('correct');
+                quizScore++;
+                qScore.innerText = quizScore;
+                document.getElementById('sidebarScore').innerText = quizScore + "/10";
+            } else {
+                opts[selectedIndex].classList.add('wrong');
+                opts[q.correct].classList.add('correct'); 
+            }
+
+            qExpText.innerText = q.explanation;
+            qExplanation.classList.add('show');
+        }
+
+        btnNext.onclick = () => {
+            currentQIndex++;
+            if (currentQIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        function showResults() {
+            document.getElementById('quizContainer').style.display = "none";
+            const resContainer = document.getElementById('resultContainer');
+            resContainer.style.display = "block";
+
+            const percent = (quizScore / quizQuestions.length) * 100;
+            const ring = document.getElementById('finalScoreRing');
+            const title = document.getElementById('finalResultTitle');
+            const badge = document.getElementById('badgeContainer');
+            
+            ring.innerText = percent + "%";
+            document.getElementById('statCorrect').innerText = quizScore;
+            document.getElementById('statWrong').innerText = quizQuestions.length - quizScore;
+            document.getElementById('sidebarScore').innerText = quizScore + "/10";
+            document.getElementById('globalProgress').style.width = "100%";
+            document.querySelector('.progress-pill span').innerText = "Progress: 100%";
+
+            const navs = document.querySelectorAll('.sidebar-item');
+            navs.forEach(n => n.classList.add('completed'));
+
+            if (percent >= 70) {
+                ring.className = "score-ring pass";
+                title.innerText = "Congratulations! You Passed.";
+                badge.style.display = "inline-block";
+                if (typeof saveModuleProgress === 'function') {
+                    saveModuleProgress(2, percent, true);
+                }
+            } else {
+                ring.className = "score-ring fail";
+                title.innerText = "Assessment Failed";
+                title.style.color = "var(--amber)";
+                badge.style.display = "none";
+                if (typeof saveModuleProgress === 'function') {
+                    saveModuleProgress(2, percent, false);
+                }
+            }
+        }
+
+        // Start Quiz
+        loadQuestion();
+        CyberSentry.init('module');
+    </script>
+    <script>
+        function switchVideo(lang) {
+            document.getElementById('videoEn').style.display = lang === 'en' ? 'block' : 'none';
+            document.getElementById('videoSi').style.display = lang === 'si' ? 'block' : 'none';
+            document.getElementById('tabEn').classList.toggle('active', lang === 'en');
+            document.getElementById('tabSi').classList.toggle('active', lang === 'si');
+        }
+        document.addEventListener('langChanged', (e) => switchVideo(e.detail.lang));
+    </script>
+    <script src="lang.js"></script>
+</body>
+</html>

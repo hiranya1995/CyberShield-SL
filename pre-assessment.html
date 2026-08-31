@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield SL - Pre-Assessment</title>
+    <meta name="description" content="Baseline cybersecurity knowledge pre-assessment for Gampaha Divisional Secretariat employees.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .assessment-header {
+            background: var(--navy);
+            color: var(--white);
+            padding: 40px 48px;
+            background-image: radial-gradient(circle at 10px 10px, rgba(255,255,255,0.05) 2px, transparent 0);
+            background-size: 40px 40px;
+        }
+        .assessment-header h1 { color: var(--white); margin-bottom: 12px; }
+        .assessment-header p { color: var(--gray-400); max-width: 600px; }
+        .meta-pills {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .meta-pill {
+            background: rgba(255,255,255,0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .assessment-body {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        .section-intro-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .section-intro-card h3 { margin-bottom: 12px; }
+        .section-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--blue-mid);
+            margin-bottom: 8px;
+        }
+        .assessment-result {
+            text-align: center;
+            padding: 48px 24px;
+            display: none;
+        }
+        .assessment-result h2 { font-size: 32px; margin-bottom: 16px; }
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            max-width: 700px;
+            margin: 32px auto;
+        }
+        .result-stat {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .result-stat h3 { font-size: 32px; margin-bottom: 4px; }
+        .result-stat p { font-size: 12px; color: var(--gray-600); font-weight: 600; }
+        .topic-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto 32px;
+            text-align: left;
+        }
+        .topic-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .topic-name { min-width: 180px; font-size: 14px; font-weight: 500; }
+        .topic-bar-bg { flex: 1; height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; }
+        .topic-bar-fill { height: 100%; border-radius: 4px; transition: width 1s; }
+        .topic-score { font-size: 13px; font-weight: 700; min-width: 40px; text-align: right; }
+    </style>
+</head>
+<body class="light-page">
+
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-logo"><i class="ti ti-shield-check" style="color: var(--gold); margin-right: 8px;"></i>Cyber<span>Shield</span> SL</div>
+            <div class="topbar-module-name">Pre-Assessment</div>
+        </div>
+        <div class="topbar-right">
+            <a href="student-dashboard.html" class="btn-back"><i class="ti ti-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Assessment Header -->
+    <div class="assessment-header">
+        <h1>Baseline Cybersecurity Knowledge Assessment</h1>
+        <p>This pre-assessment measures your existing knowledge before you begin any training modules. Your answers will not affect your progress — we use this to identify your knowledge gaps for research purposes.</p>
+        <div class="meta-pills">
+            <div class="meta-pill"><i class="ti ti-list-numbers"></i> 20 Questions</div>
+            <div class="meta-pill"><i class="ti ti-clock"></i> ~10 Minutes</div>
+            <div class="meta-pill"><i class="ti ti-info-circle"></i> Covers all 6 topic areas</div>
+            <div class="meta-pill"><i class="ti ti-chart-bar"></i> Results used for research</div>
+        </div>
+    </div>
+
+    <!-- Quiz Section (visible) -->
+    <div id="assessmentQuiz" class="assessment-body">
+        <div class="section-intro-card">
+            <div class="section-label">Research Pre-Assessment</div>
+            <h3>Knowledge Baseline Test</h3>
+            <p style="color: var(--gray-600); margin-bottom: 0;">Answer all 20 questions to the best of your current knowledge. There are no penalties for wrong answers at this stage. This establishes your baseline for the research study.</p>
+        </div>
+
+        <div class="card">
+            <div class="card-body" style="padding: 0;">
+                <div style="padding: 24px; border-bottom: 1px solid var(--gray-200);">
+                    <div class="quiz-progress-bar" id="quizProgress"></div>
+                    <div class="flex-between">
+                        <div style="font-weight: 700; color: var(--gray-600);">Question <span id="qCurrent">1</span> of 20</div>
+                        <div style="font-size: 13px; color: var(--gray-400);">Pre-Assessment: Answers are anonymous for research</div>
+                    </div>
+                </div>
+                <div style="padding: 24px;">
+                    <div id="qScenario" class="scenario-box" style="display: none;"></div>
+                    <div class="quiz-question" id="qText">Question text here?</div>
+                    <div class="quiz-options" id="qOptions"></div>
+                    <div class="quiz-explanation" id="qExplanation">
+                        <h4><i class="ti ti-bulb"></i> Explanation</h4>
+                        <p id="qExpText">Explanation text here.</p>
+                        <div style="text-align: right; margin-top: 16px;">
+                            <button class="btn btn-primary" id="btnNextQuestion">Next Question <i class="ti ti-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assessment Results (hidden initially) -->
+    <div id="assessmentResult" class="assessment-result">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="score-ring pass" id="resultRing" style="margin-bottom: 24px; width: 140px; height: 140px; font-size: 36px;">0%</div>
+            <h2 id="resultTitle">Pre-Assessment Complete!</h2>
+            <p style="color: var(--gray-600); max-width: 500px; margin: 0 auto 32px;">Thank you for completing the baseline assessment. This data will help us understand your current cybersecurity knowledge level. Now proceed to the training modules to improve your score!</p>
+
+            <div class="result-stats">
+                <div class="result-stat">
+                    <h3 id="statScore" style="color: var(--navy);">0</h3>
+                    <p>Score</p>
+                </div>
+                <div class="result-stat">
+                    <h3 id="statCorrect" style="color: var(--green);">0</h3>
+                    <p>Correct</p>
+                </div>
+                <div class="result-stat">
+                    <h3 id="statWrong" style="color: var(--red);">0</h3>
+                    <p>Incorrect</p>
+                </div>
+                <div class="result-stat">
+                    <h3 style="color: var(--blue-mid);">20</h3>
+                    <p>Total Questions</p>
+                </div>
+            </div>
+
+            <div class="card" style="max-width: 600px; margin: 0 auto 32px; text-align: left;">
+                <div class="card-header">
+                    <i class="ti ti-chart-bar"></i>
+                    <div class="card-title">Performance by Topic</div>
+                </div>
+                <div class="card-body">
+                    <div class="topic-breakdown" id="topicBreakdown">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                <a href="student-dashboard.html" class="btn btn-primary"><i class="ti ti-layout-dashboard"></i> Go to Training Modules</a>
+                <a href="survey.html" class="btn btn-outline"><i class="ti ti-speakerphone"></i> Give e-Satisfaction Feedback</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const questions = [
+            // Phishing (Q1-4)
+            { topic: 'Phishing', text: "What is the primary goal of a phishing attack?", options: ["Speed up computer performance", "Trick users into revealing sensitive information", "Install legitimate software updates", "Block unwanted spam"], correct: 1, explanation: "Phishing uses deception to manipulate users into providing passwords, financial information, or other sensitive data." },
+            { topic: 'Phishing', text: "Which of the following is a red flag indicating a phishing email?", options: ["It is addressed to you by name from a known colleague", "It comes from an official .gov.lk address", "It creates extreme urgency ('Your account will be deleted in 1 hour!')", "It contains no links or attachments"], correct: 2, explanation: "Artificial urgency is a classic phishing tactic designed to bypass rational thinking. Legitimate government systems do not send such ultimatums via email." },
+            { topic: 'Phishing', text: "What is 'Smishing'?", options: ["Phishing via phone calls", "Phishing via SMS text messages", "A type of computer virus", "A social media scam"], correct: 1, explanation: "Smishing uses SMS messages to deliver phishing attacks, often mimicking banks, government agencies, or delivery services." },
+            { topic: 'Phishing', scenario: "You receive an email from 'accounts@gampaha-secretariat.org' (note: not .gov.lk) asking you to verify your login. What should you do?", text: "What is the MOST appropriate response?", options: ["Verify by clicking the link", "Email the sender to confirm", "Do not click any links; report to IT using the official IT contact", "Forward to colleagues to warn them from the suspicious computer"], correct: 2, explanation: "The domain 'gampaha-secretariat.org' is not the official '.gov.lk' domain and is likely a phishing attempt. Never click links in suspicious emails." },
+            // Passwords (Q5-8)
+            { topic: 'Password Security', text: "Which of the following is considered the strongest password?", options: ["pass123", "Admin@2024", "BlueSkyMango!River42", "Gampaha#1"], correct: 2, explanation: "Length is the most critical factor. A long passphrase with multiple unrelated words is exponentially harder to crack than a short complex password." },
+            { topic: 'Password Security', text: "What does Multi-Factor Authentication (MFA) provide?", options: ["Faster login speeds", "An extra layer of security requiring a second form of verification beyond just a password", "Automatic password generation", "Encrypted file storage"], correct: 1, explanation: "MFA requires both something you know (password) and something you have (phone/token) or something you are (biometric), making account compromise much harder." },
+            { topic: 'Password Security', text: "Why should you NOT reuse your personal email password for government e-office systems?", options: ["Because personal emails have different character limits", "If your personal account is compromised, attackers can use the same credentials to access government systems", "Because government passwords must be shorter", "There is no reason — reusing strong passwords is acceptable"], correct: 1, explanation: "Credential stuffing attacks use stolen passwords from one breach to try logging into other services. Different systems must have unique passwords." },
+            { topic: 'Password Security', text: "A colleague forgot their government login password and asks to use your account temporarily. What should you do?", options: ["Share it since it's a trusted colleague", "Share it but change it the next day", "Refuse and advise them to contact IT for a password reset", "Write your password on a sticky note for them"], correct: 2, explanation: "Sharing login credentials violates government IT policy and could make you liable for any actions taken under your account." },
+            // Malware (Q9-12)
+            { topic: 'Malware', text: "What type of malware encrypts a victim's files and demands payment for the decryption key?", options: ["Spyware", "Adware", "Ransomware", "Worm"], correct: 2, explanation: "Ransomware has become one of the most damaging threats to government institutions. Regular offline backups are the most effective defense." },
+            { topic: 'Malware', text: "You find a USB drive labeled 'Ministry Budget Files' in the car park. What should you do?", options: ["Plug it in to see if it belongs to a colleague", "Plug it in but run a virus scan first", "Hand it to IT without plugging it in anywhere", "Put it in the lost and found box"], correct: 2, explanation: "This is a Baiting attack. Infected USB drives are left intentionally to compromise systems. Only the IT team with proper tools should handle unknown drives." },
+            { topic: 'Malware', text: "Which action BEST prevents malware infections on government workstations?", options: ["Restarting your computer daily", "Keeping the operating system and software fully updated with security patches", "Changing your wallpaper regularly", "Using a personal email for work files"], correct: 1, explanation: "Software patches fix security vulnerabilities that malware actively exploits. Unpatched systems are major targets for attackers." },
+            { topic: 'Malware', text: "If you suspect your workstation has malware, what is the FIRST action you should take?", options: ["Try to delete the suspected files yourself", "Disconnect from the network and contact IT immediately", "Continue working and see if it resolves itself", "Email your supervisor from the infected machine"], correct: 1, explanation: "Isolating an infected machine prevents the malware from spreading to other computers on the government network, limiting damage significantly." },
+            // Safe Internet (Q13-15)
+            { topic: 'Safe Internet', text: "What does the padlock icon (🔒) and 'https://' in a website address indicate?", options: ["The website is fast", "The connection between your browser and the website is encrypted", "The website is government-owned", "The website has been verified as safe by an antivirus program"], correct: 1, explanation: "HTTPS encrypts all data transmitted between you and the website, preventing eavesdroppers from reading your data in transit." },
+            { topic: 'Safe Internet', text: "What is the main danger of using public Wi-Fi (in a café or airport) for government work?", options: ["The Wi-Fi speed is too slow for government portals", "Attackers can intercept (eavesdrop on) unencrypted data sent over the network", "Public Wi-Fi doesn't work on government laptops", "It costs more data than mobile data"], correct: 1, explanation: "Public Wi-Fi is unencrypted. A Man-in-the-Middle (MitM) attack allows an attacker on the same network to capture your login credentials and sensitive data." },
+            { topic: 'Safe Internet', text: "After using a government portal on a shared office computer, what MUST you do?", options: ["Just close the browser window", "Properly log out of the portal and clear the browser session/cookies", "Turn off the monitor", "Nothing — the session expires automatically in a few days"], correct: 1, explanation: "Closing the browser doesn't always end the session. Another user could press 'back' and access your account. Always log out explicitly and clear cookies from shared computers." },
+            // Social Engineering (Q16-18)
+            { topic: 'Social Engineering', text: "Someone claiming to be an IT auditor calls and says they need your system password to conduct a compliance audit. This is an example of:", options: ["A legitimate audit procedure", "A Pretexting social engineering attack", "A Malware infection", "A technical support request"], correct: 1, explanation: "Pretexting involves fabricating a scenario (like an IT audit) to justify an unusual request. Legitimate IT auditors and support teams never need your password." },
+            { topic: 'Social Engineering', text: "An unknown person in professional attire follows you through a security door into a restricted area. This is called:", options: ["Vishing", "Spear phishing", "Tailgating/Piggybacking", "Shoulder surfing"], correct: 2, explanation: "Tailgating bypasses physical access controls by piggybacking on an authorized person's entry. Every person entering restricted areas must use their own credentials." },
+            { topic: 'Social Engineering', text: "Which psychological tactic do social engineers MOST frequently use to pressure victims?", options: ["Offering compliments and praise", "Creating urgency and invoking authority figures to prevent rational thinking", "Sending large file attachments", "Using technical jargon to confuse victims"], correct: 1, explanation: "Creating urgency (act now or face consequences) combined with authority (I'm from management/IT/police) bypasses rational decision-making and is the hallmark of social engineering." },
+            // Data Protection (Q19-20)
+            { topic: 'Data Protection', text: "Under Sri Lanka's PDPA 2022, what does 'Data Minimisation' require government employees to do?", options: ["Minimise the physical size of data files", "Only collect and process personal data that is strictly necessary for the stated purpose", "Delete all personal data every month", "Share data only via minimised email attachments"], correct: 1, explanation: "Data Minimisation is a fundamental PDPA principle: collect only what you need, for the specific purpose you need it for — nothing more." },
+            { topic: 'Data Protection', text: "A confidential citizen welfare document is no longer needed. How should it be disposed of?", options: ["Put in the general recycling bin", "Tear in half and discard", "Shred using a cross-cut shredder and dispose of securely", "Store in a drawer indefinitely"], correct: 2, explanation: "Confidential documents must be shredded (cross-cut/confetti shredding) to ensure the information cannot be reconstructed from discarded material." },
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+        const topicScores = {};
+
+        const quizProgress = document.getElementById('quizProgress');
+        const qCurrent = document.getElementById('qCurrent');
+        const qScenario = document.getElementById('qScenario');
+        const qText = document.getElementById('qText');
+        const qOptions = document.getElementById('qOptions');
+        const qExplanation = document.getElementById('qExplanation');
+        const qExpText = document.getElementById('qExpText');
+        const btnNext = document.getElementById('btnNextQuestion');
+
+        // Build topic scores tracker
+        questions.forEach(q => {
+            if (!topicScores[q.topic]) topicScores[q.topic] = { correct: 0, total: 0 };
+            topicScores[q.topic].total++;
+        });
+
+        // Init progress bar
+        for (let i = 0; i < questions.length; i++) {
+            const step = document.createElement('div');
+            step.className = 'quiz-step';
+            if (i === 0) step.classList.add('active');
+            quizProgress.appendChild(step);
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQIndex];
+            qCurrent.innerText = currentQIndex + 1;
+            if (q.scenario) { qScenario.innerText = q.scenario; qScenario.style.display = "block"; }
+            else { qScenario.style.display = "none"; }
+            qText.innerText = q.text;
+            qOptions.innerHTML = "";
+            qExplanation.classList.remove('show');
+            const letters = ['A', 'B', 'C', 'D'];
+            q.options.forEach((opt, idx) => {
+                const optEl = document.createElement('div');
+                optEl.className = 'quiz-option';
+                optEl.innerHTML = `<div class="quiz-option-letter">${letters[idx]}</div><div class="quiz-option-text">${opt}</div>`;
+                optEl.onclick = () => handleAnswer(idx);
+                qOptions.appendChild(optEl);
+            });
+            const steps = document.querySelectorAll('.quiz-step');
+            steps.forEach((s, i) => {
+                s.classList.remove('active');
+                if (i < currentQIndex) s.classList.add('completed');
+                if (i === currentQIndex) s.classList.add('active');
+            });
+        }
+
+        function handleAnswer(selectedIndex) {
+            if (qExplanation.classList.contains('show')) return;
+            const q = questions[currentQIndex];
+            const opts = qOptions.querySelectorAll('.quiz-option');
+            opts.forEach(o => o.classList.add('disabled'));
+            opts[selectedIndex].classList.add('selected');
+            if (selectedIndex === q.correct) {
+                opts[selectedIndex].classList.add('correct');
+                score++;
+                topicScores[q.topic].correct++;
+            } else {
+                opts[selectedIndex].classList.add('wrong');
+                opts[q.correct].classList.add('correct');
+            }
+            qExpText.innerText = q.explanation;
+            qExplanation.classList.add('show');
+        }
+
+        btnNext.onclick = () => {
+            currentQIndex++;
+            if (currentQIndex < questions.length) { loadQuestion(); }
+            else { showResults(); }
+        };
+
+        function showResults() {
+            document.getElementById('assessmentQuiz').style.display = 'none';
+            const resultDiv = document.getElementById('assessmentResult');
+            resultDiv.style.display = 'block';
+
+            const percent = Math.round((score / questions.length) * 100);
+            document.getElementById('resultRing').innerText = percent + '%';
+            document.getElementById('resultRing').className = percent >= 70 ? 'score-ring pass' : 'score-ring fail';
+            document.getElementById('resultTitle').innerText = percent >= 70 ? 'Strong Baseline Score!' : 'Pre-Assessment Complete!';
+            document.getElementById('statScore').innerText = percent + '%';
+            document.getElementById('statCorrect').innerText = score;
+            document.getElementById('statWrong').innerText = questions.length - score;
+
+            // Topic breakdown
+            const topicBreakdown = document.getElementById('topicBreakdown');
+            const colors = { 'Phishing': '#2563EB', 'Password Security': '#16A34A', 'Malware': '#DC2626', 'Safe Internet': '#0891B2', 'Social Engineering': '#7C3AED', 'Data Protection': '#D97706' };
+            for (const topic in topicScores) {
+                const ts = topicScores[topic];
+                const pct = Math.round((ts.correct / ts.total) * 100);
+                const color = colors[topic] || 'var(--blue-mid)';
+                const row = document.createElement('div');
+                row.className = 'topic-row';
+                row.innerHTML = `
+                    <div class="topic-name">${topic}</div>
+                    <div class="topic-bar-bg">
+                        <div class="topic-bar-fill" style="width: ${pct}%; background: ${color};"></div>
+                    </div>
+                    <div class="topic-score" style="color: ${color};">${ts.correct}/${ts.total}</div>
+                `;
+                topicBreakdown.appendChild(row);
+            }
+
+            // Save to localStorage
+            const currentUserId = localStorage.getItem('cyberShieldCurrentUser');
+            if (currentUserId && currentUserId !== 'admin') {
+                let users = JSON.parse(localStorage.getItem('cyberShieldUsers')) || [];
+                let userIndex = users.findIndex(u => u.empId === currentUserId);
+                if (userIndex !== -1) {
+                    if (!users[userIndex].progress) users[userIndex].progress = {};
+                    users[userIndex].progress.preTest = { score: percent, completedAt: new Date().toISOString(), topicScores: topicScores };
+                    localStorage.setItem('cyberShieldUsers', JSON.stringify(users));
+                }
+            }
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

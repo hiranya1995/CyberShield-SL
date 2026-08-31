@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield SL — Post-Assessment</title>
+    <meta name="description" content="Post-training cybersecurity knowledge assessment to measure learning improvement.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .assessment-header {
+            background: linear-gradient(135deg, var(--bg-surface), var(--bg-elevated));
+            padding: 48px;
+            border-bottom: 1px solid var(--glass-border);
+            position: relative; overflow: hidden;
+        }
+        .assessment-header::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 15px 15px, rgba(16,185,129,0.06) 2px, transparent 0); background-size: 30px 30px; }
+        .assessment-header::after { content: ''; position: absolute; top: -60px; right: 10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(16,185,129,0.12), transparent 70%); pointer-events: none; }
+        .assessment-header h1 { color: var(--text-primary); position: relative; z-index: 1; }
+        .assessment-header p { color: var(--text-secondary); margin-top: 8px; position: relative; z-index: 1; }
+        .meta-pills { display: flex; gap: 10px; margin-top: 16px; position: relative; z-index: 1; flex-wrap: wrap; }
+        .meta-pill { background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+
+        .quiz-body { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Pre/Post comparison chart */
+        .comparison-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md); padding: 28px; margin-bottom: 24px;
+        }
+        .comparison-title { font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .topic-comparison { display: flex; flex-direction: column; gap: 14px; }
+        .tc-row { display: flex; align-items: center; gap: 12px; }
+        .tc-label { min-width: 170px; font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+        .tc-bars { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .tc-bar-row { display: flex; align-items: center; gap: 8px; }
+        .tc-bar-label { font-size: 10px; font-weight: 700; min-width: 30px; }
+        .tc-bar-label.pre { color: var(--text-muted); }
+        .tc-bar-label.post { color: var(--green); }
+        .tc-bar-bg { flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+        .tc-bar-fill { height: 100%; border-radius: 3px; transition: width 1.2s var(--ease); }
+        .tc-bar-fill.pre-bar { background: rgba(148,163,184,0.5); }
+        .tc-bar-fill.post-bar { background: linear-gradient(90deg, var(--green), #34D399); }
+        .tc-score { font-size: 12px; font-weight: 700; min-width: 36px; text-align: right; }
+
+        /* Improvement badge */
+        .improvement-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 700;
+        }
+        .imp-positive { background: var(--green-soft); color: var(--green); border: 1px solid var(--green-border); }
+        .imp-negative { background: var(--red-soft); color: var(--red); border: 1px solid var(--red-border); }
+        .imp-neutral { background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--glass-border); }
+
+        /* Overall comparison big display */
+        .score-compare {
+            display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px;
+            align-items: center; margin-bottom: 24px;
+        }
+        .score-box { text-align: center; padding: 24px; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: var(--radius-md); }
+        .score-box-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; }
+        .score-box-val { font-size: 52px; font-weight: 800; line-height: 1; }
+        .score-box-val.pre-val { color: var(--text-muted); }
+        .score-box-val.post-val { color: var(--green); }
+        .score-box-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .arrow-box { text-align: center; }
+        .arrow-box i { font-size: 36px; color: var(--green); }
+        .delta-val { font-size: 20px; font-weight: 800; color: var(--green); }
+    </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+    <div class="topbar-left">
+        <div class="topbar-logo" style="display:flex;align-items:center;gap:8px;">
+            <div class="logo-icon" style="width:32px;height:32px;background:linear-gradient(135deg,var(--blue-mid),var(--blue-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:white;"><i class="ti ti-shield-check"></i></div>
+            Cyber<span>Shield</span> SL
+        </div>
+        <div class="topbar-module-name">Post-Assessment</div>
+    </div>
+    <div class="topbar-right">
+        <a href="student-dashboard.html" class="btn-back"><i class="ti ti-arrow-left"></i> Dashboard</a>
+    </div>
+</div>
+
+<div class="assessment-header">
+    <h1>Post-Training Knowledge Assessment</h1>
+    <p>This assessment measures your cybersecurity knowledge <em>after</em> completing the training modules. Your score will be compared with your Pre-Assessment baseline to show your improvement.</p>
+    <div class="meta-pills">
+        <div class="meta-pill"><i class="ti ti-list-numbers"></i> 20 Questions</div>
+        <div class="meta-pill"><i class="ti ti-clock"></i> ~10 Minutes</div>
+        <div class="meta-pill"><i class="ti ti-trophy"></i> Score compared vs Pre-Assessment</div>
+        <div class="meta-pill"><i class="ti ti-chart-bar"></i> Completes research study</div>
+    </div>
+</div>
+
+<!-- QUIZ -->
+<div id="postQuizSection" class="quiz-body">
+    <div class="comparison-card" id="preScoreHint" style="display:none;">
+        <div class="comparison-title"><i class="ti ti-info-circle" style="color:var(--blue-light);"></i> Your Pre-Assessment Baseline</div>
+        <p style="color:var(--text-secondary);font-size:14px;">You scored <strong id="preScoreDisplay" style="color:var(--blue-light);">—</strong> in your Pre-Assessment. Let's see how much you've improved!</p>
+    </div>
+
+    <div class="card">
+        <div class="card-body" style="padding:0;">
+            <div style="padding: 24px; border-bottom: 1px solid var(--glass-border);">
+                <div class="quiz-progress-bar" id="quizProgress"></div>
+                <div class="flex-between">
+                    <div style="font-weight:700;color:var(--text-secondary);">Question <span id="qCurrent">1</span> of 20</div>
+                    <div style="font-size:13px;color:var(--text-muted);">Post-Assessment · Answer as you now understand the topics</div>
+                </div>
+            </div>
+            <div style="padding:24px;">
+                <div id="qScenario" class="scenario-box" style="display:none;"></div>
+                <div class="quiz-question" id="qText"></div>
+                <div class="quiz-options" id="qOptions"></div>
+                <div class="quiz-explanation" id="qExplanation">
+                    <h4><i class="ti ti-bulb"></i> Explanation</h4>
+                    <p id="qExpText"></p>
+                    <div style="text-align:right;margin-top:16px;">
+                        <button class="btn btn-primary" id="btnNextQuestion">Next <i class="ti ti-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- RESULTS -->
+<div id="resultSection" class="quiz-body" style="display:none;">
+    <h2 style="color:var(--text-primary);margin-bottom:24px;text-align:center;">📊 Your Results & Improvement</h2>
+
+    <div class="comparison-card">
+        <div class="comparison-title"><i class="ti ti-chart-arrows-vertical" style="color:var(--green);"></i> Pre vs Post Score Comparison</div>
+        <div class="score-compare">
+            <div class="score-box">
+                <div class="score-box-label">Pre-Assessment</div>
+                <div class="score-box-val pre-val" id="resPre">—</div>
+                <div class="score-box-sub">Before training</div>
+            </div>
+            <div class="arrow-box">
+                <i class="ti ti-arrow-big-right"></i>
+                <div class="delta-val" id="resDelta">+0%</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">improvement</div>
+            </div>
+            <div class="score-box">
+                <div class="score-box-label">Post-Assessment</div>
+                <div class="score-box-val post-val" id="resPost">—</div>
+                <div class="score-box-sub">After training</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="comparison-card">
+        <div class="comparison-title"><i class="ti ti-list-details" style="color:var(--blue-light);"></i> Performance by Topic</div>
+        <div class="topic-comparison" id="topicComparison"></div>
+    </div>
+
+    <div class="card" style="text-align:center;padding:32px;">
+        <div class="score-ring pass" id="finalRing" style="margin-bottom:16px;">0%</div>
+        <h3 style="margin-bottom:8px;color:var(--text-primary);" id="finalTitle">Post-Assessment Complete!</h3>
+        <p style="color:var(--text-secondary);max-width:450px;margin:0 auto 24px;" id="finalMsg">Thank you for completing all assessments. This data is vital for our research study.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <a href="student-dashboard.html" class="btn btn-primary"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+            <a href="certificate.html" class="btn btn-gold"><i class="ti ti-certificate"></i> Get Certificate</a>
+            <a href="survey.html" class="btn btn-outline"><i class="ti ti-speakerphone"></i> Survey</a>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script src="sentry.js"></script>
+<script>
+    // Same 20 questions as pre-assessment (re-test format)
+    const questions = [
+        { topic: 'Phishing', text: "What is the primary goal of a phishing attack?", options: ["Speed up computer performance", "Trick users into revealing sensitive information", "Install legitimate software updates", "Block unwanted spam"], correct: 1, explanation: "Phishing uses deception to manipulate users into providing passwords, financial information, or other sensitive data." },
+        { topic: 'Phishing', text: "Which is a red flag indicating a phishing email?", options: ["It is addressed to you by name from a known colleague", "It comes from an official .gov.lk address", "It creates extreme urgency ('Your account will be deleted in 1 hour!')", "It contains no links or attachments"], correct: 2, explanation: "Artificial urgency is a classic phishing tactic designed to bypass rational thinking." },
+        { topic: 'Phishing', text: "What is 'Smishing'?", options: ["Phishing via phone calls", "Phishing via SMS text messages", "A type of computer virus", "A social media scam"], correct: 1, explanation: "Smishing uses SMS messages to deliver phishing attacks, often mimicking banks or government agencies." },
+        { topic: 'Phishing', scenario: "You receive an email from 'accounts@gampaha-secretariat.org' (not .gov.lk) asking you to verify your login.", text: "What is the MOST appropriate response?", options: ["Verify by clicking the link", "Email the sender to confirm", "Do not click any links; report to IT using the official IT contact", "Forward to colleagues to warn them from that computer"], correct: 2, explanation: "The domain '.org' is not the official '.gov.lk' domain and is likely a phishing attempt." },
+        { topic: 'Password Security', text: "Which is considered the strongest password?", options: ["pass123", "Admin@2024", "BlueSkyMango!River42", "Gampaha#1"], correct: 2, explanation: "Length is the most critical factor in password strength. A long passphrase is exponentially harder to crack." },
+        { topic: 'Password Security', text: "What does Multi-Factor Authentication (MFA) provide?", options: ["Faster login speeds", "An extra layer of security requiring a second form of verification", "Automatic password generation", "Encrypted file storage"], correct: 1, explanation: "MFA requires both something you know (password) and something you have (phone/token), making compromise much harder." },
+        { topic: 'Password Security', text: "Why should you NOT reuse your personal email password for government systems?", options: ["Personal emails have different character limits", "If your personal account is compromised, attackers can use the same credentials to access government systems", "Government passwords must be shorter", "There is no reason — reusing strong passwords is acceptable"], correct: 1, explanation: "Credential stuffing attacks use stolen passwords from one breach to try logging into other services." },
+        { topic: 'Password Security', text: "A colleague asks to use your account temporarily. What should you do?", options: ["Share it since it's a trusted colleague", "Share it but change it the next day", "Refuse and advise them to contact IT for a password reset", "Write your password on a sticky note for them"], correct: 2, explanation: "Sharing login credentials violates government IT policy and creates personal liability." },
+        { topic: 'Malware', text: "What type of malware encrypts files and demands payment for the decryption key?", options: ["Spyware", "Adware", "Ransomware", "Worm"], correct: 2, explanation: "Ransomware has become one of the most damaging threats to government institutions." },
+        { topic: 'Malware', text: "You find a USB drive labeled 'Ministry Budget Files' in the car park. What should you do?", options: ["Plug it in to see if it belongs to a colleague", "Plug it in but run a virus scan first", "Hand it to IT without plugging it in anywhere", "Put it in the lost and found box"], correct: 2, explanation: "This is a Baiting attack. Only IT with proper tools should handle unknown drives." },
+        { topic: 'Malware', text: "Which action BEST prevents malware infections on government workstations?", options: ["Restarting your computer daily", "Keeping the operating system and software fully updated with security patches", "Changing your wallpaper regularly", "Using a personal email for work files"], correct: 1, explanation: "Software patches fix security vulnerabilities that malware actively exploits." },
+        { topic: 'Malware', text: "If you suspect your workstation has malware, what is the FIRST action you should take?", options: ["Try to delete the suspected files yourself", "Disconnect from the network and contact IT immediately", "Continue working and see if it resolves itself", "Email your supervisor from the infected machine"], correct: 1, explanation: "Isolating an infected machine prevents the malware from spreading to other government computers." },
+        { topic: 'Safe Internet', text: "What does the padlock icon 🔒 and 'https://' in a website address indicate?", options: ["The website is fast", "The connection is encrypted and your data is protected", "The website is government-owned", "The website has been verified by antivirus"], correct: 1, explanation: "HTTPS encrypts all data transmitted between you and the website." },
+        { topic: 'Safe Internet', text: "What is the main danger of using public Wi-Fi for government work?", options: ["The Wi-Fi speed is too slow", "Attackers can intercept unencrypted data sent over the network", "Public Wi-Fi doesn't work on government laptops", "It costs more data"], correct: 1, explanation: "Public Wi-Fi is unencrypted. A Man-in-the-Middle attack allows an attacker to capture your login credentials." },
+        { topic: 'Safe Internet', text: "After using a government portal on a shared office computer, what MUST you do?", options: ["Just close the browser window", "Properly log out and clear the browser session/cookies", "Turn off the monitor", "Nothing — the session expires automatically"], correct: 1, explanation: "Closing the browser doesn't always end the session. Always log out explicitly on shared computers." },
+        { topic: 'Social Engineering', text: "Someone claims to be an IT auditor and needs your system password to conduct a compliance audit. This is:", options: ["A legitimate audit procedure", "A Pretexting social engineering attack", "A Malware infection", "A technical support request"], correct: 1, explanation: "Legitimate IT auditors and support teams never need your password." },
+        { topic: 'Social Engineering', text: "An unknown person in professional attire follows you through a security door. This is called:", options: ["Vishing", "Spear phishing", "Tailgating/Piggybacking", "Shoulder surfing"], correct: 2, explanation: "Tailgating bypasses physical access controls by piggybacking on an authorized person's entry." },
+        { topic: 'Social Engineering', text: "Which psychological tactic do social engineers MOST frequently use?", options: ["Offering compliments", "Creating urgency and invoking authority figures", "Sending large file attachments", "Using technical jargon"], correct: 1, explanation: "Creating urgency combined with authority bypasses rational decision-making." },
+        { topic: 'Data Protection', text: "Under Sri Lanka's PDPA 2022, what does 'Data Minimisation' require?", options: ["Minimise the physical size of data files", "Only collect and process personal data strictly necessary for the stated purpose", "Delete all personal data every month", "Share data only via minimised email attachments"], correct: 1, explanation: "Data Minimisation means collect only what you need, for the specific purpose you need it for." },
+        { topic: 'Data Protection', text: "A confidential citizen welfare document is no longer needed. How should it be disposed of?", options: ["Put in the general recycling bin", "Tear in half and discard", "Shred using a cross-cut shredder and dispose of securely", "Store in a drawer indefinitely"], correct: 2, explanation: "Confidential documents must be shredded to ensure the information cannot be reconstructed." }
+    ];
+
+    const currentUserId = localStorage.getItem('cyberShieldCurrentUser');
+    if (!currentUserId || currentUserId === 'admin') window.location.href = 'index.html';
+    const users = JSON.parse(localStorage.getItem('cyberShieldUsers')) || [];
+    const user = users.find(u => u.empId === currentUserId);
+    const preTestScore = user?.progress?.preTest?.score;
+    const preTopicScores = user?.progress?.preTest?.topicScores || {};
+
+    // Show pre score hint
+    if (preTestScore !== undefined) {
+        document.getElementById('preScoreHint').style.display = 'block';
+        document.getElementById('preScoreDisplay').textContent = preTestScore + '%';
+    }
+
+    let currentQIndex = 0, score = 0;
+    const topicScores = {};
+    questions.forEach(q => {
+        if (!topicScores[q.topic]) topicScores[q.topic] = { correct: 0, total: 0 };
+        topicScores[q.topic].total++;
+    });
+
+    const quizProgress = document.getElementById('quizProgress');
+    const qCurrent = document.getElementById('qCurrent');
+    const qScenario = document.getElementById('qScenario');
+    const qText = document.getElementById('qText');
+    const qOptions = document.getElementById('qOptions');
+    const qExplanation = document.getElementById('qExplanation');
+    const qExpText = document.getElementById('qExpText');
+    const btnNext = document.getElementById('btnNextQuestion');
+
+    for (let i = 0; i < questions.length; i++) {
+        const step = document.createElement('div');
+        step.className = 'quiz-step' + (i === 0 ? ' active' : '');
+        quizProgress.appendChild(step);
+    }
+
+    function loadQuestion() {
+        const q = questions[currentQIndex];
+        qCurrent.innerText = currentQIndex + 1;
+        qScenario.style.display = q.scenario ? 'block' : 'none';
+        if (q.scenario) qScenario.innerText = q.scenario;
+        qText.innerText = q.text;
+        qOptions.innerHTML = '';
+        qExplanation.classList.remove('show');
+        const letters = ['A','B','C','D'];
+        q.options.forEach((opt, idx) => {
+            const el = document.createElement('div');
+            el.className = 'quiz-option';
+            el.innerHTML = `<div class="quiz-option-letter">${letters[idx]}</div><div class="quiz-option-text">${opt}</div>`;
+            el.onclick = () => handleAnswer(idx);
+            qOptions.appendChild(el);
+        });
+        document.querySelectorAll('.quiz-step').forEach((s, i) => {
+            s.className = 'quiz-step' + (i < currentQIndex ? ' completed' : i === currentQIndex ? ' active' : '');
+        });
+    }
+
+    function handleAnswer(selectedIndex) {
+        if (qExplanation.classList.contains('show')) return;
+        const q = questions[currentQIndex];
+        const opts = qOptions.querySelectorAll('.quiz-option');
+        opts.forEach(o => o.classList.add('disabled'));
+        opts[selectedIndex].classList.add('selected');
+        if (selectedIndex === q.correct) {
+            opts[selectedIndex].classList.add('correct');
+            score++;
+            topicScores[q.topic].correct++;
+        } else {
+            opts[selectedIndex].classList.add('wrong');
+            opts[q.correct].classList.add('correct');
+        }
+        qExpText.innerText = q.explanation;
+        qExplanation.classList.add('show');
+    }
+
+    btnNext.onclick = () => {
+        currentQIndex++;
+        if (currentQIndex < questions.length) loadQuestion();
+        else showResults();
+    };
+
+    function showResults() {
+        document.getElementById('postQuizSection').style.display = 'none';
+        document.getElementById('resultSection').style.display = 'block';
+
+        const percent = Math.round((score / questions.length) * 100);
+
+        // Save to localStorage
+        const userIdx = users.findIndex(u => u.empId === currentUserId);
+        if (userIdx !== -1) {
+            if (!users[userIdx].progress) users[userIdx].progress = {};
+            users[userIdx].progress.postTest = { score: percent, completedAt: new Date().toISOString(), topicScores };
+            localStorage.setItem('cyberShieldUsers', JSON.stringify(users));
+        }
+
+        // Overall comparison
+        document.getElementById('resPost').textContent = percent + '%';
+        const preScore = preTestScore ?? null;
+        if (preScore !== null) {
+            document.getElementById('resPre').textContent = preScore + '%';
+            const delta = percent - preScore;
+            const deltaEl = document.getElementById('resDelta');
+            deltaEl.textContent = (delta >= 0 ? '+' : '') + delta + '%';
+            deltaEl.style.color = delta >= 0 ? 'var(--green)' : 'var(--red)';
+            document.querySelector('.arrow-box i').style.color = delta >= 0 ? 'var(--green)' : 'var(--red)';
+        } else {
+            document.getElementById('resPre').textContent = 'N/A';
+            document.getElementById('resDelta').textContent = '—';
+        }
+
+        // Final ring
+        const ring = document.getElementById('finalRing');
+        ring.textContent = percent + '%';
+        ring.className = percent >= 70 ? 'score-ring pass' : 'score-ring fail';
+        document.getElementById('finalTitle').textContent = percent >= 70 ? '🎉 Excellent Post-Assessment Score!' : 'Post-Assessment Complete';
+        document.getElementById('finalMsg').textContent = percent >= 70
+            ? 'Outstanding improvement! Your training has significantly boosted your cybersecurity knowledge.'
+            : 'Thank you for completing the assessment. Review the modules and consider retaking for a better score.';
+
+        // Topic breakdown comparison
+        const topicContainer = document.getElementById('topicComparison');
+        const topicColors = { 'Phishing': '#2563EB', 'Password Security': '#16A34A', 'Malware': '#DC2626', 'Safe Internet': '#0891B2', 'Social Engineering': '#7C3AED', 'Data Protection': '#D97706' };
+        for (const topic in topicScores) {
+            const ts = topicScores[topic];
+            const postPct = Math.round((ts.correct / ts.total) * 100);
+            const prePct = preTopicScores[topic] ? Math.round((preTopicScores[topic].correct / preTopicScores[topic].total) * 100) : null;
+            const color = topicColors[topic] || 'var(--blue-mid)';
+            const row = document.createElement('div');
+            row.className = 'tc-row';
+            row.innerHTML = `
+                <div class="tc-label">${topic}</div>
+                <div class="tc-bars">
+                    ${prePct !== null ? `<div class="tc-bar-row"><span class="tc-bar-label pre">PRE</span><div class="tc-bar-bg"><div class="tc-bar-fill pre-bar" style="width:${prePct}%;"></div></div><span class="tc-score" style="color:var(--text-muted);">${prePct}%</span></div>` : ''}
+                    <div class="tc-bar-row"><span class="tc-bar-label post">POST</span><div class="tc-bar-bg"><div class="tc-bar-fill post-bar" style="width:0%;transition:width 1.2s;" data-width="${postPct}"></div></div><span class="tc-score" style="color:var(--green);">${postPct}%</span></div>
+                </div>`;
+            topicContainer.appendChild(row);
+        }
+        // Animate bars
+        setTimeout(() => {
+            document.querySelectorAll('[data-width]').forEach(bar => {
+                bar.style.width = bar.dataset.width + '%';
+            });
+        }, 100);
+
+        CyberSentry.celebrate();
+    }
+
+    loadQuestion();
+    CyberSentry.init('module');
+</script>
+</body>
+</html>
