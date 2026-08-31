@@ -1,0 +1,7 @@
+# Runtime logs
+siem_security_events.log
+*.log
+
+# Python
+__pycache__/
+*.pyc
